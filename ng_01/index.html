@@ -11,10 +11,13 @@
 <li>高偏差（训练集性能不佳）-&gt; 尝试规模更大的神经网络/花费更多时间训练算法/更先进的优化算法</li>
 <li>高方差（开发集性能不佳）-&gt; 尝试获取更多的数据/正则化/其他神经网络模型</li>
 </ul>
-<h3 id="L-2-正则化"><a href="#L-2-正则化" class="headerlink" title="$L_2$正则化"></a>$L_2$正则化</h3><p>$$J(W,b)=\frac{1}{m}\sum^m_{i=1}\mathcal{L}(\hat{y}^{(i)},y^{(i)})+\frac{\lambda}{2m}||W||^2_2$$</p>
-<ul>
-<li>欧几里得范数$||W||<em>2^2=\sum</em>{j=1}^{n_x}W_j^2=W^TW$</li>
-<li>弗罗贝尼乌斯范数（<code>Frobenius Norm</code>）$||W^{[l]}||^2_F=\sum^{n^{[l-1]}}<em>{i=1}\sum^{n^{[l]}}</em>{j=1}(W_{ij}^{[l]})^2$</li>
+<h3 id="L-2-正则化"><a href="#L-2-正则化" class="headerlink" title="$L_2$正则化"></a>$L_2$正则化</h3><script type="math/tex; mode=display">J(W,b)=\frac{1}{m}\sum^m_{i=1}\mathcal{L}(\hat{y}^{(i)},y^{(i)})+\frac{\lambda}{2m}||W||^2_2</script><ul>
+<li>欧几里得范数：</li>
+</ul>
+<script type="math/tex; mode=display">||W||_2^2=\sum_{j=1}^{n_x}W_j^2=W^TW</script><ul>
+<li>弗罗贝尼乌斯范数（<code>Frobenius Norm</code>）：</li>
+</ul>
+<script type="math/tex; mode=display">||W^{[l]}||^2_F=\sum^{n^{[l-1]}}_{i=1}\sum^{n^{[l]}}_{j=1}(W_{ij}^{[l]})^2</script><ul>
 <li>正则化参数$\lambda$设置较大，权重矩阵接近于0，消除或者减少许多隐藏单元的影响，简化神经网络，从而减少过拟合</li>
 </ul>
 <h3 id="Dropout正则化"><a href="#Dropout正则化" class="headerlink" title="Dropout正则化"></a>Dropout正则化</h3><ul>
@@ -47,33 +50,20 @@
 <li>若训练集样本少于2000，直接使用Batch梯度下降</li>
 <li>典型的Mini-Batch设置为64~512（常为2的次方）</li>
 </ul>
-<h3 id="指数加权平均"><a href="#指数加权平均" class="headerlink" title="指数加权平均"></a>指数加权平均</h3><p>$$v^t=\beta v^{t-1}+(1-\beta)\theta^t$$</p>
-<h3 id="Momentum梯度下降"><a href="#Momentum梯度下降" class="headerlink" title="Momentum梯度下降"></a>Momentum梯度下降</h3><ul>
-<li>$V_{dW} = \beta v_{dW} + (1-\beta)d_W$</li>
-<li>$V_{db} = \beta v_{db} + (1-\beta)d_b$</li>
-<li>$W = W - \alpha v_{dW}, b = b - \alpha v_{db}$</li>
+<h3 id="指数加权平均"><a href="#指数加权平均" class="headerlink" title="指数加权平均"></a>指数加权平均</h3><script type="math/tex; mode=display">v^t=\beta v^{t-1}+(1-\beta)\theta^t</script><h3 id="Momentum梯度下降"><a href="#Momentum梯度下降" class="headerlink" title="Momentum梯度下降"></a>Momentum梯度下降</h3><script type="math/tex; mode=display">V_{dW} = \beta v_{dW} + (1-\beta)d_W</script><script type="math/tex; mode=display">V_{db} = \beta v_{db} + (1-\beta)d_b</script><script type="math/tex; mode=display">W = W - \alpha v_{dW}, b = b - \alpha v_{db}</script><ul>
 <li>$\beta$一般取$0.9$</li>
 </ul>
-<h3 id="RMSprop"><a href="#RMSprop" class="headerlink" title="RMSprop"></a>RMSprop</h3><ul>
-<li>$S_{dW} = \beta S_{dW} + (1-\beta)dW^2$</li>
-<li>$S_{db} = \beta S_{db} + (1-\beta)db^2$</li>
-<li>$W = W - \alpha \frac{dW}{\sqrt{S_{dW}+\epsilon}}$</li>
-<li>$b = b - \alpha \frac{db}{\sqrt{S_{db}+\epsilon}}$</li>
-</ul>
-<h3 id="Adam优化算法"><a href="#Adam优化算法" class="headerlink" title="Adam优化算法"></a>Adam优化算法</h3><ul>
+<h3 id="RMSprop"><a href="#RMSprop" class="headerlink" title="RMSprop"></a>RMSprop</h3><script type="math/tex; mode=display">S_{dW} = \beta S_{dW} + (1-\beta)dW^2</script><script type="math/tex; mode=display">S_{db} = \beta S_{db} + (1-\beta)db^2</script><script type="math/tex; mode=display">W = W - \alpha \frac{dW}{\sqrt{S_{dW}+\epsilon}}</script><script type="math/tex; mode=display">b = b - \alpha \frac{db}{\sqrt{S_{db}+\epsilon}}</script><h3 id="Adam优化算法"><a href="#Adam优化算法" class="headerlink" title="Adam优化算法"></a>Adam优化算法</h3><ul>
 <li>结合了Momentum和RMSprop再修正其偏差</li>
 <li>Momentum</li>
 </ul>
-<p>$$V_{dW}=\beta_1V_{dW}+(1-\beta_1)dW$$<br>$$V_{db}=\beta_1V_{db}+(1-\beta_1)db$$</p>
-<ul>
+<script type="math/tex; mode=display">V_{dW}=\beta_1V_{dW}+(1-\beta_1)dW</script><script type="math/tex; mode=display">V_{db}=\beta_1V_{db}+(1-\beta_1)db</script><ul>
 <li>RMSprop</li>
 </ul>
-<p>$$S_{dW}=\beta_2S_{dW}+(1-\beta_2)dW^2$$<br>$$S_{db}=\beta_2S_{db} + (1-\beta_2)db^2$$</p>
-<ul>
+<script type="math/tex; mode=display">S_{dW}=\beta_2S_{dW}+(1-\beta_2)dW^2</script><script type="math/tex; mode=display">S_{db}=\beta_2S_{db} + (1-\beta_2)db^2</script><ul>
 <li>偏差修正</li>
 </ul>
-<p>$$V^{corrected}<em>{dW} = \frac{V</em>{dW}}{1-\beta_1^t}, V^{corrected}<em>{db} = \frac{V</em>{db}}{1-\beta_1^t}$$<br>$$S^{corrected}<em>{dW} = \frac{S</em>{dW}}{1-\beta_2^t}, S^{corrected}<em>{db} = \frac{S</em>{db}}{1-\beta_2^t}$$<br>$$W = W - \alpha \frac{V^{corrected}<em>{dW}}{\sqrt{S^{corrected}</em>{dW}}+\epsilon}$$<br>$$b = b - \alpha \frac{V^{corrected}<em>{db}}{\sqrt{S^{corrected}</em>{db}}+\epsilon}$$</p>
-<ul>
+<script type="math/tex; mode=display">V^{corrected}_{dW} = \frac{V_{dW}}{1-\beta_1^t}, V^{corrected}_{db} = \frac{V_{db}}{1-\beta_1^t}</script><script type="math/tex; mode=display">S^{corrected}_{dW} = \frac{S_{dW}}{1-\beta_2^t}, S^{corrected}_{db} = \frac{S_{db}}{1-\beta_2^t}</script><script type="math/tex; mode=display">W = W - \alpha \frac{V^{corrected}_{dW}}{\sqrt{S^{corrected}_{dW}}+\epsilon}</script><script type="math/tex; mode=display">b = b - \alpha \frac{V^{corrected}_{db}}{\sqrt{S^{corrected}_{db}}+\epsilon}</script><ul>
 <li>$\beta_1$一般取$0.9$，$\beta_2$一般取$0.999$，$\epsilon$一般取$10^{-8}$</li>
 </ul>
 <h3 id="学习率衰减"><a href="#学习率衰减" class="headerlink" title="学习率衰减"></a>学习率衰减</h3><ul>
@@ -97,8 +87,7 @@
 <h3 id="Batch-Normalization"><a href="#Batch-Normalization" class="headerlink" title="Batch Normalization"></a>Batch Normalization</h3><ul>
 <li>归一化也适用于隐含层的$z^{(1)}$~$z^{(m)}$</li>
 </ul>
-<p>$$\mu=\frac{1}{m}\sum_i{z^{(i)}}$$<br>$$\sigma^2=\frac{1}{m}\sum_i({z^{(i)}-\mu})^2$$<br>$$z_{norm}^{(i)}=\frac{z^{(i)}-\mu}{(\sqrt{\sigma^2+\epsilon}}$$<br>$$\tilde{z}^{(i)}=\gamma z_{norm}^{(i)}+\beta$$</p>
-<ul>
+<script type="math/tex; mode=display">\mu=\frac{1}{m}\sum_i{z^{(i)}}</script><script type="math/tex; mode=display">\sigma^2=\frac{1}{m}\sum_i({z^{(i)}-\mu})^2</script><script type="math/tex; mode=display">z_{norm}^{(i)}=\frac{z^{(i)}-\mu}{(\sqrt{\sigma^2+\epsilon}}</script><script type="math/tex; mode=display">\tilde{z}^{(i)}=\gamma z_{norm}^{(i)}+\beta</script><ul>
 <li>其中$\gamma$和$\beta$是模型的学习参数</li>
 <li>BN减少了隐含层变量的分布变化数量，同时有轻微的正则化效果</li>
 <li>通常用指数加权平均来调整每个mini-batch训练集中的$\mu$和$\sigma$</li>
@@ -107,8 +96,7 @@
 <li>Softmax将逻辑回归推广到C类，输出$X$属于各分类的概率</li>
 <li>$t=e^{z^{[l]}}$，$z^{[l]}$是输出层的元素构成的向量</li>
 </ul>
-<p>$$a^{[l]}=\frac{e^{z^{[l]}}}{\sum_{j=1}^nt_i}$$<br>$$a^{[l]}_i=\frac{t_i}{\sum_{j=1}^n t_i}$$</p>
-<h3 id="深度学习框架"><a href="#深度学习框架" class="headerlink" title="深度学习框架"></a>深度学习框架</h3><ul>
+<script type="math/tex; mode=display">a^{[l]}=\frac{e^{z^{[l]}}}{\sum_{j=1}^nt_i}</script><script type="math/tex; mode=display">a^{[l]}_i=\frac{t_i}{\sum_{j=1}^n t_i}</script><h3 id="深度学习框架"><a href="#深度学习框架" class="headerlink" title="深度学习框架"></a>深度学习框架</h3><ul>
 <li>Caffe/Caffe2</li>
 <li>CNTK</li>
 <li>DL4J</li>
