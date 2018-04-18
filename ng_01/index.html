@@ -1,0 +1,134 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="Rarit7's Blog"><title>吴恩达深度学习笔记（1）——超参数调试与优化 | BDC</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/7.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">吴恩达深度学习笔记（1）——超参数调试与优化</h1><a id="logo" href="/.">BDC</a><p class="description">神经中枢</p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">吴恩达深度学习笔记（1）——超参数调试与优化</h1><div class="post-meta">Apr 10, 2018<span> | </span><span class="category"><a href="/categories/深度学习/">深度学习</a></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#深度学习的实用层面"><span class="toc-number">1.</span> <span class="toc-text">深度学习的实用层面</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#训练集-开发集-测试集"><span class="toc-number">1.1.</span> <span class="toc-text">训练集/开发集/测试集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#偏差和方差"><span class="toc-number">1.2.</span> <span class="toc-text">偏差和方差</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#训练神经网络的基本方法"><span class="toc-number">1.3.</span> <span class="toc-text">训练神经网络的基本方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#L-2-正则化"><span class="toc-number">1.4.</span> <span class="toc-text">$L_2$正则化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Dropout正则化"><span class="toc-number">1.5.</span> <span class="toc-text">Dropout正则化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#其他正则化方法"><span class="toc-number">1.6.</span> <span class="toc-text">其他正则化方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#归一化输入"><span class="toc-number">1.7.</span> <span class="toc-text">归一化输入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#梯度消失和梯度爆炸"><span class="toc-number">1.8.</span> <span class="toc-text">梯度消失和梯度爆炸</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#梯度检验"><span class="toc-number">1.9.</span> <span class="toc-text">梯度检验</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#优化"><span class="toc-number">2.</span> <span class="toc-text">优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Mini-Batch梯度下降"><span class="toc-number">2.1.</span> <span class="toc-text">Mini-Batch梯度下降</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#指数加权平均"><span class="toc-number">2.2.</span> <span class="toc-text">指数加权平均</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Momentum梯度下降"><span class="toc-number">2.3.</span> <span class="toc-text">Momentum梯度下降</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RMSprop"><span class="toc-number">2.4.</span> <span class="toc-text">RMSprop</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Adam优化算法"><span class="toc-number">2.5.</span> <span class="toc-text">Adam优化算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#学习率衰减"><span class="toc-number">2.6.</span> <span class="toc-text">学习率衰减</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#局部最优"><span class="toc-number">2.7.</span> <span class="toc-text">局部最优</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#超参数调试、Batch正则化和程序框架"><span class="toc-number">3.</span> <span class="toc-text">超参数调试、Batch正则化和程序框架</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#调试处理"><span class="toc-number">3.1.</span> <span class="toc-text">调试处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#为超参数选择合适的范围"><span class="toc-number">3.2.</span> <span class="toc-text">为超参数选择合适的范围</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Batch-Normalization"><span class="toc-number">3.3.</span> <span class="toc-text">Batch Normalization</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Softmax回归"><span class="toc-number">3.4.</span> <span class="toc-text">Softmax回归</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#深度学习框架"><span class="toc-number">3.5.</span> <span class="toc-text">深度学习框架</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TensorFlow"><span class="toc-number">3.6.</span> <span class="toc-text">TensorFlow</span></a></li></ol></li></ol></div></div><div class="post-content"><h2 id="深度学习的实用层面"><a href="#深度学习的实用层面" class="headerlink" title="深度学习的实用层面"></a>深度学习的实用层面</h2><h3 id="训练集-开发集-测试集"><a href="#训练集-开发集-测试集" class="headerlink" title="训练集/开发集/测试集"></a>训练集/开发集/测试集</h3><ul>
+<li>在机器学习中，通常是训练集：测试集=7:3或者训练集：开发集：测试集=6:2:2</li>
+<li>在大数据时代，开发集和测试集的容量可以有所减小（对于超百万级别的数据，训练集可以占到99.5%）</li>
+<li>确保开发集和测试集的数据与训练集来自同一分布</li>
+</ul>
+<h3 id="偏差和方差"><a href="#偏差和方差" class="headerlink" title="偏差和方差"></a>偏差和方差</h3><ul>
+<li>高偏差：欠拟合（例如训练集误差15%，开发集误差16%）</li>
+<li>高方差：过拟合（例如训练集误差1%，开发集误差11%）</li>
+</ul>
+<h3 id="训练神经网络的基本方法"><a href="#训练神经网络的基本方法" class="headerlink" title="训练神经网络的基本方法"></a>训练神经网络的基本方法</h3><ul>
+<li>高偏差（训练集性能不佳）-&gt; 尝试规模更大的神经网络/花费更多时间训练算法/更先进的优化算法</li>
+<li>高方差（开发集性能不佳）-&gt; 尝试获取更多的数据/正则化/其他神经网络模型</li>
+</ul>
+<h3 id="L-2-正则化"><a href="#L-2-正则化" class="headerlink" title="$L_2$正则化"></a>$L_2$正则化</h3><p>$$J(W,b)=\frac{1}{m}\sum^m_{i=1}\mathcal{L}(\hat{y}^{(i)},y^{(i)})+\frac{\lambda}{2m}||W||^2_2$$</p>
+<ul>
+<li>欧几里得范数$||W||<em>2^2=\sum</em>{j=1}^{n_x}W_j^2=W^TW$</li>
+<li>弗罗贝尼乌斯范数（<code>Frobenius Norm</code>）$||W^{[l]}||^2_F=\sum^{n^{[l-1]}}<em>{i=1}\sum^{n^{[l]}}</em>{j=1}(W_{ij}^{[l]})^2$</li>
+<li>正则化参数$\lambda$设置较大，权重矩阵接近于0，消除或者减少许多隐藏单元的影响，简化神经网络，从而减少过拟合</li>
+</ul>
+<h3 id="Dropout正则化"><a href="#Dropout正则化" class="headerlink" title="Dropout正则化"></a>Dropout正则化</h3><ul>
+<li>反向随机失活：随机删除神经网络中的一些单元，简化神经网络，从而减少过拟合</li>
+<li><code>Dropout</code>在计算机视觉中使用比较频繁</li>
+</ul>
+<h3 id="其他正则化方法"><a href="#其他正则化方法" class="headerlink" title="其他正则化方法"></a>其他正则化方法</h3><ul>
+<li>通过翻转、随机剪裁图片、轻微变形等方法增大数据集</li>
+<li><code>Early Stopping</code>：随着迭代次数的增加，训练集性能提升同时开发集性能下降，因此在迭代过程中提早停止训练网络</li>
+</ul>
+<h3 id="归一化输入"><a href="#归一化输入" class="headerlink" title="归一化输入"></a>归一化输入</h3><ul>
+<li>零均值化</li>
+<li>归一化方差</li>
+</ul>
+<h3 id="梯度消失和梯度爆炸"><a href="#梯度消失和梯度爆炸" class="headerlink" title="梯度消失和梯度爆炸"></a>梯度消失和梯度爆炸</h3><ul>
+<li>深层网络反向传播对激活函数（例如<code>sigmoid</code>和<code>tanh</code>）求导，梯度更新以指数衰减或递增，造成梯度消失和梯度爆炸</li>
+</ul>
+<h3 id="梯度检验"><a href="#梯度检验" class="headerlink" title="梯度检验"></a>梯度检验</h3><ul>
+<li>用于开发反向传播的求导是否正确</li>
+<li>梯度检验不用于训练，只用于debug</li>
+<li>梯度检验不能忽略正则项</li>
+<li>梯度检验不能和<code>Dropout</code>混用</li>
+<li>随机初始化时运用一次梯度检验，反复训练之后再次运用梯度检验</li>
+</ul>
+<h2 id="优化"><a href="#优化" class="headerlink" title="优化"></a>优化</h2><h3 id="Mini-Batch梯度下降"><a href="#Mini-Batch梯度下降" class="headerlink" title="Mini-Batch梯度下降"></a>Mini-Batch梯度下降</h3><ul>
+<li>把一个包含大量样本的训练集拆分成数个小样本（Mini-Batch）的训练集，从而提高训练的效率</li>
+<li>当Mini-Batch的大小等于m时，称为Batch梯度下降，缺点是每次迭代的时间过长</li>
+<li>当Mini-Batch的大小等于1时，称为随机梯度下降，缺点是失去向量化带来的算法加速，计算效率低下</li>
+<li>视情况选择合适的Mini-Batch的大小</li>
+<li>若训练集样本少于2000，直接使用Batch梯度下降</li>
+<li>典型的Mini-Batch设置为64~512（常为2的次方）</li>
+</ul>
+<h3 id="指数加权平均"><a href="#指数加权平均" class="headerlink" title="指数加权平均"></a>指数加权平均</h3><p>$$v^t=\beta v^{t-1}+(1-\beta)\theta^t$$</p>
+<h3 id="Momentum梯度下降"><a href="#Momentum梯度下降" class="headerlink" title="Momentum梯度下降"></a>Momentum梯度下降</h3><ul>
+<li>$V_{dW} = \beta v_{dW} + (1-\beta)d_W$</li>
+<li>$V_{db} = \beta v_{db} + (1-\beta)d_b$</li>
+<li>$W = W - \alpha v_{dW}, b = b - \alpha v_{db}$</li>
+<li>$\beta$一般取$0.9$</li>
+</ul>
+<h3 id="RMSprop"><a href="#RMSprop" class="headerlink" title="RMSprop"></a>RMSprop</h3><ul>
+<li>$S_{dW} = \beta S_{dW} + (1-\beta)dW^2$</li>
+<li>$S_{db} = \beta S_{db} + (1-\beta)db^2$</li>
+<li>$W = W - \alpha \frac{dW}{\sqrt{S_{dW}+\epsilon}}$</li>
+<li>$b = b - \alpha \frac{db}{\sqrt{S_{db}+\epsilon}}$</li>
+</ul>
+<h3 id="Adam优化算法"><a href="#Adam优化算法" class="headerlink" title="Adam优化算法"></a>Adam优化算法</h3><ul>
+<li>结合了Momentum和RMSprop再修正其偏差</li>
+<li>Momentum</li>
+</ul>
+<p>$$V_{dW}=\beta_1V_{dW}+(1-\beta_1)dW$$<br>$$V_{db}=\beta_1V_{db}+(1-\beta_1)db$$</p>
+<ul>
+<li>RMSprop</li>
+</ul>
+<p>$$S_{dW}=\beta_2S_{dW}+(1-\beta_2)dW^2$$<br>$$S_{db}=\beta_2S_{db} + (1-\beta_2)db^2$$</p>
+<ul>
+<li>偏差修正</li>
+</ul>
+<p>$$V^{corrected}<em>{dW} = \frac{V</em>{dW}}{1-\beta_1^t}, V^{corrected}<em>{db} = \frac{V</em>{db}}{1-\beta_1^t}$$<br>$$S^{corrected}<em>{dW} = \frac{S</em>{dW}}{1-\beta_2^t}, S^{corrected}<em>{db} = \frac{S</em>{db}}{1-\beta_2^t}$$<br>$$W = W - \alpha \frac{V^{corrected}<em>{dW}}{\sqrt{S^{corrected}</em>{dW}}+\epsilon}$$<br>$$b = b - \alpha \frac{V^{corrected}<em>{db}}{\sqrt{S^{corrected}</em>{db}}+\epsilon}$$</p>
+<ul>
+<li>$\beta_1$一般取$0.9$，$\beta_2$一般取$0.999$，$\epsilon$一般取$10^{-8}$</li>
+</ul>
+<h3 id="学习率衰减"><a href="#学习率衰减" class="headerlink" title="学习率衰减"></a>学习率衰减</h3><ul>
+<li>线性衰减：$\alpha = \frac{1}{1 + \text{decay-rate} * \text{epoch-num}} \alpha_0$</li>
+<li>其他方法：指数衰减、平方根衰减、离散下降、手动衰减等</li>
+</ul>
+<h3 id="局部最优"><a href="#局部最优" class="headerlink" title="局部最优"></a>局部最优</h3><ul>
+<li>高维空间中更有可能遇到鞍点而不是局部最优点</li>
+</ul>
+<h2 id="超参数调试、Batch正则化和程序框架"><a href="#超参数调试、Batch正则化和程序框架" class="headerlink" title="超参数调试、Batch正则化和程序框架"></a>超参数调试、Batch正则化和程序框架</h2><h3 id="调试处理"><a href="#调试处理" class="headerlink" title="调试处理"></a>调试处理</h3><ul>
+<li>超参数：学习率$\alpha$， $\beta$（Mometum）， $\beta_1$ / $\beta_2$ / $\epsilon$（Adam），神经网络层数，隐含层的神经元数，学习率衰减率，mini-Batch的大小等</li>
+<li>最重要的超参数：学习率$\alpha$</li>
+<li>次重要：$\beta$（Mometum）、mini-Batch的大小、隐含层的神经元数</li>
+<li>再次重要：网络层数、学习率衰减率</li>
+<li>Adam的参数基本采用常用设置</li>
+</ul>
+<h3 id="为超参数选择合适的范围"><a href="#为超参数选择合适的范围" class="headerlink" title="为超参数选择合适的范围"></a>为超参数选择合适的范围</h3><ul>
+<li>用对数标尺搜索超参数比随机均匀取值更合理</li>
+<li>例如：$\alpha=10^r,r\in[-4,0]$</li>
+</ul>
+<h3 id="Batch-Normalization"><a href="#Batch-Normalization" class="headerlink" title="Batch Normalization"></a>Batch Normalization</h3><ul>
+<li>归一化也适用于隐含层的$z^{(1)}$~$z^{(m)}$</li>
+</ul>
+<p>$$\mu=\frac{1}{m}\sum_i{z^{(i)}}$$<br>$$\sigma^2=\frac{1}{m}\sum_i({z^{(i)}-\mu})^2$$<br>$$z_{norm}^{(i)}=\frac{z^{(i)}-\mu}{(\sqrt{\sigma^2+\epsilon}}$$<br>$$\tilde{z}^{(i)}=\gamma z_{norm}^{(i)}+\beta$$</p>
+<ul>
+<li>其中$\gamma$和$\beta$是模型的学习参数</li>
+<li>BN减少了隐含层变量的分布变化数量，同时有轻微的正则化效果</li>
+<li>通常用指数加权平均来调整每个mini-batch训练集中的$\mu$和$\sigma$</li>
+</ul>
+<h3 id="Softmax回归"><a href="#Softmax回归" class="headerlink" title="Softmax回归"></a>Softmax回归</h3><ul>
+<li>Softmax将逻辑回归推广到C类，输出$X$属于各分类的概率</li>
+<li>$t=e^{z^{[l]}}$，$z^{[l]}$是输出层的元素构成的向量</li>
+</ul>
+<p>$$a^{[l]}=\frac{e^{z^{[l]}}}{\sum_{j=1}^nt_i}$$<br>$$a^{[l]}_i=\frac{t_i}{\sum_{j=1}^n t_i}$$</p>
+<h3 id="深度学习框架"><a href="#深度学习框架" class="headerlink" title="深度学习框架"></a>深度学习框架</h3><ul>
+<li>Caffe/Caffe2</li>
+<li>CNTK</li>
+<li>DL4J</li>
+<li>Keras</li>
+<li>Lasagne</li>
+<li>mxnet</li>
+<li>PaddlePaddle</li>
+<li>TensorFlow</li>
+<li>Theano</li>
+<li>Torch</li>
+<li>选择框架的标准：易于编程；运行速度；持续开源</li>
+</ul>
+<h3 id="TensorFlow"><a href="#TensorFlow" class="headerlink" title="TensorFlow"></a>TensorFlow</h3><ul>
+<li><p>示例</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"></span><br><span class="line"><span class="comment"># 假设代价函数是J = w**2 - 10*w + 25，w是我们要优化的变量</span></span><br><span class="line">w = tf.Variable(<span class="number">0</span>, dtype=tf.float32)</span><br><span class="line"><span class="comment"># cost = tf.add(tf.add(w**2, tf.mutiply(-10., w)), 25)</span></span><br><span class="line">cost = w**<span class="number">2</span> - <span class="number">10</span>*w + <span class="number">25</span></span><br><span class="line"><span class="comment"># 学习率0.01</span></span><br><span class="line">train = tf.train.GradientDescentOptimizer(<span class="number">0.01</span>).minimize(cost)</span><br><span class="line"></span><br><span class="line">init = tf.global_variables_initializer()</span><br><span class="line">session = tf.Session()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出w初始化的值0.0</span></span><br><span class="line">session.run(init)</span><br><span class="line">print(session.run(w))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出一步梯度下降后w的值0.1</span></span><br><span class="line">session.run(train)</span><br><span class="line">print(session.run(w))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 迭代1000次，w接近于最优值5</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1000</span>):</span><br><span class="line">	session.run(train)</span><br><span class="line">print(session.run(w))</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>placeholder()函数</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># placeholder()告诉tensorFlow稍后要为x输入变量</span></span><br><span class="line">x = tf.placeholder(tf.float32, [<span class="number">3</span>, <span class="number">1</span>])</span><br><span class="line"></span><br><span class="line">cost = x[<span class="number">0</span>][<span class="number">0</span>]*w**<span class="number">2</span> + x[<span class="number">1</span>][<span class="number">0</span>]*w + x[<span class="number">2</span>][<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line">coefficients = np.array([[<span class="number">1.</span>], [<span class="number">-10.</span>], [<span class="number">25.</span>]])</span><br><span class="line"></span><br><span class="line">session.run(train, feed_dict=[x:coefficients])</span><br></pre></td></tr></table></figure></li>
+</ul>
+</div><div class="tags"><a href="/tags/Andrew-Ng/">Andrew Ng</a><a href="/tags/深度学习/">深度学习</a></div><div class="post-nav"><a class="pre" href="/ng_02/">吴恩达深度学习笔记（2）——结构化机器学习项目</a><a class="next" href="/kaggle_01/">Kaggle机器学习实战（1）——泰坦尼克号生还预测</a></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/机器学习/">机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/深度学习/">深度学习</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/Kaggle/" style="font-size: 15px;">Kaggle</a> <a href="/tags/机器学习/" style="font-size: 15px;">机器学习</a> <a href="/tags/R/" style="font-size: 15px;">R</a> <a href="/tags/特征工程/" style="font-size: 15px;">特征工程</a> <a href="/tags/随机森林/" style="font-size: 15px;">随机森林</a> <a href="/tags/Andrew-Ng/" style="font-size: 15px;">Andrew Ng</a> <a href="/tags/深度学习/" style="font-size: 15px;">深度学习</a></div></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2018 <a href="/." rel="nofollow">BDC.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/x-mathjax-config">MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+  });
+</script><script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
