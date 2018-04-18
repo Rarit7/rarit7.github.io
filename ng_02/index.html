@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="Rarit7's Blog"><title>吴恩达深度学习笔记（2）——结构化机器学习项目 | BDC</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/7.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">吴恩达深度学习笔记（2）——结构化机器学习项目</h1><a id="logo" href="/.">BDC</a><p class="description">神经中枢</p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">吴恩达深度学习笔记（2）——结构化机器学习项目</h1><div class="post-meta">Apr 14, 2018<span> | </span><span class="category"><a href="/categories/深度学习/">深度学习</a></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#机器学习策略"><span class="toc-number">1.</span> <span class="toc-text">机器学习策略</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#机器学习策略-1"><span class="toc-number">1.1.</span> <span class="toc-text">机器学习策略</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#正交化"><span class="toc-number">1.2.</span> <span class="toc-text">正交化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#单实数评估指标"><span class="toc-number">1.3.</span> <span class="toc-text">单实数评估指标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#满足和优化指标"><span class="toc-number">1.4.</span> <span class="toc-text">满足和优化指标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#训练-开发-测试集划分"><span class="toc-number">1.5.</span> <span class="toc-text">训练/开发/测试集划分</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#开发集和测试集的大小"><span class="toc-number">1.6.</span> <span class="toc-text">开发集和测试集的大小</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#改变开发集-测试集指标"><span class="toc-number">1.7.</span> <span class="toc-text">改变开发集/测试集指标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#机器学习算法达到人类水平表现"><span class="toc-number">1.8.</span> <span class="toc-text">机器学习算法达到人类水平表现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#可减少的偏差"><span class="toc-number">1.9.</span> <span class="toc-text">可减少的偏差</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#人类水平误差"><span class="toc-number">1.10.</span> <span class="toc-text">人类水平误差</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#超过人类水平表现"><span class="toc-number">1.11.</span> <span class="toc-text">超过人类水平表现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#提高模型性能"><span class="toc-number">1.12.</span> <span class="toc-text">提高模型性能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#进行误差分析"><span class="toc-number">1.13.</span> <span class="toc-text">进行误差分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#快速搭建模型"><span class="toc-number">1.14.</span> <span class="toc-text">快速搭建模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#不同分布数据集的处理"><span class="toc-number">1.15.</span> <span class="toc-text">不同分布数据集的处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数据不匹配问题"><span class="toc-number">1.16.</span> <span class="toc-text">数据不匹配问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#迁移学习"><span class="toc-number">1.17.</span> <span class="toc-text">迁移学习</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#多任务学习"><span class="toc-number">1.18.</span> <span class="toc-text">多任务学习</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#端到端的深度学习"><span class="toc-number">1.19.</span> <span class="toc-text">端到端的深度学习</span></a></li></ol></li></ol></div></div><div class="post-content"><h2 id="机器学习策略"><a href="#机器学习策略" class="headerlink" title="机器学习策略"></a>机器学习策略</h2><h3 id="机器学习策略-1"><a href="#机器学习策略-1" class="headerlink" title="机器学习策略"></a>机器学习策略</h3><ul>
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="Rarit7's Blog"><title>吴恩达深度学习笔记（2）——结构化机器学习项目 | BDC</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/7.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">吴恩达深度学习笔记（2）——结构化机器学习项目</h1><a id="logo" href="/.">BDC</a><p class="description">神经中枢</p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">吴恩达深度学习笔记（2）——结构化机器学习项目</h1><div class="post-meta">Apr 14, 2018<span> | </span><span class="category"><a href="/categories/深度学习/">深度学习</a></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#机器学习策略"><span class="toc-number">1.</span> <span class="toc-text">机器学习策略</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#机器学习策略-1"><span class="toc-number">1.1.</span> <span class="toc-text">机器学习策略</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#正交化"><span class="toc-number">1.2.</span> <span class="toc-text">正交化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#单实数评估指标"><span class="toc-number">1.3.</span> <span class="toc-text">单实数评估指标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#满足和优化指标"><span class="toc-number">1.4.</span> <span class="toc-text">满足和优化指标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#训练-开发-测试集划分"><span class="toc-number">1.5.</span> <span class="toc-text">训练/开发/测试集划分</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#开发集和测试集的大小"><span class="toc-number">1.6.</span> <span class="toc-text">开发集和测试集的大小</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#改变开发集-测试集指标"><span class="toc-number">1.7.</span> <span class="toc-text">改变开发集/测试集指标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#机器学习算法达到人类水平表现"><span class="toc-number">1.8.</span> <span class="toc-text">机器学习算法达到人类水平表现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#可减少的偏差"><span class="toc-number">1.9.</span> <span class="toc-text">可减少的偏差</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#人类水平误差"><span class="toc-number">1.10.</span> <span class="toc-text">人类水平误差</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#超过人类水平表现"><span class="toc-number">1.11.</span> <span class="toc-text">超过人类水平表现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#提高模型性能"><span class="toc-number">1.12.</span> <span class="toc-text">提高模型性能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#进行误差分析"><span class="toc-number">1.13.</span> <span class="toc-text">进行误差分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#快速搭建模型"><span class="toc-number">1.14.</span> <span class="toc-text">快速搭建模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#不同分布数据集的处理"><span class="toc-number">1.15.</span> <span class="toc-text">不同分布数据集的处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数据不匹配问题"><span class="toc-number">1.16.</span> <span class="toc-text">数据不匹配问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#迁移学习"><span class="toc-number">1.17.</span> <span class="toc-text">迁移学习</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#多任务学习"><span class="toc-number">1.18.</span> <span class="toc-text">多任务学习</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#端到端的深度学习"><span class="toc-number">1.19.</span> <span class="toc-text">端到端的深度学习</span></a></li></ol></li></ol></div></div><div class="post-content"><h2 id="机器学习策略"><a href="#机器学习策略" class="headerlink" title="机器学习策略"></a>机器学习策略</h2><h3 id="机器学习策略-1"><a href="#机器学习策略-1" class="headerlink" title="机器学习策略"></a>机器学习策略</h3><ul>
 <li>收集更多数据</li>
 <li>增加数据多样性</li>
 <li>增加梯度下降迭代次数</li>
@@ -9,7 +9,7 @@
 <li>修改网络架构（激活函数、隐藏单元数目）</li>
 </ul>
 <h3 id="正交化"><a href="#正交化" class="headerlink" title="正交化"></a>正交化</h3><ul>
-<li>在训练集上性能良好（更大型的神经网络/更好的优化算法）</li>
+<li>在训练集上性能良好（更大型的神经网络/更好的优化算法）</li>
 <li>在开发集上性能良好（增加正则项/更多的训练样本）</li>
 <li>在测试集上性能良好（更大的开发集）</li>
 <li>在实际情况上性能良好（调整样本的分布）</li>
@@ -27,16 +27,16 @@
 <li>选择最好的分类器时，准确度和运算时间都要考虑</li>
 <li>准确度是优化目标，运算时间是满足指标</li>
 </ul>
-<h3 id="训练-开发-测试集划分"><a href="#训练-开发-测试集划分" class="headerlink" title="训练/开发/测试集划分"></a>训练/开发/测试集划分</h3><ul>
+<h3 id="训练-开发-测试集划分"><a href="#训练-开发-测试集划分" class="headerlink" title="训练/开发/测试集划分"></a>训练/开发/测试集划分</h3><ul>
 <li>确保开发和测试集来自同一分布</li>
 <li>将所有数据打乱顺序，随机分配到开发集和测试集上</li>
 </ul>
-<h3 id="开发集和测试集的大小"><a href="#开发集和测试集的大小" class="headerlink" title="开发集和测试集的大小"></a>开发集和测试集的大小</h3><ul>
-<li>传统的（小规模数据集）划分：训练集：测试集=70%：30%，或者训练集：开发集：测试集=60%:20%:20%</li>
-<li>对于较大规模的数据集，训练集：开发集：测试集=98%:1%:1%</li>
+<h3 id="开发集和测试集的大小"><a href="#开发集和测试集的大小" class="headerlink" title="开发集和测试集的大小"></a>开发集和测试集的大小</h3><ul>
+<li>传统的（小规模数据集）划分：训练集：测试集=70%：30%，或者训练集：开发集：测试集=60%:20%:20%</li>
+<li>对于较大规模的数据集，训练集：开发集：测试集=98%:1%:1%</li>
 <li>提升训练集样本数有助于提高模型的整体性能</li>
 <li>测试集用于评估性能可以少于整体样本数的30%</li>
-<li>为了评估不同的分类器，开发集需要足够大</li>
+<li>为了评估不同的分类器，开发集需要足够大</li>
 </ul>
 <h3 id="改变开发集-测试集指标"><a href="#改变开发集-测试集指标" class="headerlink" title="改变开发集/测试集指标"></a>改变开发集/测试集指标</h3><ul>
 <li>在计算误差时，对错误的分类加大权重</li>
@@ -45,7 +45,7 @@
 <li>修改错误分类的权重后：</li>
 <li><script type="math/tex; mode=display">Error=\frac{1}{\sum w^{(i)}}\sum^{m_{dev}}_{i=1}w^{(i)}\mathcal{L}\{(\hat{y}^{(i)}\not=y^{(i)})\}</script></li>
 </ul>
-<h3 id="机器学习算法达到人类水平表现"><a href="#机器学习算法达到人类水平表现" class="headerlink" title="机器学习算法达到人类水平表现"></a>机器学习算法达到人类水平表现</h3><ul>
+<h3 id="机器学习算法达到人类水平表现"><a href="#机器学习算法达到人类水平表现" class="headerlink" title="机器学习算法达到人类水平表现"></a>机器学习算法达到人类水平表现</h3><ul>
 <li>贝叶斯最优误差</li>
 <li>评估机器算学习误差产生的原因</li>
 <li>更好的分析方差和偏差</li>
@@ -60,7 +60,7 @@
 </ul>
 <h3 id="超过人类水平表现"><a href="#超过人类水平表现" class="headerlink" title="超过人类水平表现"></a>超过人类水平表现</h3><ul>
 <li>结构化数据问题上，机器学习表现已经超过人类表现，例如：在线广告、产品推荐、物流预测、贷款申请情况预测</li>
-<li>自然感知问题上，超越人类表现不容易</li>
+<li>自然感知问题上，超越人类表现不容易</li>
 </ul>
 <h3 id="提高模型性能"><a href="#提高模型性能" class="headerlink" title="提高模型性能"></a>提高模型性能</h3><ul>
 <li>训练集拟合程度较好，低偏差</li>
@@ -71,15 +71,15 @@
 <h3 id="进行误差分析"><a href="#进行误差分析" class="headerlink" title="进行误差分析"></a>进行误差分析</h3><ul>
 <li>大多数深度学习模型对随机误差鲁棒性强，但对系统误差鲁棒性差</li>
 <li>评估某一错误原因占全部错误的比重，决定是否要对该类误差做单独处理</li>
-<li>如果因为标记错误导致了误差，除了训练集，开发集和测试集上的数据也要修改，保证它们依然来自同一分布</li>
+<li>如果因为标记错误导致了误差，除了训练集，开发集和测试集上的数据也要修改，保证它们依然来自同一分布</li>
 <li>同时需要考察虽然标记错误但分类正确的样本</li>
 </ul>
 <h3 id="快速搭建模型"><a href="#快速搭建模型" class="headerlink" title="快速搭建模型"></a>快速搭建模型</h3><ul>
 <li>快速建立第一个模型并进行迭代，利用方差和偏差评估模型的优化方向</li>
-<li>在较为热门的领域，参考文献对训练自己的模型有较大的帮助</li>
+<li>在较为热门的领域，参考文献对训练自己的模型有较大的帮助</li>
 </ul>
 <h3 id="不同分布数据集的处理"><a href="#不同分布数据集的处理" class="headerlink" title="不同分布数据集的处理"></a>不同分布数据集的处理</h3><ul>
-<li>方法1：把两组数组混合在一起。优点：训练集、开发集和测试集来自同一分布；缺点：开发集和测试集包含某一组数据的样本量太少，不是所需求的目标</li>
+<li>方法1：把两组数组混合在一起。优点：训练集、开发集和测试集来自同一分布；缺点：开发集和测试集包含某一组数据的样本量太少，不是所需求的目标</li>
 <li>方法2：50%投入训练集，其他分别投入开发集和测试集。优点：开发集和测试集包含所需要的优化目标；缺点：训练集、开发集和测试集并非来自同一分布</li>
 </ul>
 <h3 id="数据不匹配问题"><a href="#数据不匹配问题" class="headerlink" title="数据不匹配问题"></a>数据不匹配问题</h3><ul>
@@ -95,14 +95,14 @@
 <li>例如要判断图像中是否有4种物体，则输出结果$\hat{y}$为$4\times1$的向量</li>
 </ul>
 <script type="math/tex; mode=display">Loss=\frac{1}{m}\sum^m_{i=1}\sum^4_{j=1}L(\hat{y}^{(i)}_j,y^{(i)}_j)</script><ul>
-<li>同时处理多个任务比多次处理单个任务性能要好，同时可以应对只有部分标签的情况</li>
+<li>同时处理多个任务比多次处理单个任务性能要好，同时可以应对只有部分标签的情况</li>
 <li>适用于训练的多个目标具有相同的低层次特征</li>
-<li>如果想要从多任务学习中提升特定任务的性能，要让其余任务训练样本数量之和远大于特定任务的训练样本</li>
+<li>如果想要从多任务学习中提升特定任务的性能，要让其余任务训练样本数量之和远大于特定任务的训练样本</li>
 <li>可以建立更大的神经网络模型来提高多任务学习的性能</li>
 </ul>
 <h3 id="端到端的深度学习"><a href="#端到端的深度学习" class="headerlink" title="端到端的深度学习"></a>端到端的深度学习</h3><ul>
 <li>在深度神经网络中输入$X$，直接输出$\hat{y}$，而无需手工提取特征</li>
-<li>庞大的训练数据集使得端到端深度学习性能良好</li>
+<li>庞大的训练数据集使得端到端深度学习性能良好</li>
 <li>优点：避免人的主观意志，不需要花时间手工设计功能</li>
 <li>缺点：依赖大量数据，排除了手工设计功能</li>
 </ul>
