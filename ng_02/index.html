@@ -41,11 +41,11 @@
 <h3 id="改变开发集-测试集指标"><a href="#改变开发集-测试集指标" class="headerlink" title="改变开发集/测试集指标"></a>改变开发集/测试集指标</h3><ul>
 <li>在计算误差时，对错误的分类加大权重</li>
 <li>误差评估：</li>
-<li><script type="math/tex; mode=display">Error=\frac{1}{m_{dev}}\sum^{m_{dev}}_{i=1}\mathcal{L}\{(\hat{y}^{(i)}\not=y^{(i)})\}</script></li>
-<li>修改错误分类的权重后：</li>
-<li><script type="math/tex; mode=display">Error=\frac{1}{\sum w^{(i)}}\sum^{m_{dev}}_{i=1}w^{(i)}\mathcal{L}\{(\hat{y}^{(i)}\not=y^{(i)})\}</script></li>
 </ul>
-<h3 id="机器学习算法达到人类水平表现"><a href="#机器学习算法达到人类水平表现" class="headerlink" title="机器学习算法达到人类水平表现"></a>机器学习算法达到人类水平表现</h3><ul>
+<script type="math/tex; mode=display">Error=\frac{1}{m_{dev}}\sum^{m_{dev}}_{i=1}\mathcal{L}\{(\hat{y}^{(i)}\not=y^{(i)})\}</script><ul>
+<li>修改错误分类的权重后：</li>
+</ul>
+<script type="math/tex; mode=display">Error=\frac{1}{\sum w^{(i)}}\sum^{m_{dev}}_{i=1}w^{(i)}\mathcal{L}\{(\hat{y}^{(i)}\not=y^{(i)})\}</script><h3 id="机器学习算法达到人类水平表现"><a href="#机器学习算法达到人类水平表现" class="headerlink" title="机器学习算法达到人类水平表现"></a>机器学习算法达到人类水平表现</h3><ul>
 <li>贝叶斯最优误差</li>
 <li>评估机器算学习误差产生的原因</li>
 <li>更好的分析方差和偏差</li>
