@@ -5,11 +5,11 @@
 <li>例如，一幅$6\times6$的图像矩阵，经过$3\times3$的卷积核运算，变换为$4\times4$的矩阵</li>
 <li>一种垂直边缘检测卷积核：</li>
 </ul>
-<p>$$\begin{bmatrix}1&amp;0&amp;-1\1&amp;0&amp;-1\1&amp;0&amp;-1\end{bmatrix}$$</p>
+<p>$$\begin{bmatrix}1&amp;0&amp;-1 \ 1&amp;0&amp;-1 \ 1&amp;0&amp;-1 \end{bmatrix}$$</p>
 <ul>
 <li>一种水平边缘检测卷积核：</li>
 </ul>
-<p>$$\begin{bmatrix}1&amp;1&amp;1\0&amp;0&amp;0\-1&amp;-1&amp;-1\end{bmatrix}$$</p>
+<p>$$\begin{bmatrix}1&amp;1&amp;1 \ 0&amp;0&amp;0 \ -1&amp;-1&amp;-1 \end{bmatrix}$$</p>
 <h3 id="Padding"><a href="#Padding" class="headerlink" title="Padding"></a>Padding</h3><ul>
 <li>卷积的缺点：经过多层之后，图片会变得很小；图像边缘大部分信息丢失</li>
 <li><code>Padding</code>就是在图像周围填充像素点，以克服上述缺点</li>
