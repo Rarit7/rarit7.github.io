@@ -1,0 +1,96 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="Rarit7's Blog"><title>Python机器学习库笔记（7）——scikit-learn：聚类&amp;降维 | BDC</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/7.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">Python机器学习库笔记（7）——scikit-learn：聚类&amp;降维</h1><a id="logo" href="/.">BDC</a><p class="description">神经中枢</p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">Python机器学习库笔记（7）——scikit-learn：聚类&amp;降维</h1><div class="post-meta">Aug 28, 2018<span> | </span><span class="category"><a href="/categories/机器学习/">机器学习</a></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#聚类"><span class="toc-number">1.</span> <span class="toc-text">聚类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#K-Means"><span class="toc-number">1.1.</span> <span class="toc-text">K-Means</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DBSCAN"><span class="toc-number">1.2.</span> <span class="toc-text">DBSCAN</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#降维"><span class="toc-number">2.</span> <span class="toc-text">降维</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#PCA"><span class="toc-number">2.1.</span> <span class="toc-text">PCA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LDA"><span class="toc-number">2.2.</span> <span class="toc-text">LDA</span></a></li></ol></li></ol></div></div><div class="post-content"><p>本文将介绍以下几种聚类、降维算法在scikit-learn中的使用方法：</p>
+<p>聚类：</p>
+<ul>
+<li>K-Means</li>
+<li>DBSCAN</li>
+</ul>
+<p>降维：</p>
+<ul>
+<li>PCA</li>
+<li>LDA</li>
+</ul>
+<h2 id="聚类"><a href="#聚类" class="headerlink" title="聚类"></a>聚类</h2><h3 id="K-Means"><a href="#K-Means" class="headerlink" title="K-Means"></a>K-Means</h3><p>参数：</p>
+<ul>
+<li><code>n_clusters</code>：要分成的类别数，默认值为8。</li>
+<li><code>init</code>：初始化聚类中心的方法，默认为<code>&quot;k-means++&quot;</code>，它将智能选择初始聚类中心；<code>&quot;random&quot;</code>将随机选择初始聚类中心；也可传入一组数组指定为初始聚类中心。</li>
+<li><code>n_init</code>：用不同的初始化聚类中心运行算法的次数，默认10。</li>
+<li><code>max_iter</code>：最大迭代次数，默认300。</li>
+<li><code>tol</code>：容差，默认1e-4。</li>
+<li><code>precompute_distances</code>：是否预先计算距离（更快但消耗更多内存）。选<code>&quot;auto&quot;</code>会在<code>n_samples * n_clusters &gt; 12</code>时不预先计算距离。</li>
+<li><code>verbose</code>：是否冗余输出，默认0。</li>
+<li><code>random_state</code>：随机数种子。</li>
+<li><code>copy_x</code>：是否复制训练集，默认为<code>True</code>，如果为<code>False</code>则会直接在原数据上修改。</li>
+<li><code>n_jobs</code>：使用的核心数。默认<code>None</code>为单核。</li>
+<li><code>algorithm</code>：可选<code>&quot;auto&quot;</code>（默认）、<code>&quot;full&quot;</code>或<code>&quot;elkan&quot;</code>，<code>&quot;auto&quot;</code>自动选择<code>&quot;elkan&quot;</code>处理稠密数据，<code>&quot;full&quot;</code>处理稀疏数据。</li>
+</ul>
+<p>属性：</p>
+<ul>
+<li><code>cluster_centers_</code>：返回聚类中心。</li>
+<li><code>labels_</code>：返回聚类后每个点的标签。</li>
+<li><code>inertia_</code>：返回样本到最近聚类中心距离的平方和。</li>
+<li><code>n_iter_</code>：返回迭代次数。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.cluster <span class="keyword">import</span> KMeans</span><br><span class="line">KMeans(n_clusters=<span class="number">8</span>, init=<span class="string">"k-means++"</span>, n_init=<span class="number">10</span>, max_iter=<span class="number">300</span>, tol=<span class="number">0.0001</span>, </span><br><span class="line">       precompute_distances=<span class="string">"auto"</span>, verbose=<span class="number">0</span>, random_state=<span class="keyword">None</span>, copy_x=<span class="keyword">True</span>, </span><br><span class="line">       n_jobs=<span class="keyword">None</span>, algorithm=<span class="string">"auto"</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="DBSCAN"><a href="#DBSCAN" class="headerlink" title="DBSCAN"></a>DBSCAN</h3><p>参数：</p>
+<ul>
+<li><code>eps</code>：两个样本被认为在同一邻域内的最大距离。默认为0.5。</li>
+<li><code>min_samples</code>：如果一个点被视为核心点，它邻域内至少包含的点的数量（包括这个点本身）。默认为5。</li>
+<li><code>metric</code>：距离度量函数，默认为<code>&quot;euclidean&quot;</code>欧式距离。</li>
+<li><code>metric_params</code>：距离度量函数的附加参数。</li>
+<li><code>algorithm</code>：计算近邻距离的算法，可选<code>&quot;auto&quot;</code>（默认）、<code>&quot;ball_tree&quot;</code>、<code>&quot;kd_tree&quot;</code>、<code>&quot;brute&quot;</code>，该参数类似于KNN。</li>
+<li><code>leaf_size</code>：算法选择KD树或者球树时，该参数用于控制叶节点数量，默认值30。</li>
+<li><code>p</code>：闵式距离的度量，p=1时为曼哈顿距离，p=2时为欧式距离。</li>
+</ul>
+<p>属性：</p>
+<ul>
+<li><code>core_sample_indices_</code>：返回核心点的index列表。</li>
+<li><code>components_</code>：返回核心点的副本列表。</li>
+<li><code>labels_</code>：返回聚类后每个点的标签，噪声点用-1表示。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.cluster <span class="keyword">import</span> DBSCAN</span><br><span class="line">DBSCAN(eps=<span class="number">0.5</span>, min_samples=<span class="number">5</span>, metric=<span class="string">"euclidean"</span>, metric_params=<span class="keyword">None</span>, </span><br><span class="line">       algorithm=<span class="string">"auto"</span>, leaf_size=<span class="number">30</span>, p=<span class="keyword">None</span>, n_jobs=<span class="keyword">None</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="降维"><a href="#降维" class="headerlink" title="降维"></a>降维</h2><h3 id="PCA"><a href="#PCA" class="headerlink" title="PCA"></a>PCA</h3><p>参数：</p>
+<ul>
+<li><code>n_components</code>：降维之后保留的维数，如果不指定则该值取样本数和特征数间的较小值。可指定为一个整数，即所需保留的维数。如果设为<code>&quot;mle&quot;</code>且<code>svd_solver == &quot;full&quot;</code>，会采用MLE算法自动选择一个合适的维度。如果是一个浮点数且<code>svd_solver == &quot;full&quot;</code>，它代表降维后的能保留的信息比值。如果<code>svd_solver == &quot;arpack&quot;</code>，该值会被严格限制为小于样本数和特征数。</li>
+<li><code>copy</code>：是否创建数据副本而不覆盖原数据，默认为<code>True</code>。</li>
+<li><code>whiten</code>：是否白化，即去除降维后的特征之间的相关性并且方差相同。默认为<code>False</code>。</li>
+<li><code>svd_solver</code>：SVD采用的算法，默认<code>&quot;auto&quot;</code>会根据输入数据自动挑选最优解，具体方法有<code>&quot;full&quot;</code>、<code>&quot;arpack&quot;</code>、<code>&quot;randomized&quot;</code>。</li>
+<li><code>tol</code>：<code>svd_solver == &quot;arpack&quot;</code>时，奇异值的误差容忍度，默认0.。</li>
+<li><code>iterated_power</code>：<code>svd_solver == &quot;randomized&quot;</code>时的迭代次数，默认<code>&quot;auto&quot;</code>。</li>
+<li><code>random_state</code>：随机数种子。</li>
+</ul>
+<p>属性：</p>
+<ul>
+<li><code>components_</code>：主成分的轴的方向。</li>
+<li><code>explained_variance_</code>：降维后各成分的方差。</li>
+<li><code>explained_variance_ratio_</code>：降维后各成分的方差所占的比值。</li>
+<li><code>singular_values_</code>：降维后主成分的奇异值。</li>
+<li><code>mean_</code>：降维后主成分的经验均值。</li>
+<li><code>n_components_</code>：降维之后保留的维数。</li>
+<li><code>noise_variance_</code>：噪声协方差。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.decomposition <span class="keyword">import</span> PCA</span><br><span class="line">PCA(n_components=<span class="keyword">None</span>, copy=<span class="keyword">True</span>, whiten=<span class="keyword">False</span>, svd_solver=<span class="string">"auto"</span>, </span><br><span class="line">    tol=<span class="number">0.0</span>, iterated_power=<span class="string">"auto"</span>, random_state=<span class="keyword">None</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="LDA"><a href="#LDA" class="headerlink" title="LDA"></a>LDA</h3><p>参数;</p>
+<ul>
+<li><code>solver</code>：算法，可选<code>&quot;svd&quot;</code>（默认）、<code>&quot;lsqr&quot;</code>、<code>&quot;eigen&quot;</code></li>
+<li><code>shrinkage</code>：正则化参数，默认<code>None</code>，可指定为0到1之间的浮点数，也可选<code>&quot;auto&quot;</code>自动选择。该参数在算法使用<code>&quot;svd&quot;</code>时无效。</li>
+<li><code>priors</code>：类别的先验概率。</li>
+<li><code>n_components</code>：降维之后保留的维数，必须小于<code>n_classes - 1</code>。</li>
+<li><code>store_covariance</code>：是否计算类的协方差矩阵，默认为<code>False</code>。</li>
+<li><code>tol</code>：奇异值的误差容忍度，默认1e-4。</li>
+</ul>
+<p>属性：</p>
+<ul>
+<li><code>coef_</code>：权重系数。</li>
+<li><code>intercept_</code>：截距。</li>
+<li><code>covariance_</code>：协方差矩阵。</li>
+<li><code>explained_variance_ratio_</code>：降维后各成分的方差所占的比值。只有选择<code>&quot;svd&quot;</code>算法时可用。</li>
+<li><code>means_</code>：类的均值。</li>
+<li><code>priors_</code>：类的先验概率。</li>
+<li><code>scalings_</code>：用于降维性能度量。</li>
+<li><code>xbar_</code>：总体均值。</li>
+<li><code>classes_</code>：独特的类别标签。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.discriminant_analysis <span class="keyword">import</span> LinearDiscriminantAnalysis</span><br><span class="line">LinearDiscriminantAnalysis(solver=<span class="string">"svd"</span>, shrinkage=<span class="keyword">None</span>, priors=<span class="keyword">None</span>, </span><br><span class="line">                           n_components=<span class="keyword">None</span>, store_covariance=<span class="keyword">False</span>, tol=<span class="number">0.0001</span>)</span><br></pre></td></tr></table></figure></div><div class="tags"><a href="/tags/机器学习/">机器学习</a><a href="/tags/Python/">Python</a><a href="/tags/scikit-learn/">scikit-learn</a></div><div class="post-nav"><a class="pre" href="/py_sklearn_4/">Python机器学习库笔记（8）——scikit-learn：模型评估与优化</a><a class="next" href="/py_sklearn_2/">Python机器学习库笔记（6）——scikit-learn：分类模型</a></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/机器学习/">机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/深度学习/">深度学习</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/集成学习/" style="font-size: 15px;">集成学习</a> <a href="/tags/Kaggle/" style="font-size: 15px;">Kaggle</a> <a href="/tags/Python/" style="font-size: 15px;">Python</a> <a href="/tags/数据可视化/" style="font-size: 15px;">数据可视化</a> <a href="/tags/数据清洗/" style="font-size: 15px;">数据清洗</a> <a href="/tags/R/" style="font-size: 15px;">R</a> <a href="/tags/特征工程/" style="font-size: 15px;">特征工程</a> <a href="/tags/随机森林/" style="font-size: 15px;">随机森林</a> <a href="/tags/机器学习/" style="font-size: 15px;">机器学习</a> <a href="/tags/Stacking/" style="font-size: 15px;">Stacking</a> <a href="/tags/Andrew-Ng/" style="font-size: 15px;">Andrew Ng</a> <a href="/tags/深度学习/" style="font-size: 15px;">深度学习</a> <a href="/tags/Keras/" style="font-size: 15px;">Keras</a> <a href="/tags/Numpy/" style="font-size: 15px;">Numpy</a> <a href="/tags/Pandas/" style="font-size: 15px;">Pandas</a> <a href="/tags/Matplotlib/" style="font-size: 15px;">Matplotlib</a> <a href="/tags/scikit-learn/" style="font-size: 15px;">scikit-learn</a></div></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">BDC.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/x-mathjax-config">MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+  });
+</script><script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>

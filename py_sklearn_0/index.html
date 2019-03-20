@@ -1,0 +1,90 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="Rarit7's Blog"><title>Python机器学习库笔记（4）——scikit-learn：快速入门 | BDC</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/7.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">Python机器学习库笔记（4）——scikit-learn：快速入门</h1><a id="logo" href="/.">BDC</a><p class="description">神经中枢</p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">Python机器学习库笔记（4）——scikit-learn：快速入门</h1><div class="post-meta">Jul 31, 2018<span> | </span><span class="category"><a href="/categories/机器学习/">机器学习</a></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#数据集"><span class="toc-number">1.</span> <span class="toc-text">数据集</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数据预处理"><span class="toc-number">2.</span> <span class="toc-text">数据预处理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#数据标准化"><span class="toc-number">2.1.</span> <span class="toc-text">数据标准化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数据二值化"><span class="toc-number">2.2.</span> <span class="toc-text">数据二值化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#标签编码"><span class="toc-number">2.3.</span> <span class="toc-text">标签编码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#独热编码"><span class="toc-number">2.4.</span> <span class="toc-text">独热编码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数据集拆分"><span class="toc-number">3.</span> <span class="toc-text">数据集拆分</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#定义模型"><span class="toc-number">4.</span> <span class="toc-text">定义模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#模型评估"><span class="toc-number">5.</span> <span class="toc-text">模型评估</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#保存模型"><span class="toc-number">6.</span> <span class="toc-text">保存模型</span></a></li></ol></div></div><div class="post-content"><p>scikit-learn是用python进行机器学习项目的最重要的模块，它对主要的机器学习模型进行了封装，支持分类、回归、聚类、降维等机器学习任务，涵盖了树、支持向量机、神经网络等主流机器学习模型，并且提供了特征缩放、模型评估等功能。一个优秀的数据科学工作者应当熟练掌握它。</p>
+<p>scikit-learn的<a href="https://scikit-learn.org/stable/" target="_blank" rel="noopener">官方文档地址</a>，<a href="http://sklearn.apachecn.org/" target="_blank" rel="noopener">官方中文文档地址</a>。</p>
+<p>scikit-learn内容较多，将分为5篇文章分步阐述：</p>
+<ul>
+<li>数据载入、预处理（标准化、归一化、特征转换）、保存与恢复</li>
+<li>回归（线性模型，树回归，SVM回归，KNN回归，集成回归模型）</li>
+<li>分类（逻辑回归，决策树，贝叶斯分类器，神经网络，SVM，KNN，集成分类模型）</li>
+<li>聚类（K-Means、DBSCAN）、降维（PCA、LDA）</li>
+<li>模型评估与优化</li>
+</ul>
+<h2 id="数据集"><a href="#数据集" class="headerlink" title="数据集"></a>数据集</h2><p>为了帮助新手快速入门机器学习项目，scikit-learn内建了许多经典的机器学习数据集。注意有部分较大的数据集在首次使用时需要联网下载。</p>
+<p>列举其中一些数据集如下：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:left">数据集</th>
+<th style="text-align:left">说明</th>
+<th style="text-align:center">类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>datasets.load_boston</code></td>
+<td style="text-align:left">波士顿房价数据集</td>
+<td style="text-align:center">回归</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>datasets.load_breast_cancer</code></td>
+<td style="text-align:left">威斯康辛州乳腺癌数据集</td>
+<td style="text-align:center">二分类</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>datasets.load_digits</code></td>
+<td style="text-align:left">8×8手写数字数据集</td>
+<td style="text-align:center">多分类</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>datasets.load_iris</code></td>
+<td style="text-align:left">鸢尾花数据集</td>
+<td style="text-align:center">多分类</td>
+</tr>
+</tbody>
+</table>
+</div>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 导入内建数据集</span></span><br><span class="line"><span class="keyword">from</span> sklearn <span class="keyword">import</span> datasets</span><br><span class="line">iris = datasets.load_iris()</span><br><span class="line"><span class="comment"># 获得ndarray格式的变量X和标签y</span></span><br><span class="line">X = iris.data</span><br><span class="line">y = iris.target</span><br><span class="line"><span class="comment"># 获得数据维度</span></span><br><span class="line">n_samples, n_features = iris.data.shape</span><br></pre></td></tr></table></figure>
+<h2 id="数据预处理"><a href="#数据预处理" class="headerlink" title="数据预处理"></a>数据预处理</h2><p>在<a href="http://ster.im/py_pd/">《Python机器学习库笔记（3）——pandas》</a>一节中，已经利用pandas库对数据集完成去重、填充缺失值等工作。此外还需使用scikit-learn中的<code>preprocessing</code>模块来对数据做进一步的处理。</p>
+<h3 id="数据标准化"><a href="#数据标准化" class="headerlink" title="数据标准化"></a>数据标准化</h3><p>数据标准化和归一化是将数据映射到一个小的浮点数范围内，以便模型能快速收敛。</p>
+<p>标准化有多种方式，常用的一种是min-max标准化（对象名为<code>MinMaxScaler</code>），该方法使数据落到[0,1]区间：</p>
+<script type="math/tex; mode=display">x'=\frac{x-x_{min}}{x_{max}-x_{min}}</script><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># min-max标准化</span></span><br><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> MinMaxScaler</span><br><span class="line">sc = MinMaxScaler()</span><br><span class="line">sc.fit(X)</span><br><span class="line">sc.transform(X)</span><br></pre></td></tr></table></figure>
+<p>另一种是Z-score标准化（对象名为<code>StandardScaler</code>），该方法使数据满足标准正态分布：</p>
+<script type="math/tex; mode=display">x'=\frac{x-\bar{X}}{S}</script><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Z-score标准化</span></span><br><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> StandardScaler</span><br><span class="line">StandardScaler().fit_transform(X) <span class="comment">#将fit和transform组合执行</span></span><br></pre></td></tr></table></figure>
+<p>归一化（对象名为<code>Normalizer</code>，默认为L2归一化）：</p>
+<script type="math/tex; mode=display">x'=\frac{x}{\sqrt{\Sigma^m_jx[j]^2}}</script><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># L2归一化</span></span><br><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> Normalizer</span><br><span class="line">Normalizer().fit_transform(X)</span><br></pre></td></tr></table></figure>
+<h3 id="数据二值化"><a href="#数据二值化" class="headerlink" title="数据二值化"></a>数据二值化</h3><p>使用阈值过滤器将数据转化为布尔值，即为二值化。使用<code>Binarizer</code>对象实现数据的二值化：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 二值化，阈值设置为3</span></span><br><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> Binarizer</span><br><span class="line">Binarizer(threshold=<span class="number">3</span>).fit_transform(X)</span><br></pre></td></tr></table></figure>
+<h3 id="标签编码"><a href="#标签编码" class="headerlink" title="标签编码"></a>标签编码</h3><p>使用<code>LabelEncoder</code>将不连续的数值或文本变量转化为有序的数值型变量：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 标签编码</span></span><br><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> LabelEncoder</span><br><span class="line">LabelEncoder().fit_transform([<span class="string">'apple'</span>,<span class="string">'pear'</span>,<span class="string">'orange'</span>,<span class="string">'banana'</span>])</span><br></pre></td></tr></table></figure>
+<h3 id="独热编码"><a href="#独热编码" class="headerlink" title="独热编码"></a>独热编码</h3><p>对于无序的离散型特征，其数值大小并没有意义，需要对其进行one-hot编码，将其特征的m个可能值转化为m个二值化特征。可以利用<code>OneHotEncoder</code>对象实现：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 独热编码</span></span><br><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> OneHotEncoder</span><br><span class="line">OneHotEncoder().fit_transform(y.reshape(<span class="number">-1</span>,<span class="number">1</span>)).toarray()</span><br></pre></td></tr></table></figure>
+<p><strong>注意</strong>：<code>OneHotEncoder</code>无法对字符串类型进行转换，须先进行<code>LabelEncoder</code>将其转化为数字，或者尝试用<code>pandas.get_dummies()</code>来完成这一步工作。</p>
+<h2 id="数据集拆分"><a href="#数据集拆分" class="headerlink" title="数据集拆分"></a>数据集拆分</h2><p>为了进行模型评估，将训练数据集拆分成训练集和测试集，可使用<code>train_test_split</code>，它接收如下参数：</p>
+<ul>
+<li><code>train_data</code>：用于拆分的数据集的特征集X。</li>
+<li><code>train_target</code>：用于拆分的数据集的标签y。</li>
+<li><code>test_size</code>：如果是浮点数，表示测试集样本占比；如果是整数，表示测试集样本的数量。</li>
+<li><code>random_state</code>：随机数种子。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 随机拆分20%数据作为测试集</span></span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line">X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=<span class="number">0.2</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="定义模型"><a href="#定义模型" class="headerlink" title="定义模型"></a>定义模型</h2><p>在scikit-learn中，所有模型都是<code>BaseEstimator</code>的子类，他们都有同样的接口供调用。监督学习模型都具有以下的方法：</p>
+<ul>
+<li><code>fit</code>：对数据进行拟合。</li>
+<li><code>set_params</code>：设定模型参数。</li>
+<li><code>get_params</code>：返回模型参数。</li>
+<li><code>predict</code>：在指定的数据集上预测。</li>
+<li><code>score</code>：返回预测器的得分。</li>
+</ul>
+<p>鸢尾花数据集是一个分类任务，故以决策树模型为例，采用默认参数拟合模型，并对验证集预测。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 决策树分类器</span></span><br><span class="line"><span class="keyword">from</span> sklearn.tree <span class="keyword">import</span> DecisionTreeClassifier</span><br><span class="line">model = DecisionTreeClassifier()</span><br><span class="line"><span class="comment"># 训练模型</span></span><br><span class="line">model.fit(X_train, y_train)</span><br><span class="line"><span class="comment"># 在测试集上预测</span></span><br><span class="line">model.predict(X_test)</span><br><span class="line"><span class="comment"># 测试集上的得分（默认为准确率）</span></span><br><span class="line">model.score(X_test, y_test)</span><br></pre></td></tr></table></figure>
+<p>scikit-learn中所有模型的调用方式都类似。关于其他模型以及模型的参数用法，可参阅我的相关文章：</p>
+<h2 id="模型评估"><a href="#模型评估" class="headerlink" title="模型评估"></a>模型评估</h2><p>评估模型的常用方法为K折交叉验证，它将数据集划分为K个大小相近的子集（K通常取10），每次选择其中(K-1)个子集的并集做为训练集，余下的做为测试集，总共得到K组训练集&amp;测试集，最终返回这K次测试结果的得分，取其均值可作为选定最终模型的指标。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 交叉验证</span></span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> cross_val_score</span><br><span class="line">cross_val_score(model, X, y, scoring=<span class="keyword">None</span>, cv=<span class="number">10</span>)</span><br></pre></td></tr></table></figure>
+<p><strong>注意</strong>：由于之前采用了<code>train_test_split</code>分割数据集，它默认对数据进行了洗牌，所以这里可以直接使用<code>cv=10</code>来进行10折交叉验证（<code>cross_val_score</code>不会对数据进行洗牌）。如果之前未对数据进行洗牌，则要搭配使用<code>KFold</code>模块：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> KFold</span><br><span class="line">n_folds = <span class="number">10</span></span><br><span class="line">kf = KFold(n_folds, shuffle=<span class="keyword">True</span>).get_n_splits(X)</span><br><span class="line">cross_val_score(model, X, y, scoring=<span class="keyword">None</span>, cv = kf)</span><br></pre></td></tr></table></figure>
+<p>关于模型评估的更多信息，详见<a href="http://ster.im/py_sklearn_4">这篇文章</a>。</p>
+<h2 id="保存模型"><a href="#保存模型" class="headerlink" title="保存模型"></a>保存模型</h2><p>在训练模型后可将模型保存，以免下次重复训练。一种方法是采用python标准库中的<code>pickle</code>，另一种是使用sklearn的<code>joblib</code>：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.externals <span class="keyword">import</span> joblib</span><br><span class="line"><span class="comment"># 保存模型</span></span><br><span class="line">joblib.dump(model,<span class="string">'myModel.pkl'</span>)</span><br><span class="line"><span class="comment"># 载入模型</span></span><br><span class="line">model=joblib.load(<span class="string">'myModel.pkl'</span>)</span><br></pre></td></tr></table></figure></div><div class="tags"><a href="/tags/机器学习/">机器学习</a><a href="/tags/Python/">Python</a><a href="/tags/scikit-learn/">scikit-learn</a></div><div class="post-nav"><a class="pre" href="/py_sklearn_1/">Python机器学习库笔记（5）——scikit-learn：回归模型</a><a class="next" href="/py_pd/">Python机器学习库笔记（3）——pandas</a></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/机器学习/">机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/深度学习/">深度学习</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/集成学习/" style="font-size: 15px;">集成学习</a> <a href="/tags/Kaggle/" style="font-size: 15px;">Kaggle</a> <a href="/tags/Python/" style="font-size: 15px;">Python</a> <a href="/tags/数据可视化/" style="font-size: 15px;">数据可视化</a> <a href="/tags/数据清洗/" style="font-size: 15px;">数据清洗</a> <a href="/tags/R/" style="font-size: 15px;">R</a> <a href="/tags/特征工程/" style="font-size: 15px;">特征工程</a> <a href="/tags/随机森林/" style="font-size: 15px;">随机森林</a> <a href="/tags/机器学习/" style="font-size: 15px;">机器学习</a> <a href="/tags/Stacking/" style="font-size: 15px;">Stacking</a> <a href="/tags/Andrew-Ng/" style="font-size: 15px;">Andrew Ng</a> <a href="/tags/深度学习/" style="font-size: 15px;">深度学习</a> <a href="/tags/Keras/" style="font-size: 15px;">Keras</a> <a href="/tags/Numpy/" style="font-size: 15px;">Numpy</a> <a href="/tags/Pandas/" style="font-size: 15px;">Pandas</a> <a href="/tags/Matplotlib/" style="font-size: 15px;">Matplotlib</a> <a href="/tags/scikit-learn/" style="font-size: 15px;">scikit-learn</a></div></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">BDC.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/x-mathjax-config">MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+  });
+</script><script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
