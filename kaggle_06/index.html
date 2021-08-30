@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Kaggle手写数字识别实战（基于TensorFlow）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kaggle机器学习实战（6）——MNIST（下）">
+<meta property="og:url" content="https://ster.im/kaggle_06/index.html">
+<meta property="og:site_name" content="Rarit7&#39;s Blog">
+<meta property="og:description" content="Kaggle手写数字识别实战（基于TensorFlow）">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-10-22T09:45:47.000Z">
+<meta property="article:modified_time" content="2019-04-04T09:47:40.496Z">
+<meta property="article:author" content="Rarit7">
+<meta property="article:tag" content="Kaggle">
+<meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="深度学习">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="TensorFlow">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Kaggle机器学习实战（6）——MNIST（下）</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" "Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇 " href="/lc_tc_01/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇 " href="/kaggle_05/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部 " href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章 " href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ster.im/kaggle_06/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ster.im/kaggle_06/&text=Kaggle机器学习实战（6）——MNIST（下）"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ster.im/kaggle_06/&title=Kaggle机器学习实战（6）——MNIST（下）"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ster.im/kaggle_06/&is_video=false&description=Kaggle机器学习实战（6）——MNIST（下）"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Kaggle机器学习实战（6）——MNIST（下）&body=Check out this article: https://ster.im/kaggle_06/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ster.im/kaggle_06/&title=Kaggle机器学习实战（6）——MNIST（下）"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ster.im/kaggle_06/&title=Kaggle机器学习实战（6）——MNIST（下）"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ster.im/kaggle_06/&title=Kaggle机器学习实战（6）——MNIST（下）"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ster.im/kaggle_06/&title=Kaggle机器学习实战（6）——MNIST（下）"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ster.im/kaggle_06/&name=Kaggle机器学习实战（6）——MNIST（下）&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ster.im/kaggle_06/&t=Kaggle机器学习实战（6）——MNIST（下）"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#LeNet%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">LeNet简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8TensorFlow%E6%9E%84%E5%BB%BA%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="toc-number">2.</span> <span class="toc-text">使用TensorFlow构建卷积神经网络</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B1%821%EF%BC%9A%E5%8D%B7%E7%A7%AF%E5%B1%82"><span class="toc-number">2.1.</span> <span class="toc-text">层1：卷积层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B1%822%EF%BC%9A%E6%B1%A0%E5%8C%96%E5%B1%82"><span class="toc-number">2.2.</span> <span class="toc-text">层2：池化层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B1%823%EF%BC%9A%E5%8D%B7%E7%A7%AF%E5%B1%82"><span class="toc-number">2.3.</span> <span class="toc-text">层3：卷积层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B1%824%EF%BC%9A%E6%B1%A0%E5%8C%96%E5%B1%82"><span class="toc-number">2.4.</span> <span class="toc-text">层4：池化层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B1%825%EF%BC%9A%E5%85%A8%E8%BF%9E%E6%8E%A5%E5%B1%82-Dropout"><span class="toc-number">2.5.</span> <span class="toc-text">层5：全连接层+Dropout</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B1%826%EF%BC%9A%E5%85%A8%E8%BF%9E%E6%8E%A5%E5%B1%82"><span class="toc-number">2.6.</span> <span class="toc-text">层6：全连接层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E5%8F%8A%E8%AF%84%E4%BC%B0%E6%A8%A1%E5%9E%8B"><span class="toc-number">2.7.</span> <span class="toc-text">训练及评估模型</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">3.</span> <span class="toc-text">总结</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Kaggle机器学习实战（6）——MNIST（下）
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Rarit7</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2018-10-22T09:45:47.000Z" itemprop="datePublished">2018-10-22</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Kaggle/" rel="tag">Kaggle</a>, <a class="tag-link-link" href="/tags/Python/" rel="tag">Python</a>, <a class="tag-link-link" href="/tags/TensorFlow/" rel="tag">TensorFlow</a>, <a class="tag-link-link" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag">机器学习</a>, <a class="tag-link-link" href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" rel="tag">深度学习</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p><a href="http://ster.im/kaggle_04/">之前</a>已经使用TensorFlow的高层封装Keras运行过一次CNN，这次直接使用TensorFlow复现经典的LeNet-5来完成MNIST手写数字识别，顺便学习一下TensorFlow的基本使用方法。</p>
+<h2 id="LeNet简介"><a href="#LeNet简介" class="headerlink" title="LeNet简介"></a>LeNet简介</h2><p>LeNet出自Yann LeCun于1998年发表的经典论文<a target="_blank" rel="noopener" href="http://yann.lecun.com/exdb/publis/pdf/lecun-98.pdf">《Gradient-Based Learning Applied to Document Recognition》</a>，他首次使用卷积神经网络进行手写数字识别，并达到了惊人的99.2%的准确率。他在文章中详细阐述了卷积核以及降采样的用处，并因此被认为是卷积神经网络之父。由于当时受制于数据量与算力，卷积神经网络没能得到更进一步的发展，直到2012年的AlexNet横空出世，才让人们对CNN的认识达到了空前的高度。</p>
+<p>该网络共有7层构成（不包括输入层）：</p>
+<ul>
+<li>输入层为经过处理的32×32×1的手写数字图像。</li>
+<li>第1层为使用大小为5×5、深度为6的卷积层，不使用填充，步长为1，经过卷积处理的图像的边长变为((32－5)/1＋1＝28)。该层共有(5×5＋1)×6＝156)个参数。</li>
+<li>第2层为使用2×2的平均池化层（降采样层），经过处理的图像的边长变为14。并用Sigmoid函数去线性化。</li>
+<li>第3层为使用大小为5×5、深度为16的卷积层，但是每个卷积核与上一层的多个特征图谱相连接。经过卷积处理的图像的边长变为((14－5)/1＋1＝10)。该层共有1516个参数。</li>
+<li>第4层为池化层，经过处理的图像的边长变为5。</li>
+<li>第5层为使用大小为5×5、深度为120的卷积层，经过卷积处理的图像的边长变为((5－5)/1＋1＝1)，由于这一步实际上将图像展开为一维向量，可以视为全连接层。共有48120个参数。</li>
+<li>第6层为全连接层，共有84个节点，使用Sigmoid激活函数。共有((120＋1)×84＝10164)个参数。</li>
+<li>第7层为输出层，使用RBF函数，可认为输出的是输入图像与各数字ASCII编码图的相似度，越接近于0表示与该标准图像越接近。</li>
+</ul>
+<p>原论文中附有网络结构的图解，结合图片能对该网络有更好的认识。</p>
+<p>现在结合Kaggle上的入门训练<a target="_blank" rel="noopener" href="https://www.kaggle.com/c/digit-recognizer">《Digit Recognizer》</a>并使用TensorFlow加深对卷积神经网络的认识。本文参考了一篇kernel：<a target="_blank" rel="noopener" href="https://www.kaggle.com/kakauandme/tensorflow-deep-nn">《TensorFlow deep NN》</a>，以及《TensorFlow实战Google深度学习框架》、《TensorFlow技术解析与实战》两本书。</p>
+<h2 id="使用TensorFlow构建卷积神经网络"><a href="#使用TensorFlow构建卷积神经网络" class="headerlink" title="使用TensorFlow构建卷积神经网络"></a>使用TensorFlow构建卷积神经网络</h2><p>TensorFlow是目前运用最多的深度学习框架，每个人工智能学者当熟练运用之。而本次最简单的CNN只用到几个简单的API。更进一步的操作包括TensorBoard、RNN等有时间会进一步学习。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 调包</span></span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br></pre></td></tr></table></figure>
+
+<p>虽然TensorFlow可以调用自带的数据集API来读取MNIST数据，但依然严格按照Kaggle提供的数据进行实践。Kaggle上的练习提供了42000个带标签的训练集样本和28000个测试集样本。每个样本具有784个特征。我们的模型接收具有4个维度的输入，第一维表示样本量，第二维和第三维表示图像的尺寸，第四维表示颜色通道数。我们需要将其转换为需要的数据类型，并进行标准化。最后，分割训练集和验证集。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">train = pd.read_csv(<span class="string">&#x27;train.csv&#x27;</span>)</span><br><span class="line">test = pd.read_csv(<span class="string">&#x27;test.csv&#x27;</span>)</span><br><span class="line"></span><br><span class="line">y = train[<span class="string">&#x27;label&#x27;</span>].values</span><br><span class="line">train.drop([<span class="string">&#x27;label&#x27;</span>], axis=<span class="number">1</span>, inplace=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 标准化</span></span><br><span class="line">train = train / <span class="number">255.</span></span><br><span class="line">test = test / <span class="number">255.</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 转换为合适的shape</span></span><br><span class="line">train = train.values.reshape(-<span class="number">1</span>,<span class="number">28</span>,<span class="number">28</span>,<span class="number">1</span>)</span><br><span class="line">test = test.values.reshape(-<span class="number">1</span>,<span class="number">28</span>,<span class="number">28</span>,<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 对y进行one-hot编码</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">one_hot_encoding</span>(<span class="params">y, C</span>):</span></span><br><span class="line">    <span class="keyword">return</span> np.eye(C)[y.reshape(-<span class="number">1</span>)]</span><br><span class="line"></span><br><span class="line">y = one_hot_encoding(y, <span class="number">10</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 拆分训练集和验证集</span></span><br><span class="line">X_train, X_test, y_train, y_test = train_test_split(train, y, test_size=<span class="number">0.1</span>)</span><br></pre></td></tr></table></figure>
+
+<p>卷积神经网络经过20年的发展，相较1998年的LeNet，现常用的CNN已有较大变化：</p>
+<ul>
+<li>输入层图片大小从32×32×1改为28×28×1，直接使用标准MNIST数据；</li>
+<li>使用最大池化代替平均池化；</li>
+<li>激活函数从Sigmoid换成了ReLU，后者是目前最常用的激活函数；</li>
+<li>在全连接层之间添加了一层Dropout，可以防止过拟合；</li>
+<li>最后的多分类输出层使用Softmax函数。</li>
+</ul>
+<p>本次练习采用的模型为：CONV-&gt;MAX_POOL-&gt;CONV-&gt;MAX_POOL-&gt;FC-&gt;Dropout-&gt;FC-&gt;Softmax，具有7层深度的结构在能得到较高的准确率的同时，也能在一块普通GPU上很快跑完。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 定义超参数</span></span><br><span class="line">LEARNING_RATE = <span class="number">1e-3</span> <span class="comment">#初始学习率</span></span><br><span class="line">KEEP_PROB = <span class="number">1.0</span> <span class="comment">#Dropout保留神经元的比例</span></span><br><span class="line">BATCH_SIZE = <span class="number">128</span> <span class="comment">#一个batch的大小</span></span><br><span class="line">EPOCHS = <span class="number">200</span> <span class="comment">#整个数据集迭代次数</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义占位符，shape[0]设为None便于自定batch的大小</span></span><br><span class="line">X = tf.placeholder(tf.float32, shape=[<span class="literal">None</span>, <span class="number">28</span>, <span class="number">28</span>, <span class="number">1</span>])</span><br><span class="line">y_ = tf.placeholder(tf.float32, shape=[<span class="literal">None</span>, <span class="number">10</span>])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 封装接下来会重复使用的代码</span></span><br><span class="line"><span class="comment"># 随机初始化权重</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">weight</span>(<span class="params">shape</span>):</span></span><br><span class="line">    <span class="keyword">return</span> tf.Variable(tf.truncated_normal(shape, mean=<span class="number">0</span>, stddev=<span class="number">1</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 常量初始化偏置项</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">bias</span>(<span class="params">shape</span>):</span></span><br><span class="line">    <span class="keyword">return</span> tf.Variable(tf.constant(<span class="number">0.1</span>, shape=shape))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 卷积层</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">conv</span>(<span class="params">X, W, strides=<span class="number">1</span></span>):</span></span><br><span class="line">    <span class="keyword">return</span> tf.nn.conv2d(X, W, strides=[<span class="number">1</span>, strides, strides, <span class="number">1</span>], padding=<span class="string">&#x27;SAME&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 池化层</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">pool</span>(<span class="params">X, k=<span class="number">2</span>, strides=<span class="number">2</span></span>):</span></span><br><span class="line">    <span class="keyword">return</span> tf.nn.max_pool(X, ksize=[<span class="number">1</span>, k, k, <span class="number">1</span>], strides=[<span class="number">1</span>, strides, strides, <span class="number">1</span>], padding=<span class="string">&#x27;SAME&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 激活函数</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">relu</span>(<span class="params">X, b</span>):</span></span><br><span class="line">    <span class="keyword">return</span> tf.nn.relu(tf.nn.bias_add(X, b))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 全连接层</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dense</span>(<span class="params">X, W, b</span>):</span></span><br><span class="line">    <span class="keyword">return</span> relu(tf.matmul(X, W), b)</span><br></pre></td></tr></table></figure>
+
+<h3 id="层1：卷积层"><a href="#层1：卷积层" class="headerlink" title="层1：卷积层"></a>层1：卷积层</h3><p>第一层卷积层采用5×5的卷积核，深度为32，步长为1，使用全0填充使输出图像的维度与输入相同（<code>padding=&#39;SAME&#39;</code>）。输入数据的尺寸为（<code>BATCH_SIZE</code>×28×28×1），其中<code>BATCH_SIZE</code>为预先设置好的超参数。在大多数深度学习任务中，通常会使用mini-batch梯度下降，能够保证内存不溢出并提高收敛速度。由于MNIST是一个很小的数据集，因此将整个数据集用于一次迭代也是可行的。</p>
+<p>卷积后，图像的尺寸为28×28×32。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">W1 = weight([<span class="number">5</span>, <span class="number">5</span>, <span class="number">1</span>, <span class="number">32</span>])</span><br><span class="line">b1 = bias([<span class="number">32</span>])</span><br><span class="line">CONV1 = relu(conv(X, W1), b1)</span><br></pre></td></tr></table></figure>
+
+<h3 id="层2：池化层"><a href="#层2：池化层" class="headerlink" title="层2：池化层"></a>层2：池化层</h3><p>第二层池化层采用2×2的最大池化，步长为2，使用全0填充。池化处理后图像的尺寸为14×14，深度为32。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">POOL2 = pool(CONV1)</span><br></pre></td></tr></table></figure>
+
+<h3 id="层3：卷积层"><a href="#层3：卷积层" class="headerlink" title="层3：卷积层"></a>层3：卷积层</h3><p>第三层卷积层采用5×5的卷积核，深度为64，步长为1，使用全0填充。卷积后，图像的尺寸为14×14×64。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">W2 = weight([<span class="number">5</span>, <span class="number">5</span>, <span class="number">32</span>, <span class="number">64</span>])</span><br><span class="line">b2 = bias([<span class="number">64</span>])</span><br><span class="line">CONV3 = relu(conv(POOL2, W2), b2)</span><br></pre></td></tr></table></figure>
+
+<h3 id="层4：池化层"><a href="#层4：池化层" class="headerlink" title="层4：池化层"></a>层4：池化层</h3><p>第四层池化层采用2×2的最大池化，步长为2，使用全0填充。池化处理后图像的尺寸为7×7，深度为64。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">POOL4 = pool(CONV3)</span><br></pre></td></tr></table></figure>
+
+<h3 id="层5：全连接层-Dropout"><a href="#层5：全连接层-Dropout" class="headerlink" title="层5：全连接层+Dropout"></a>层5：全连接层+Dropout</h3><p>该层为传统神经网络结构，首先需要将上一层输出的矩阵扁平化，再使用ReLU激活函数。然后使用Dropout稀疏化矩阵并且防止过拟合。<code>keep_prob</code>参数表示保留的神经元数目，例如该参数设置为0.7即表示有30%的神经元被抑制。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 展开</span></span><br><span class="line">Flatten = tf.reshape(POOL4,[-<span class="number">1</span>,<span class="number">7</span>*<span class="number">7</span>*<span class="number">64</span>])</span><br><span class="line"></span><br><span class="line">W3 = weight([<span class="number">7</span>*<span class="number">7</span>*<span class="number">64</span>,<span class="number">1024</span>])</span><br><span class="line">b3 = bias([<span class="number">1024</span>])</span><br><span class="line">FC5 = dense(Flatten, W3, b3)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Dropout</span></span><br><span class="line">Dropout = tf.nn.dropout(FC5, keep_prob=KEEP_PROB)</span><br></pre></td></tr></table></figure>
+
+<h3 id="层6：全连接层"><a href="#层6：全连接层" class="headerlink" title="层6：全连接层"></a>层6：全连接层</h3><p>该层经过Softmax函数即可输出样本属于各个类别的概率，但由于损失函数需未经Softmax的输出值，这里暂时先不进行Softmax操作。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">W4 = weight([<span class="number">1024</span>,<span class="number">10</span>])</span><br><span class="line">b4 = bias([<span class="number">10</span>])</span><br><span class="line">FC6 = tf.add(tf.matmul(Dropout, W4),b4)</span><br></pre></td></tr></table></figure>
+
+<h3 id="训练及评估模型"><a href="#训练及评估模型" class="headerlink" title="训练及评估模型"></a>训练及评估模型</h3><p>对于多分类任务，通常使用交叉熵损失函数，TensorFlow有<code>softmax_cross_entropy_with_logits</code>和<code>sparse_softmax_cross_entropy_with_logits</code>两种封装好的损失函数，前者适用于one-hot编码后的标签输入，后者适用于原始标签输入。两者都会先对输入数据进行一层softmax，因此这里的<code>logits</code>需要接收未经过softmax层的上一层的输出。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 定义交叉熵损失函数</span></span><br><span class="line">cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=FC6))</span><br></pre></td></tr></table></figure>
+
+<p>然后定义优化器，这里选择Adam优化器，参数一般只需设置初始学习率即可，其他保持默认设置。优化目标即为最小化损失函数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 定义优化器与优化目标</span></span><br><span class="line">optimizer = tf.train.AdamOptimizer(learning_rate=LEARNING_RATE)</span><br><span class="line">train_step = optimizer.minimize(cross_entropy)</span><br></pre></td></tr></table></figure>
+
+<p>然后使用准确率作为评估指标。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 定义评估指标</span></span><br><span class="line">correct_prediction = tf.equal(tf.argmax(FC6, <span class="number">1</span>), tf.argmax(y_, <span class="number">1</span>))</span><br><span class="line">accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))</span><br></pre></td></tr></table></figure>
+
+<p>使用<code>tf.Session</code>会话机制开始训练模型。设置每10个epoch输出一次在验证集上的准确率。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> tf.Session() <span class="keyword">as</span> sess:</span><br><span class="line">    <span class="comment"># 全局初始化参数</span></span><br><span class="line">    tf.global_variables_initializer().run()</span><br><span class="line">    <span class="comment"># mini-batch</span></span><br><span class="line">    epoch = <span class="number">1</span></span><br><span class="line">    <span class="keyword">while</span> epoch &lt;= EPOCHS:</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(X_train) // BATCH_SIZE + <span class="number">1</span>):</span><br><span class="line">            start = i*BATCH_SIZE</span><br><span class="line">            end = <span class="built_in">min</span>((i+<span class="number">1</span>)*BATCH_SIZE, <span class="built_in">len</span>(X_train))</span><br><span class="line">            train_step.run(feed_dict=&#123;X: X_train[start:end], y_: y_train[start:end]&#125;)</span><br><span class="line">        <span class="comment"># 每过10个epoch，输出一次当前的验证集精度</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> epoch % <span class="number">10</span>:</span><br><span class="line">            dev_accuracy = accuracy.<span class="built_in">eval</span>(feed_dict=&#123;X:X_test, y_:y_test&#125;)</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;Epoch %d, validation accuracy: %g&quot;</span>%(epoch, dev_accuracy))</span><br><span class="line">        epoch += <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p>经过200个epoch的迭代，在验证集上的准确率达到了99.119%。想要进一步提高模型的性能，可以扩大训练集，例如使用数据增强对图片进行轻微的变形等，更直接的办法是把整个数据集作为训练集而不采用验证集。接下来用整个训练集重新训练模型，并在测试集上预测，最后上传至Kaggle查看得分。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">output = tf.nn.softmax(FC6)</span><br><span class="line">label = np.zeros(test.shape[<span class="number">0</span>])</span><br><span class="line">pred = tf.argmax(output, <span class="number">1</span>)</span><br><span class="line"><span class="keyword">with</span> tf.Session() <span class="keyword">as</span> sess:</span><br><span class="line">    tf.global_variables_initializer().run()</span><br><span class="line">    epoch = <span class="number">1</span></span><br><span class="line">    <span class="keyword">while</span> epoch &lt;= EPOCHS:</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(train) // BATCH_SIZE + <span class="number">1</span>):</span><br><span class="line">            start = i*BATCH_SIZE</span><br><span class="line">            end = <span class="built_in">min</span>((i+<span class="number">1</span>)*BATCH_SIZE, <span class="built_in">len</span>(train))</span><br><span class="line">            train_step.run(feed_dict=&#123;X: train[start:end], y_: y[start:end]&#125;)</span><br><span class="line">        epoch += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(test) // BATCH_SIZE + <span class="number">1</span>):</span><br><span class="line">        start = j*BATCH_SIZE</span><br><span class="line">        end = <span class="built_in">min</span>((j+<span class="number">1</span>)*BATCH_SIZE, <span class="built_in">len</span>(test))</span><br><span class="line">        label[start:end] = pred.<span class="built_in">eval</span>(feed_dict=&#123;X: test[start:end]&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>得到了测试集上的预测，然后导出预测的数据。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">label = label.astype(<span class="string">&#x27;int&#x27;</span>)</span><br><span class="line">ImageId = np.arange(<span class="number">1</span>, test.shape[<span class="number">0</span>]+<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">submission = pd.DataFrame(&#123;<span class="string">&#x27;ImageId&#x27;</span>: ImageId, <span class="string">&#x27;Label&#x27;</span>: label&#125;)</span><br><span class="line">submission.to_csv(<span class="string">&quot;MNISTSubmission.csv&quot;</span>, index=<span class="literal">False</span>)</span><br></pre></td></tr></table></figure>
+
+<p>在测试集上取得了0.98742的准确率。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>这次实现的是最简单的卷积神经网络，更深、更加实用的CNN包括Inception、ResNet等有待进一步学习。</li>
+<li>相比于易于使用的Keras，TensorFlow最大的优势是能够自定义网络（虽然本文没有体现）。</li>
+</ul>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#LeNet%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">LeNet简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8TensorFlow%E6%9E%84%E5%BB%BA%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="toc-number">2.</span> <span class="toc-text">使用TensorFlow构建卷积神经网络</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B1%821%EF%BC%9A%E5%8D%B7%E7%A7%AF%E5%B1%82"><span class="toc-number">2.1.</span> <span class="toc-text">层1：卷积层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B1%822%EF%BC%9A%E6%B1%A0%E5%8C%96%E5%B1%82"><span class="toc-number">2.2.</span> <span class="toc-text">层2：池化层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B1%823%EF%BC%9A%E5%8D%B7%E7%A7%AF%E5%B1%82"><span class="toc-number">2.3.</span> <span class="toc-text">层3：卷积层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B1%824%EF%BC%9A%E6%B1%A0%E5%8C%96%E5%B1%82"><span class="toc-number">2.4.</span> <span class="toc-text">层4：池化层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B1%825%EF%BC%9A%E5%85%A8%E8%BF%9E%E6%8E%A5%E5%B1%82-Dropout"><span class="toc-number">2.5.</span> <span class="toc-text">层5：全连接层+Dropout</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B1%826%EF%BC%9A%E5%85%A8%E8%BF%9E%E6%8E%A5%E5%B1%82"><span class="toc-number">2.6.</span> <span class="toc-text">层6：全连接层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E5%8F%8A%E8%AF%84%E4%BC%B0%E6%A8%A1%E5%9E%8B"><span class="toc-number">2.7.</span> <span class="toc-text">训练及评估模型</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">3.</span> <span class="toc-text">总结</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ster.im/kaggle_06/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ster.im/kaggle_06/&text=Kaggle机器学习实战（6）——MNIST（下）"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ster.im/kaggle_06/&title=Kaggle机器学习实战（6）——MNIST（下）"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ster.im/kaggle_06/&is_video=false&description=Kaggle机器学习实战（6）——MNIST（下）"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Kaggle机器学习实战（6）——MNIST（下）&body=Check out this article: https://ster.im/kaggle_06/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ster.im/kaggle_06/&title=Kaggle机器学习实战（6）——MNIST（下）"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ster.im/kaggle_06/&title=Kaggle机器学习实战（6）——MNIST（下）"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ster.im/kaggle_06/&title=Kaggle机器学习实战（6）——MNIST（下）"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ster.im/kaggle_06/&title=Kaggle机器学习实战（6）——MNIST（下）"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ster.im/kaggle_06/&name=Kaggle机器学习实战（6）——MNIST（下）&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ster.im/kaggle_06/&t=Kaggle机器学习实战（6）——MNIST（下）"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2012-2021
+    Rarit7
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.3/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdn.bootcdn.net/ajax/libs/clipboard.js/2.0.8/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>

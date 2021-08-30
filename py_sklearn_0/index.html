@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Python sklearn学习笔记（1）：数据载入、预处理（标准化、归一化、特征转换）、保存与恢复">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python机器学习库笔记（4）——scikit-learn：快速入门">
+<meta property="og:url" content="https://ster.im/py_sklearn_0/index.html">
+<meta property="og:site_name" content="Rarit7&#39;s Blog">
+<meta property="og:description" content="Python sklearn学习笔记（1）：数据载入、预处理（标准化、归一化、特征转换）、保存与恢复">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-07-31T01:22:34.000Z">
+<meta property="article:modified_time" content="2019-03-20T11:37:17.522Z">
+<meta property="article:author" content="Rarit7">
+<meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="scikit-learn">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Python机器学习库笔记（4）——scikit-learn：快速入门</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" "Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇 " href="/py_sklearn_1/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇 " href="/py_pd/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部 " href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章 " href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ster.im/py_sklearn_0/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ster.im/py_sklearn_0/&text=Python机器学习库笔记（4）——scikit-learn：快速入门"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ster.im/py_sklearn_0/&title=Python机器学习库笔记（4）——scikit-learn：快速入门"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ster.im/py_sklearn_0/&is_video=false&description=Python机器学习库笔记（4）——scikit-learn：快速入门"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Python机器学习库笔记（4）——scikit-learn：快速入门&body=Check out this article: https://ster.im/py_sklearn_0/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ster.im/py_sklearn_0/&title=Python机器学习库笔记（4）——scikit-learn：快速入门"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ster.im/py_sklearn_0/&title=Python机器学习库笔记（4）——scikit-learn：快速入门"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ster.im/py_sklearn_0/&title=Python机器学习库笔记（4）——scikit-learn：快速入门"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ster.im/py_sklearn_0/&title=Python机器学习库笔记（4）——scikit-learn：快速入门"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ster.im/py_sklearn_0/&name=Python机器学习库笔记（4）——scikit-learn：快速入门&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ster.im/py_sklearn_0/&t=Python机器学习库笔记（4）——scikit-learn：快速入门"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="toc-number">1.</span> <span class="toc-text">数据集</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86"><span class="toc-number">2.</span> <span class="toc-text">数据预处理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%A0%87%E5%87%86%E5%8C%96"><span class="toc-number">2.1.</span> <span class="toc-text">数据标准化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E4%BA%8C%E5%80%BC%E5%8C%96"><span class="toc-number">2.2.</span> <span class="toc-text">数据二值化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%87%E7%AD%BE%E7%BC%96%E7%A0%81"><span class="toc-number">2.3.</span> <span class="toc-text">标签编码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8B%AC%E7%83%AD%E7%BC%96%E7%A0%81"><span class="toc-number">2.4.</span> <span class="toc-text">独热编码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E9%9B%86%E6%8B%86%E5%88%86"><span class="toc-number">3.</span> <span class="toc-text">数据集拆分</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89%E6%A8%A1%E5%9E%8B"><span class="toc-number">4.</span> <span class="toc-text">定义模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E8%AF%84%E4%BC%B0"><span class="toc-number">5.</span> <span class="toc-text">模型评估</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%9D%E5%AD%98%E6%A8%A1%E5%9E%8B"><span class="toc-number">6.</span> <span class="toc-text">保存模型</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Python机器学习库笔记（4）——scikit-learn：快速入门
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Rarit7</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2018-07-31T01:22:34.000Z" itemprop="datePublished">2018-07-31</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Python/" rel="tag">Python</a>, <a class="tag-link-link" href="/tags/scikit-learn/" rel="tag">scikit-learn</a>, <a class="tag-link-link" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag">机器学习</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>scikit-learn是用python进行机器学习项目的最重要的模块，它对主要的机器学习模型进行了封装，支持分类、回归、聚类、降维等机器学习任务，涵盖了树、支持向量机、神经网络等主流机器学习模型，并且提供了特征缩放、模型评估等功能。一个优秀的数据科学工作者应当熟练掌握它。</p>
+<p>scikit-learn的<a target="_blank" rel="noopener" href="https://scikit-learn.org/stable/">官方文档地址</a>，<a target="_blank" rel="noopener" href="http://sklearn.apachecn.org/">官方中文文档地址</a>。</p>
+<p>scikit-learn内容较多，将分为5篇文章分步阐述：</p>
+<ul>
+<li>数据载入、预处理（标准化、归一化、特征转换）、保存与恢复</li>
+<li>回归（线性模型，树回归，SVM回归，KNN回归，集成回归模型）</li>
+<li>分类（逻辑回归，决策树，贝叶斯分类器，神经网络，SVM，KNN，集成分类模型）</li>
+<li>聚类（K-Means、DBSCAN）、降维（PCA、LDA）</li>
+<li>模型评估与优化</li>
+</ul>
+<h2 id="数据集"><a href="#数据集" class="headerlink" title="数据集"></a>数据集</h2><p>为了帮助新手快速入门机器学习项目，scikit-learn内建了许多经典的机器学习数据集。注意有部分较大的数据集在首次使用时需要联网下载。</p>
+<p>列举其中一些数据集如下：</p>
+<table>
+<thead>
+<tr>
+<th align="left">数据集</th>
+<th align="left">说明</th>
+<th align="center">类型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>datasets.load_boston</code></td>
+<td align="left">波士顿房价数据集</td>
+<td align="center">回归</td>
+</tr>
+<tr>
+<td align="left"><code>datasets.load_breast_cancer</code></td>
+<td align="left">威斯康辛州乳腺癌数据集</td>
+<td align="center">二分类</td>
+</tr>
+<tr>
+<td align="left"><code>datasets.load_digits</code></td>
+<td align="left">8×8手写数字数据集</td>
+<td align="center">多分类</td>
+</tr>
+<tr>
+<td align="left"><code>datasets.load_iris</code></td>
+<td align="left">鸢尾花数据集</td>
+<td align="center">多分类</td>
+</tr>
+</tbody></table>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 导入内建数据集</span></span><br><span class="line"><span class="keyword">from</span> sklearn <span class="keyword">import</span> datasets</span><br><span class="line">iris = datasets.load_iris()</span><br><span class="line"><span class="comment"># 获得ndarray格式的变量X和标签y</span></span><br><span class="line">X = iris.data</span><br><span class="line">y = iris.target</span><br><span class="line"><span class="comment"># 获得数据维度</span></span><br><span class="line">n_samples, n_features = iris.data.shape</span><br></pre></td></tr></table></figure>
+
+<h2 id="数据预处理"><a href="#数据预处理" class="headerlink" title="数据预处理"></a>数据预处理</h2><p>在<a href="http://ster.im/py_pd/">《Python机器学习库笔记（3）——pandas》</a>一节中，已经利用pandas库对数据集完成去重、填充缺失值等工作。此外还需使用scikit-learn中的<code>preprocessing</code>模块来对数据做进一步的处理。</p>
+<h3 id="数据标准化"><a href="#数据标准化" class="headerlink" title="数据标准化"></a>数据标准化</h3><p>数据标准化和归一化是将数据映射到一个小的浮点数范围内，以便模型能快速收敛。</p>
+<p>标准化有多种方式，常用的一种是min-max标准化（对象名为<code>MinMaxScaler</code>），该方法使数据落到[0,1]区间：</p>
+<p>$$x’=\frac{x-x_{min}}{x_{max}-x_{min}}$$</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># min-max标准化</span></span><br><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> MinMaxScaler</span><br><span class="line">sc = MinMaxScaler()</span><br><span class="line">sc.fit(X)</span><br><span class="line">sc.transform(X)</span><br></pre></td></tr></table></figure>
+
+<p>另一种是Z-score标准化（对象名为<code>StandardScaler</code>），该方法使数据满足标准正态分布：</p>
+<p>$$x’=\frac{x-\bar{X}}{S}$$</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Z-score标准化</span></span><br><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> StandardScaler</span><br><span class="line">StandardScaler().fit_transform(X) <span class="comment">#将fit和transform组合执行</span></span><br></pre></td></tr></table></figure>
+
+<p>归一化（对象名为<code>Normalizer</code>，默认为L2归一化）：</p>
+<p>$$x’=\frac{x}{\sqrt{\Sigma^m_jx[j]^2}}$$</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># L2归一化</span></span><br><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> Normalizer</span><br><span class="line">Normalizer().fit_transform(X)</span><br></pre></td></tr></table></figure>
+
+<h3 id="数据二值化"><a href="#数据二值化" class="headerlink" title="数据二值化"></a>数据二值化</h3><p>使用阈值过滤器将数据转化为布尔值，即为二值化。使用<code>Binarizer</code>对象实现数据的二值化：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 二值化，阈值设置为3</span></span><br><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> Binarizer</span><br><span class="line">Binarizer(threshold=<span class="number">3</span>).fit_transform(X)</span><br></pre></td></tr></table></figure>
+
+<h3 id="标签编码"><a href="#标签编码" class="headerlink" title="标签编码"></a>标签编码</h3><p>使用<code>LabelEncoder</code>将不连续的数值或文本变量转化为有序的数值型变量：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 标签编码</span></span><br><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> LabelEncoder</span><br><span class="line">LabelEncoder().fit_transform([<span class="string">&#x27;apple&#x27;</span>,<span class="string">&#x27;pear&#x27;</span>,<span class="string">&#x27;orange&#x27;</span>,<span class="string">&#x27;banana&#x27;</span>])</span><br></pre></td></tr></table></figure>
+
+<h3 id="独热编码"><a href="#独热编码" class="headerlink" title="独热编码"></a>独热编码</h3><p>对于无序的离散型特征，其数值大小并没有意义，需要对其进行one-hot编码，将其特征的m个可能值转化为m个二值化特征。可以利用<code>OneHotEncoder</code>对象实现：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 独热编码</span></span><br><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> OneHotEncoder</span><br><span class="line">OneHotEncoder().fit_transform(y.reshape(-<span class="number">1</span>,<span class="number">1</span>)).toarray()</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意</strong>：<code>OneHotEncoder</code>无法对字符串类型进行转换，须先进行<code>LabelEncoder</code>将其转化为数字，或者尝试用<code>pandas.get_dummies()</code>来完成这一步工作。</p>
+<h2 id="数据集拆分"><a href="#数据集拆分" class="headerlink" title="数据集拆分"></a>数据集拆分</h2><p>为了进行模型评估，将训练数据集拆分成训练集和测试集，可使用<code>train_test_split</code>，它接收如下参数：</p>
+<ul>
+<li><code>train_data</code>：用于拆分的数据集的特征集X。</li>
+<li><code>train_target</code>：用于拆分的数据集的标签y。</li>
+<li><code>test_size</code>：如果是浮点数，表示测试集样本占比；如果是整数，表示测试集样本的数量。</li>
+<li><code>random_state</code>：随机数种子。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 随机拆分20%数据作为测试集</span></span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line">X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=<span class="number">0.2</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="定义模型"><a href="#定义模型" class="headerlink" title="定义模型"></a>定义模型</h2><p>在scikit-learn中，所有模型都是<code>BaseEstimator</code>的子类，他们都有同样的接口供调用。监督学习模型都具有以下的方法：</p>
+<ul>
+<li><code>fit</code>：对数据进行拟合。</li>
+<li><code>set_params</code>：设定模型参数。</li>
+<li><code>get_params</code>：返回模型参数。</li>
+<li><code>predict</code>：在指定的数据集上预测。</li>
+<li><code>score</code>：返回预测器的得分。</li>
+</ul>
+<p>鸢尾花数据集是一个分类任务，故以决策树模型为例，采用默认参数拟合模型，并对验证集预测。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 决策树分类器</span></span><br><span class="line"><span class="keyword">from</span> sklearn.tree <span class="keyword">import</span> DecisionTreeClassifier</span><br><span class="line">model = DecisionTreeClassifier()</span><br><span class="line"><span class="comment"># 训练模型</span></span><br><span class="line">model.fit(X_train, y_train)</span><br><span class="line"><span class="comment"># 在测试集上预测</span></span><br><span class="line">model.predict(X_test)</span><br><span class="line"><span class="comment"># 测试集上的得分（默认为准确率）</span></span><br><span class="line">model.score(X_test, y_test)</span><br></pre></td></tr></table></figure>
+
+<p>scikit-learn中所有模型的调用方式都类似。关于其他模型以及模型的参数用法，可参阅我的相关文章：</p>
+<h2 id="模型评估"><a href="#模型评估" class="headerlink" title="模型评估"></a>模型评估</h2><p>评估模型的常用方法为K折交叉验证，它将数据集划分为K个大小相近的子集（K通常取10），每次选择其中(K-1)个子集的并集做为训练集，余下的做为测试集，总共得到K组训练集&amp;测试集，最终返回这K次测试结果的得分，取其均值可作为选定最终模型的指标。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 交叉验证</span></span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> cross_val_score</span><br><span class="line">cross_val_score(model, X, y, scoring=<span class="literal">None</span>, cv=<span class="number">10</span>)</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意</strong>：由于之前采用了<code>train_test_split</code>分割数据集，它默认对数据进行了洗牌，所以这里可以直接使用<code>cv=10</code>来进行10折交叉验证（<code>cross_val_score</code>不会对数据进行洗牌）。如果之前未对数据进行洗牌，则要搭配使用<code>KFold</code>模块：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> KFold</span><br><span class="line">n_folds = <span class="number">10</span></span><br><span class="line">kf = KFold(n_folds, shuffle=<span class="literal">True</span>).get_n_splits(X)</span><br><span class="line">cross_val_score(model, X, y, scoring=<span class="literal">None</span>, cv = kf)</span><br></pre></td></tr></table></figure>
+
+<p>关于模型评估的更多信息，详见<a href="http://ster.im/py_sklearn_4">这篇文章</a>。</p>
+<h2 id="保存模型"><a href="#保存模型" class="headerlink" title="保存模型"></a>保存模型</h2><p>在训练模型后可将模型保存，以免下次重复训练。一种方法是采用python标准库中的<code>pickle</code>，另一种是使用sklearn的<code>joblib</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.externals <span class="keyword">import</span> joblib</span><br><span class="line"><span class="comment"># 保存模型</span></span><br><span class="line">joblib.dump(model,<span class="string">&#x27;myModel.pkl&#x27;</span>)</span><br><span class="line"><span class="comment"># 载入模型</span></span><br><span class="line">model=joblib.load(<span class="string">&#x27;myModel.pkl&#x27;</span>)</span><br></pre></td></tr></table></figure>
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="toc-number">1.</span> <span class="toc-text">数据集</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86"><span class="toc-number">2.</span> <span class="toc-text">数据预处理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%A0%87%E5%87%86%E5%8C%96"><span class="toc-number">2.1.</span> <span class="toc-text">数据标准化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E4%BA%8C%E5%80%BC%E5%8C%96"><span class="toc-number">2.2.</span> <span class="toc-text">数据二值化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%87%E7%AD%BE%E7%BC%96%E7%A0%81"><span class="toc-number">2.3.</span> <span class="toc-text">标签编码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8B%AC%E7%83%AD%E7%BC%96%E7%A0%81"><span class="toc-number">2.4.</span> <span class="toc-text">独热编码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E9%9B%86%E6%8B%86%E5%88%86"><span class="toc-number">3.</span> <span class="toc-text">数据集拆分</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89%E6%A8%A1%E5%9E%8B"><span class="toc-number">4.</span> <span class="toc-text">定义模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E8%AF%84%E4%BC%B0"><span class="toc-number">5.</span> <span class="toc-text">模型评估</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%9D%E5%AD%98%E6%A8%A1%E5%9E%8B"><span class="toc-number">6.</span> <span class="toc-text">保存模型</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ster.im/py_sklearn_0/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ster.im/py_sklearn_0/&text=Python机器学习库笔记（4）——scikit-learn：快速入门"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ster.im/py_sklearn_0/&title=Python机器学习库笔记（4）——scikit-learn：快速入门"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ster.im/py_sklearn_0/&is_video=false&description=Python机器学习库笔记（4）——scikit-learn：快速入门"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Python机器学习库笔记（4）——scikit-learn：快速入门&body=Check out this article: https://ster.im/py_sklearn_0/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ster.im/py_sklearn_0/&title=Python机器学习库笔记（4）——scikit-learn：快速入门"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ster.im/py_sklearn_0/&title=Python机器学习库笔记（4）——scikit-learn：快速入门"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ster.im/py_sklearn_0/&title=Python机器学习库笔记（4）——scikit-learn：快速入门"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ster.im/py_sklearn_0/&title=Python机器学习库笔记（4）——scikit-learn：快速入门"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ster.im/py_sklearn_0/&name=Python机器学习库笔记（4）——scikit-learn：快速入门&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ster.im/py_sklearn_0/&t=Python机器学习库笔记（4）——scikit-learn：快速入门"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2012-2021
+    Rarit7
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.3/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdn.bootcdn.net/ajax/libs/clipboard.js/2.0.8/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Kaggle《泰坦尼克号生还预测》kernel">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kaggle机器学习实战（1）——泰坦尼克号生还预测">
+<meta property="og:url" content="https://ster.im/kaggle_01/index.html">
+<meta property="og:site_name" content="Rarit7&#39;s Blog">
+<meta property="og:description" content="Kaggle《泰坦尼克号生还预测》kernel">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-03-28T10:10:08.000Z">
+<meta property="article:modified_time" content="2018-12-02T16:19:29.448Z">
+<meta property="article:author" content="Rarit7">
+<meta property="article:tag" content="Kaggle">
+<meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="R">
+<meta property="article:tag" content="特征工程">
+<meta property="article:tag" content="随机森林">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Kaggle机器学习实战（1）——泰坦尼克号生还预测</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" "Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇 " href="/kaggle_02/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇 " href="/hello-world/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部 " href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章 " href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ster.im/kaggle_01/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ster.im/kaggle_01/&text=Kaggle机器学习实战（1）——泰坦尼克号生还预测"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ster.im/kaggle_01/&title=Kaggle机器学习实战（1）——泰坦尼克号生还预测"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ster.im/kaggle_01/&is_video=false&description=Kaggle机器学习实战（1）——泰坦尼克号生还预测"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Kaggle机器学习实战（1）——泰坦尼克号生还预测&body=Check out this article: https://ster.im/kaggle_01/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ster.im/kaggle_01/&title=Kaggle机器学习实战（1）——泰坦尼克号生还预测"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ster.im/kaggle_01/&title=Kaggle机器学习实战（1）——泰坦尼克号生还预测"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ster.im/kaggle_01/&title=Kaggle机器学习实战（1）——泰坦尼克号生还预测"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ster.im/kaggle_01/&title=Kaggle机器学习实战（1）——泰坦尼克号生还预测"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ster.im/kaggle_01/&name=Kaggle机器学习实战（1）——泰坦尼克号生还预测&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ster.im/kaggle_01/&t=Kaggle机器学习实战（1）——泰坦尼克号生还预测"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE"><span class="toc-number">1.</span> <span class="toc-text">读取数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%89%B9%E5%BE%81%E5%B7%A5%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">特征工程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A7%93%E5%90%8D%E7%9A%84%E5%A4%84%E7%90%86"><span class="toc-number">2.1.</span> <span class="toc-text">姓名的处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%8C%E4%B8%80%E5%AE%B6%E6%97%8F%E7%9A%84%E4%BA%BA"><span class="toc-number">2.2.</span> <span class="toc-text">同一家族的人</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%BA%E5%A4%B1%E5%80%BC"><span class="toc-number">3.</span> <span class="toc-text">缺失值</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%A8%E5%90%88%E7%90%86%E7%9A%84%E5%80%BC%E5%A1%AB%E5%85%85"><span class="toc-number">3.1.</span> <span class="toc-text">用合理的值填充</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%84%E6%B5%8B%E6%8E%A8%E6%96%AD"><span class="toc-number">3.2.</span> <span class="toc-text">预测推断</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E5%A5%BD%E2%80%98%E5%B9%B4%E9%BE%84%E2%80%99%E5%8F%98%E9%87%8F"><span class="toc-number">3.3.</span> <span class="toc-text">利用好‘年龄’变量</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E5%92%8C%E9%A2%84%E6%B5%8B"><span class="toc-number">4.</span> <span class="toc-text">训练和预测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B"><span class="toc-number">4.1.</span> <span class="toc-text">训练模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%98%E9%87%8F%E6%9D%83%E9%87%8D"><span class="toc-number">4.2.</span> <span class="toc-text">变量权重</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%84%E6%B5%8B"><span class="toc-number">4.3.</span> <span class="toc-text">预测</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E8%AE%BA"><span class="toc-number">5.</span> <span class="toc-text">结论</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Kaggle机器学习实战（1）——泰坦尼克号生还预测
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Rarit7</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2018-03-28T10:10:08.000Z" itemprop="datePublished">2018-03-28</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Kaggle/" rel="tag">Kaggle</a>, <a class="tag-link-link" href="/tags/R/" rel="tag">R</a>, <a class="tag-link-link" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag">机器学习</a>, <a class="tag-link-link" href="/tags/%E7%89%B9%E5%BE%81%E5%B7%A5%E7%A8%8B/" rel="tag">特征工程</a>, <a class="tag-link-link" href="/tags/%E9%9A%8F%E6%9C%BA%E6%A3%AE%E6%9E%97/" rel="tag">随机森林</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p><a target="_blank" rel="noopener" href="https://www.kaggle.com/c/titanic">泰坦尼克号生还预测</a>是非常推荐给入门级新手的一个热身训练。这是一个二分类任务。本文主要翻译自这篇<a target="_blank" rel="noopener" href="https://www.kaggle.com/mrisdal/exploring-survival-on-the-titanic">kernel</a>，它是kaggle上点赞数最高的一篇kernel（截至2018-03-28）。采用的工具是R语言。</p>
+<h2 id="读取数据"><a href="#读取数据" class="headerlink" title="读取数据"></a>读取数据</h2><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 调包</span></span><br><span class="line">library(<span class="string">&#x27;ggplot2&#x27;</span>) <span class="comment"># 数据可视化</span></span><br><span class="line">library(<span class="string">&#x27;ggthemes&#x27;</span>) <span class="comment"># 数据可视化</span></span><br><span class="line">library(<span class="string">&#x27;scales&#x27;</span>) <span class="comment"># 数据可视化</span></span><br><span class="line">library(<span class="string">&#x27;dplyr&#x27;</span>) <span class="comment"># 数据操作</span></span><br><span class="line">library(<span class="string">&#x27;mice&#x27;</span>) <span class="comment"># 缺失值填充</span></span><br><span class="line">library(<span class="string">&#x27;randomForest&#x27;</span>) <span class="comment"># 这一步就已经剧透了，我们要用随机森林</span></span><br></pre></td></tr></table></figure>
+<p>之后我们读取csv格式的数据，假设数据存放在../input文件夹下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">train &lt;- read.csv(<span class="string">&#x27;../input/train.csv&#x27;</span>, stringsAsFactors = <span class="built_in">F</span>)</span><br><span class="line">test  &lt;- read.csv(<span class="string">&#x27;../input/test.csv&#x27;</span>, stringsAsFactors = <span class="built_in">F</span>)</span><br><span class="line"></span><br><span class="line">full  &lt;- bind_rows(train, test) <span class="comment"># 合并训练集和测试集</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 总览数据</span></span><br><span class="line">str(full)</span><br></pre></td></tr></table></figure>
+<p>经过这一步我们就对变量有了大体的印象，哪些变量是数值型的，哪些变量是字符串型的。我们总共有12个变量，1309组数据。为了更方便理解，我们再来看一遍变量代表了什么：</p>
+<ul>
+<li><code>Survived</code>：我们要预测的Y，用1表示生还，0表示死亡</li>
+<li><code>Pclass</code>：头等舱/二等舱/三等舱</li>
+<li><code>Name</code>：姓名</li>
+<li><code>Sex</code>：性别</li>
+<li><code>Age</code>：年龄</li>
+<li><code>SibSp</code>：船上兄弟姐妹/配偶的数量</li>
+<li><code>Parch</code>：船上父母/孩子的数量</li>
+<li><code>Ticket</code>：船票号码</li>
+<li><code>Fare</code>：船票费用</li>
+<li><code>Cabin</code>：舱位</li>
+<li><code>Embarked</code>：登船的港口（瑟堡/皇后镇/南安普顿）</li>
+</ul>
+<p>看过电影《泰坦尼克号》或者听说过西方宣传的所谓“骑士精神”的人，都知道泰坦尼克号上妇女和小孩的生还几率比男性要高很多；此外头等舱乘客的生还率也是显然要高于二等舱、三等舱的。因此，<code>Sex</code>、<code>Age</code>、<code>Pclass</code>、<code>Fare</code>这些变量我们想当然的把它们列入考察范围。关键就在于对剩下的一些变量的运用——这就是<strong>特征工程</strong>了，在这个实战项目中，它甚至比选择哪一种分类方法更为重要。</p>
+<h2 id="特征工程"><a href="#特征工程" class="headerlink" title="特征工程"></a>特征工程</h2><h3 id="姓名的处理"><a href="#姓名的处理" class="headerlink" title="姓名的处理"></a>姓名的处理</h3><p>对于“乘客的姓名”这一变量，许多人认为这是一个跟预测结果无关紧要的变量，难道叫张三还是李四会决定一个人的生死？但是，仔细观察变量会发现：这一长串的名字可不是“张三”“李四”这么简单，它们由名字、称谓（例如Mrs., Dr.）、姓氏构成。这些字符串可以拆分出一些有用的信息，例如，称谓可以体现一个人的阶级属性；有相同姓氏的人可以归为一个家庭（外国人同姓不同族的情况比中国少多了）。因此我们要做的就是尽可能利用给出的信息，来创造变量！</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 从姓名中提取有用的信息（Title：称谓）</span></span><br><span class="line">full$Title &lt;- gsub(<span class="string">&#x27;(.*, )|(\\..*)&#x27;</span>, <span class="string">&#x27;&#x27;</span>, full$Name)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 按性别显示称谓的统计信息</span></span><br><span class="line">table(full$Sex, full$Title)</span><br></pre></td></tr></table></figure>
+<p>第一步是利用R语言中的<code>gsub()</code>函数，将不需要的字符串替换掉：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gsub(pattern, replacement, x)</span><br></pre></td></tr></table></figure>
+<p><code>gsub()</code>会替换<code>x</code>中所有满足<code>pattern</code>条件的字符串转变为<code>replacement</code>，在此之前我们要简单了解一下R的正则表达式，<code>.</code>表示任意字符，<code>\\</code>是转义字符，因此<code>\\.</code>就是一般的句点，<code>|</code>是逻辑或，可以简单理解为前后两个条件的并集。例如<code>Braund, Mr. Owen Harris</code>，我们要提取<code>Mr</code>，就是把第一个逗号+空格之前的字符串以及第一个句点后面的字符串全部替换为空。  </p>
+<p>我们可以看到<code>Capt</code>、<code>Col</code>、<code>Don</code>、<code>Dona</code>等等这些称谓只有极个位数的人，因此要精简一下。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 手动把一些出现频率较低的称谓归为“稀有称谓”</span></span><br><span class="line">rare_title &lt;- <span class="built_in">c</span>(<span class="string">&#x27;Dona&#x27;</span>, <span class="string">&#x27;Lady&#x27;</span>, <span class="string">&#x27;the Countess&#x27;</span>,<span class="string">&#x27;Capt&#x27;</span>, <span class="string">&#x27;Col&#x27;</span>, <span class="string">&#x27;Don&#x27;</span>, </span><br><span class="line">                <span class="string">&#x27;Dr&#x27;</span>, <span class="string">&#x27;Major&#x27;</span>, <span class="string">&#x27;Rev&#x27;</span>, <span class="string">&#x27;Sir&#x27;</span>, <span class="string">&#x27;Jonkheer&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 同义词转换</span></span><br><span class="line">full$Title[full$Title == <span class="string">&#x27;Mlle&#x27;</span>]        &lt;- <span class="string">&#x27;Miss&#x27;</span> </span><br><span class="line">full$Title[full$Title == <span class="string">&#x27;Ms&#x27;</span>]          &lt;- <span class="string">&#x27;Miss&#x27;</span></span><br><span class="line">full$Title[full$Title == <span class="string">&#x27;Mme&#x27;</span>]         &lt;- <span class="string">&#x27;Mrs&#x27;</span> </span><br><span class="line">full$Title[full$Title %in% rare_title]  &lt;- <span class="string">&#x27;Rare Title&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 再按性别显示称谓的统计信息</span></span><br><span class="line">table(full$Sex, full$Title)</span><br></pre></td></tr></table></figure>
+<p>于是我们得到了：男性中有61人为<code>Master</code>称谓，25人为稀有称谓，其余757人为普通的<code>Mr</code>称谓；女性中有264人为未婚<code>Miss</code>，198人为已婚<code>Mrs</code>，4人为稀有称谓。</p>
+<p>接着，我们提取名字中的姓氏，这很有可能会与ta是否生还密切相关——因为“一家人最重要的是整整齐齐”。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 提取姓氏，增设一个变量：Surname</span></span><br><span class="line">full$Surname &lt;- sapply(full$Name,  </span><br><span class="line">                      <span class="keyword">function</span>(x) strsplit(x, split = <span class="string">&#x27;[,.]&#x27;</span>)[[<span class="number">1</span>]][<span class="number">1</span>])</span><br><span class="line"></span><br><span class="line">nlevels(factor(full$Surname))</span><br></pre></td></tr></table></figure>
+<p>共有875个不重样的姓氏。（有兴趣的话，还可以从姓氏分析出国籍、种族。）</p>
+<h3 id="同一家族的人"><a href="#同一家族的人" class="headerlink" title="同一家族的人"></a>同一家族的人</h3><p>现在我们有了姓氏，再结合<code>SibSp</code>和<code>Parch</code>两个反映家族特征的变量，可以拿过来制造我们所需的变量。首先，我们创造一个表示船上有多少名家族成员的变量。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建一个船上同一家族人数的变量（包含自己）</span></span><br><span class="line">full$Fsize &lt;- full$SibSp + full$Parch + <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 创造一个新变量，把家族大小跟在姓氏后面更直观一些</span></span><br><span class="line">full$Family &lt;- paste(full$Surname, full$Fsize, sep=<span class="string">&#x27;_&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 把家族人数和生还情况的关系可视化一下</span></span><br><span class="line">ggplot(full[<span class="number">1</span>:<span class="number">891</span>,], aes(x = Fsize, fill = factor(Survived))) +</span><br><span class="line">  geom_bar(stat=<span class="string">&#x27;count&#x27;</span>, position=<span class="string">&#x27;dodge&#x27;</span>) +</span><br><span class="line">  scale_x_continuous(breaks=<span class="built_in">c</span>(<span class="number">1</span>:<span class="number">11</span>)) +</span><br><span class="line">  labs(x = <span class="string">&#x27;Family Size&#x27;</span>) +</span><br><span class="line">  theme_few()</span><br></pre></td></tr></table></figure>
+<p>通过柱状图可以非常直观地看出，家庭大小在2~4人的生还率要超过50%，而相对的，单身的和家庭超过4人的则生还率有非常明显的降低。据此，我们创建一个新的变量来更好地反映家庭大小与生还情况的关系：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 建立离散的家庭大小变量</span></span><br><span class="line">full$FsizeD[full$Fsize == <span class="number">1</span>] &lt;- <span class="string">&#x27;singleton&#x27;</span></span><br><span class="line">full$FsizeD[full$Fsize &lt; <span class="number">5</span> &amp; full$Fsize &gt; <span class="number">1</span>] &lt;- <span class="string">&#x27;small&#x27;</span></span><br><span class="line">full$FsizeD[full$Fsize &gt; <span class="number">4</span>] &lt;- <span class="string">&#x27;large&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 把离散的家庭大小变量和生还情况用马赛克图表示</span></span><br><span class="line">mosaicplot(table(full$FsizeD, full$Survived), main=<span class="string">&#x27;Family Size by Survival&#x27;</span>, shade=<span class="literal">TRUE</span>)</span><br></pre></td></tr></table></figure>
+<p>马赛克图更为清晰地揭示了单身和大家庭的人更难以生还的事实。如果结合年龄数据，可以挖掘出更多信息——但是年龄一项有263个缺失值，因此先跳过。  </p>
+<p>最后再看一下<code>Cabin</code>这个变量，它有太多的缺失值了。我们能从中挖掘的信息就是它的第一位代表甲板号A-F，也就是房间所在位置，它可能会是影响能否生还的变量。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">full$Deck&lt;-factor(sapply(full$Cabin, <span class="keyword">function</span>(x) strsplit(x, <span class="literal">NULL</span>)[[<span class="number">1</span>]][<span class="number">1</span>]))</span><br></pre></td></tr></table></figure>
+<p>另外就是有一些带有多个舱位的数据（例如“C23 C25 C27”），我们想办法在这上面做点文章。但首先，我们要做的是处理缺失值。</p>
+<h2 id="缺失值"><a href="#缺失值" class="headerlink" title="缺失值"></a>缺失值</h2><p>接下来我们要处理最为棘手的缺失值了。也许快刀斩乱麻是一个方法，但由于这个训练样本容量较小、特征维度也较小，我们不应该选择删除某一个训练样本或者某一特征。所以我们选择用这一行或这一列的平均数、中位数、众数来填充。选择填充缺失值的方法之前，我们可以借助可视化的手段。  </p>
+<h3 id="用合理的值填充"><a href="#用合理的值填充" class="headerlink" title="用合理的值填充"></a>用合理的值填充</h3><p>我们先看登船港口这一项，有62号和830号两个缺失值。他们俩有相同的票号、票价和船舱号，所以他们是一个港口上船的。让我们把票价和登船港口以及舱位等级的图画一画，关系就清晰明了。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 先把缺失项排除掉</span></span><br><span class="line">embark_fare &lt;- full %&gt;%</span><br><span class="line">  filter(PassengerId != <span class="number">62</span> &amp; PassengerId != <span class="number">830</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 把登船港口跟船舱等级和票价做个可视化</span></span><br><span class="line">ggplot(embark_fare, aes(x = Embarked, y = Fare, fill = factor(Pclass))) +</span><br><span class="line">  geom_boxplot() +</span><br><span class="line">  geom_hline(aes(yintercept=<span class="number">80</span>), </span><br><span class="line">    colour=<span class="string">&#x27;red&#x27;</span>, linetype=<span class="string">&#x27;dashed&#x27;</span>, lwd=<span class="number">2</span>) +</span><br><span class="line">  scale_y_continuous(labels=dollar_format()) +</span><br><span class="line">  theme_few()</span><br></pre></td></tr></table></figure>
+<p>请在RStudio里面画一画——有了这个箱形图就直观多了。很显然，票价与登船港口和船舱等级直接相关，而80刀所对应的区间正位于头等舱-C港口的那群人的中位数附近。那么，在票价上花了80刀，并且是头等舱乘客的62号，他的登船港口我们可以放心大胆地填上C。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">full$Embarked[<span class="built_in">c</span>(<span class="number">62</span>, <span class="number">830</span>)] &lt;- <span class="string">&#x27;C&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>接着处理1044号乘客票价一栏的缺失值。很显然，我们要找和他同样的三等舱、S港口上船的乘客，比较他们的船票价格，填充一个比较合理的数值。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 三等舱、S登船的乘客的票价，并标注出中位数</span></span><br><span class="line">ggplot(full[full$Pclass == <span class="string">&#x27;3&#x27;</span> &amp; full$Embarked == <span class="string">&#x27;S&#x27;</span>, ], </span><br><span class="line">  aes(x = Fare)) +</span><br><span class="line">  geom_density(fill = <span class="string">&#x27;#99d6ff&#x27;</span>, alpha=<span class="number">0.4</span>) + </span><br><span class="line">  geom_vline(aes(xintercept=median(Fare, na.rm=<span class="built_in">T</span>)),</span><br><span class="line">    colour=<span class="string">&#x27;red&#x27;</span>, linetype=<span class="string">&#x27;dashed&#x27;</span>, lwd=<span class="number">1</span>) +</span><br><span class="line">  scale_x_continuous(labels=dollar_format()) +</span><br><span class="line">  theme_few()</span><br></pre></td></tr></table></figure>
+<p>好，我们完全有理由给这个缺失值填上8.05刀——三等舱S登船的票价的中位数。</p>
+<h3 id="预测推断"><a href="#预测推断" class="headerlink" title="预测推断"></a>预测推断</h3><p>上面我们处理的都是少量的缺失值，但是看看年龄这一项，有太多的缺失值了，如果用平均数或者中位数来填充，效果肯定会不好，所以我们要建立一个回归模型来预测缺失值的年龄。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 看一看有多少缺失值</span></span><br><span class="line"><span class="built_in">sum</span>(<span class="built_in">is.na</span>(full$Age))</span><br></pre></td></tr></table></figure>
+<p>这里原文用了<code>mice</code>这个包来做预测推断。<code>mice</code>利用其他已知变量的数据对待填充的数据进行拟合并填充，</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 先把这些定性的变量化为factor类型</span></span><br><span class="line">factor_vars &lt;- <span class="built_in">c</span>(<span class="string">&#x27;PassengerId&#x27;</span>,<span class="string">&#x27;Pclass&#x27;</span>,<span class="string">&#x27;Sex&#x27;</span>,<span class="string">&#x27;Embarked&#x27;</span>,</span><br><span class="line">                 <span class="string">&#x27;Title&#x27;</span>,<span class="string">&#x27;Surname&#x27;</span>,<span class="string">&#x27;Family&#x27;</span>,<span class="string">&#x27;FsizeD&#x27;</span>)</span><br><span class="line"></span><br><span class="line">full[factor_vars] &lt;- lapply(full[factor_vars], <span class="keyword">function</span>(x) as.factor(x))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置随机数种子，接下来我们用随机森林填充缺失值</span></span><br><span class="line">set.seed(<span class="number">129</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 用数据集中已知的数据拟合缺失值，首先排除一些不需要的变量</span></span><br><span class="line">mice_mod &lt;- mice(full[, !<span class="built_in">names</span>(full) %in% <span class="built_in">c</span>(<span class="string">&#x27;PassengerId&#x27;</span>,<span class="string">&#x27;Name&#x27;</span>,<span class="string">&#x27;Ticket&#x27;</span>,<span class="string">&#x27;Cabin&#x27;</span>,<span class="string">&#x27;Family&#x27;</span>,<span class="string">&#x27;Surname&#x27;</span>,<span class="string">&#x27;Survived&#x27;</span>)], method=<span class="string">&#x27;rf&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 保存结果</span></span><br><span class="line">mice_output &lt;- complete(mice_mod)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看补全后的和原始的年龄数值分布情况</span></span><br><span class="line">par(mfrow=<span class="built_in">c</span>(<span class="number">1</span>,<span class="number">2</span>))</span><br><span class="line">hist(full$Age, freq=<span class="built_in">F</span>, main=<span class="string">&#x27;Age: Original Data&#x27;</span>, </span><br><span class="line">  col=<span class="string">&#x27;darkgreen&#x27;</span>, ylim=<span class="built_in">c</span>(<span class="number">0</span>,<span class="number">0.04</span>))</span><br><span class="line">hist(mice_output$Age, freq=<span class="built_in">F</span>, main=<span class="string">&#x27;Age: MICE Output&#x27;</span>, </span><br><span class="line">  col=<span class="string">&#x27;lightgreen&#x27;</span>, ylim=<span class="built_in">c</span>(<span class="number">0</span>,<span class="number">0.04</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 结果看起来不错，所以把拟合出的结果代入到原数据集中</span></span><br><span class="line">full$Age &lt;- mice_output$Age</span><br><span class="line"></span><br><span class="line"><span class="comment"># 然后查看缺失值数量，变成0了</span></span><br><span class="line"><span class="built_in">sum</span>(<span class="built_in">is.na</span>(full$Age))</span><br></pre></td></tr></table></figure>
+<p>这样我们就完成了年龄的缺失值填充了。前面已经说过，对于我们要预测的生还情况而言，年龄是一个相当重要的参数。所以我们可以再多做一些特征工程，创造一些更有用的变量。（下面这一步我认为是这篇kernel的精华所在！）</p>
+<h3 id="利用好‘年龄’变量"><a href="#利用好‘年龄’变量" class="headerlink" title="利用好‘年龄’变量"></a>利用好‘年龄’变量</h3><p>我们有了完整的年龄数据，再结合之前通过姓名提取的一些信息，可以创造出更具价值的变量——<code>Child</code>和<code>Mother</code>，这是两个布尔型的变量。判断一个人是否是孩子很简单，年龄小于18。判断一个人是不是妈妈需要4点：</p>
+<ol>
+<li>她是女性；</li>
+<li>她大于18岁；</li>
+<li>她的孩子数量大于0；</li>
+<li>她的称谓不是<code>Miss</code>。</li>
+</ol>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 先看一下年龄，性别和生还率的关系</span></span><br><span class="line">ggplot(full[<span class="number">1</span>:<span class="number">891</span>,], aes(Age, fill = factor(Survived))) + </span><br><span class="line">  geom_histogram() + </span><br><span class="line">  facet_grid(.~Sex) + </span><br><span class="line">  theme_few()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创造一个变量</span></span><br><span class="line">full$Child[full$Age &lt; <span class="number">18</span>] &lt;- <span class="string">&#x27;Child&#x27;</span></span><br><span class="line">full$Child[full$Age &gt;= <span class="number">18</span>] &lt;- <span class="string">&#x27;Adult&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看这个新建的变量的统计</span></span><br><span class="line">table(full$Child, full$Survived)</span><br></pre></td></tr></table></figure>
+<p>从这个结果似乎看不出孩子的身份能保证一名乘客生还。接下来创造<code>Mother</code>这个变量，我们预想中母亲的生还率会高一些。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创造一个变量</span></span><br><span class="line">full$Mother &lt;- <span class="string">&#x27;Not Mother&#x27;</span></span><br><span class="line">full$Mother[full$Sex == <span class="string">&#x27;female&#x27;</span> &amp; full$Parch &gt; <span class="number">0</span> &amp; full$Age &gt; <span class="number">18</span> &amp; full$Title != <span class="string">&#x27;Miss&#x27;</span>] &lt;- <span class="string">&#x27;Mother&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看这个新建的变量的统计</span></span><br><span class="line">table(full$Mother, full$Survived)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 把这两个新建的变量添加到原数据集中</span></span><br><span class="line">full$Child  &lt;- factor(full$Child)</span><br><span class="line">full$Mother &lt;- factor(full$Mother)</span><br></pre></td></tr></table></figure>
+<p>保险起见可以再复查一下有没有疏漏：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">md.pattern(full)</span><br></pre></td></tr></table></figure>
+<p>填补了年龄、登船港口和船票价格的缺失值，并且创建了一些相信对预测结果能起到作用的变量，接下来便可以进行训练和预测了。</p>
+<h2 id="训练和预测"><a href="#训练和预测" class="headerlink" title="训练和预测"></a>训练和预测</h2><p>选择何种分类模型对最终结果的精度是至关重要的，但这篇文章的作者没有告诉我们为什么选择随机森林，以及参数如何确定。</p>
+<p>先拆分训练集和测试集。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">train &lt;- full[<span class="number">1</span>:<span class="number">891</span>,]</span><br><span class="line">test &lt;- full[<span class="number">892</span>:<span class="number">1309</span>,] </span><br></pre></td></tr></table></figure>
+<h3 id="训练模型"><a href="#训练模型" class="headerlink" title="训练模型"></a>训练模型</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 设置随机数种子</span></span><br><span class="line">set.seed(<span class="number">754</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 训练模型（只挑选了有用的变量用于训练）</span></span><br><span class="line">rf_model &lt;- randomForest(factor(Survived) ~ Pclass + Sex + Age + SibSp + Parch + </span><br><span class="line">                                            Fare + Embarked + Title + </span><br><span class="line">                                            FsizeD + Child + Mother,</span><br><span class="line">                                            data = train)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 可视化性能随树的数量的变化</span></span><br><span class="line">plot(rf_model, ylim=<span class="built_in">c</span>(<span class="number">0</span>,<span class="number">0.36</span>))</span><br><span class="line">legend(<span class="string">&#x27;topright&#x27;</span>, colnames(rf_model$err.rate), col=<span class="number">1</span>:<span class="number">3</span>, fill=<span class="number">1</span>:<span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+<p>这张图上黑线表示整体的错误率（大约在20%左右），红线和绿线分别表示死亡和幸存的错误率。预测死亡比预测生还要更成功。这是为什么？</p>
+<h3 id="变量权重"><a href="#变量权重" class="headerlink" title="变量权重"></a>变量权重</h3><p>通过绘制决策树上的基尼系数的平均值来考察变量的重要性。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 获取重要度</span></span><br><span class="line">importance    &lt;- importance(rf_model)</span><br><span class="line">varImportance &lt;- data.frame(Variables = row.names(importance), </span><br><span class="line">                            Importance = <span class="built_in">round</span>(importance[ ,<span class="string">&#x27;MeanDecreaseGini&#x27;</span>],<span class="number">2</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 根据重要度创建排名变量</span></span><br><span class="line">rankImportance &lt;- varImportance %&gt;%</span><br><span class="line">  mutate(Rank = paste0(<span class="string">&#x27;#&#x27;</span>,dense_rank(desc(Importance))))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 可视化重要性排名</span></span><br><span class="line">ggplot(rankImportance, aes(x = reorder(Variables, Importance), </span><br><span class="line">    y = Importance, fill = Importance)) +</span><br><span class="line">  geom_bar(stat=<span class="string">&#x27;identity&#x27;</span>) + </span><br><span class="line">  geom_text(aes(x = Variables, y = <span class="number">0.5</span>, label = Rank),</span><br><span class="line">    hjust=<span class="number">0</span>, vjust=<span class="number">0.55</span>, size = <span class="number">4</span>, colour = <span class="string">&#x27;red&#x27;</span>) +</span><br><span class="line">  labs(x = <span class="string">&#x27;Variables&#x27;</span>) +</span><br><span class="line">  coord_flip() + </span><br><span class="line">  theme_few()</span><br></pre></td></tr></table></figure>
+<p>与乘客最终是否幸存影响最大的变量竟然是<code>Title</code>——也就是我们根据姓名创造出来的称谓这个变量！第二名是性别，第三名是船票费用，紧接着是年龄。而预想中关系密切的“船舱等级”竟然只排到第五位，这个结果令人惊讶。</p>
+<h3 id="预测"><a href="#预测" class="headerlink" title="预测"></a>预测</h3><p>训练出了模型，对测试集进行预测。</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">prediction &lt;- predict(rf_model, test)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 把结果保存至两列：乘客ID和是否生还</span></span><br><span class="line">solution &lt;- data.frame(PassengerID = test$PassengerId, Survived = prediction)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 导出至文件</span></span><br><span class="line">write.csv(solution, file = <span class="string">&#x27;rf_mod_Solution.csv&#x27;</span>, row.names = <span class="built_in">F</span>)</span><br></pre></td></tr></table></figure>
+<p>上传，查看精度和排名。（作者的精度为0.80382）</p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><ul>
+<li><p>这篇kernel在特征工程上面花了比较多的心思。首先是根据姓名提取出了“称谓”这个变量，最后事实证明这是一个非常有效的变量。创建“家庭大小”这个变量也很有创意。之后创建了“是母亲”“是孩子”这两个有趣的变量，这是一个非常新颖的想法，我们可以融会贯通在别的实战项目里面运用类似的思想，说不定有奇效。</p>
+</li>
+<li><p>许多高精度的kernel证明了，对于这种变量很少的训练样本，多多进行特征工程、创造新的变量是王道。本kernel没有在选择模型以及调参方面作过多叙述，因为随机森林已经足够好。运用更加复杂的集成模型能给最终结果带来一定提升。</p>
+</li>
+<li><p>泰坦尼克号生还预测可谓是机器学习初学者必须亲手参与的经典入门试题，可以尝试更多的特征工程、运用不同的模型多加尝试。</p>
+</li>
+</ul>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE"><span class="toc-number">1.</span> <span class="toc-text">读取数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%89%B9%E5%BE%81%E5%B7%A5%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">特征工程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A7%93%E5%90%8D%E7%9A%84%E5%A4%84%E7%90%86"><span class="toc-number">2.1.</span> <span class="toc-text">姓名的处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%8C%E4%B8%80%E5%AE%B6%E6%97%8F%E7%9A%84%E4%BA%BA"><span class="toc-number">2.2.</span> <span class="toc-text">同一家族的人</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%BA%E5%A4%B1%E5%80%BC"><span class="toc-number">3.</span> <span class="toc-text">缺失值</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%A8%E5%90%88%E7%90%86%E7%9A%84%E5%80%BC%E5%A1%AB%E5%85%85"><span class="toc-number">3.1.</span> <span class="toc-text">用合理的值填充</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%84%E6%B5%8B%E6%8E%A8%E6%96%AD"><span class="toc-number">3.2.</span> <span class="toc-text">预测推断</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E5%A5%BD%E2%80%98%E5%B9%B4%E9%BE%84%E2%80%99%E5%8F%98%E9%87%8F"><span class="toc-number">3.3.</span> <span class="toc-text">利用好‘年龄’变量</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E5%92%8C%E9%A2%84%E6%B5%8B"><span class="toc-number">4.</span> <span class="toc-text">训练和预测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B"><span class="toc-number">4.1.</span> <span class="toc-text">训练模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%98%E9%87%8F%E6%9D%83%E9%87%8D"><span class="toc-number">4.2.</span> <span class="toc-text">变量权重</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%84%E6%B5%8B"><span class="toc-number">4.3.</span> <span class="toc-text">预测</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E8%AE%BA"><span class="toc-number">5.</span> <span class="toc-text">结论</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ster.im/kaggle_01/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ster.im/kaggle_01/&text=Kaggle机器学习实战（1）——泰坦尼克号生还预测"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ster.im/kaggle_01/&title=Kaggle机器学习实战（1）——泰坦尼克号生还预测"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ster.im/kaggle_01/&is_video=false&description=Kaggle机器学习实战（1）——泰坦尼克号生还预测"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Kaggle机器学习实战（1）——泰坦尼克号生还预测&body=Check out this article: https://ster.im/kaggle_01/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ster.im/kaggle_01/&title=Kaggle机器学习实战（1）——泰坦尼克号生还预测"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ster.im/kaggle_01/&title=Kaggle机器学习实战（1）——泰坦尼克号生还预测"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ster.im/kaggle_01/&title=Kaggle机器学习实战（1）——泰坦尼克号生还预测"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ster.im/kaggle_01/&title=Kaggle机器学习实战（1）——泰坦尼克号生还预测"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ster.im/kaggle_01/&name=Kaggle机器学习实战（1）——泰坦尼克号生还预测&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ster.im/kaggle_01/&t=Kaggle机器学习实战（1）——泰坦尼克号生还预测"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2012-2021
+    Rarit7
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.3/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdn.bootcdn.net/ajax/libs/clipboard.js/2.0.8/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Redis主从、哨兵、集群">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis学习笔记（5）——高可用">
+<meta property="og:url" content="https://ster.im/redis_05/index.html">
+<meta property="og:site_name" content="Rarit7&#39;s Blog">
+<meta property="og:description" content="Redis主从、哨兵、集群">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-01-12T06:30:43.000Z">
+<meta property="article:modified_time" content="2021-05-18T17:20:26.574Z">
+<meta property="article:author" content="Rarit7">
+<meta property="article:tag" content="Redis">
+<meta property="article:tag" content="高性能">
+<meta property="article:tag" content="开发">
+<meta property="article:tag" content="高可用">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Redis学习笔记（5）——高可用</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" "Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇 " href="/redis_06/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇 " href="/redis_04/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部 " href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章 " href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ster.im/redis_05/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ster.im/redis_05/&text=Redis学习笔记（5）——高可用"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ster.im/redis_05/&title=Redis学习笔记（5）——高可用"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ster.im/redis_05/&is_video=false&description=Redis学习笔记（5）——高可用"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Redis学习笔记（5）——高可用&body=Check out this article: https://ster.im/redis_05/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ster.im/redis_05/&title=Redis学习笔记（5）——高可用"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ster.im/redis_05/&title=Redis学习笔记（5）——高可用"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ster.im/redis_05/&title=Redis学习笔记（5）——高可用"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ster.im/redis_05/&title=Redis学习笔记（5）——高可用"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ster.im/redis_05/&name=Redis学习笔记（5）——高可用&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ster.im/redis_05/&t=Redis学习笔记（5）——高可用"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis%E5%A4%9A%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">1.</span> <span class="toc-text">Redis多机数据库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6"><span class="toc-number">2.</span> <span class="toc-text">主从复制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F"><span class="toc-number">3.</span> <span class="toc-text">哨兵模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9B%86%E7%BE%A4"><span class="toc-number">4.</span> <span class="toc-text">集群</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E8%87%B4%E6%80%A7Hash%E7%AE%97%E6%B3%95"><span class="toc-number">4.1.</span> <span class="toc-text">一致性Hash算法</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Redis学习笔记（5）——高可用
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Rarit7</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2020-01-12T06:30:43.000Z" itemprop="datePublished">2020-01-12</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Redis/" rel="tag">Redis</a>, <a class="tag-link-link" href="/tags/%E5%BC%80%E5%8F%91/" rel="tag">开发</a>, <a class="tag-link-link" href="/tags/%E9%AB%98%E5%8F%AF%E7%94%A8/" rel="tag">高可用</a>, <a class="tag-link-link" href="/tags/%E9%AB%98%E6%80%A7%E8%83%BD/" rel="tag">高性能</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="Redis多机数据库"><a href="#Redis多机数据库" class="headerlink" title="Redis多机数据库"></a>Redis多机数据库</h2><ul>
+<li>主从模式：主服务器和从服务器保存相同的数据。</li>
+<li>哨兵模式：哨兵监控主从数据库是否正常，并在主库出现故障时选举从库升级为主库。</li>
+<li>集群模式：集群上每个节点存储不同的内容，每个主节点有从节点备份，每个节点之间互相监控，在主库出现故障时选举从库升级为主库。</li>
+</ul>
+<h2 id="主从复制"><a href="#主从复制" class="headerlink" title="主从复制"></a>主从复制</h2><ul>
+<li>旧版复制功能：Slave向Master发送<code>SYNC</code>命令，Master收到命令开始执行<code>BGSAVE</code>在后台生成RDB文件，并使用缓冲区记录从开始执行的所有写命令；当Master的<code>BGSAVE</code>执行完毕，会将RDB文件发送给Slave，Slave接收并载入RDB文件，将自己的数据库状态更新至Master执行<code>BGSAVE</code>时的数据库状态；Master再将缓冲区中的所有写命令发送给Slave，Slave执行这些写命令，将自己的数据库状态更新至Master当前所处的状态。每当Master执行客户端的写命令从而导致主从不一致，Master需要将写命令发送给Slave执行，从而回到主从一致的状态。</li>
+<li>新版复制功能：解决旧版复制在处理断线重复制情况时的低效问题。使用<code>PSYNC</code>命令代替<code>SYNC</code>，具有完整重同步和部分重同步两种模式，部分重同步用于处理断线重复制的情况：Slave在断线后重新连接Master后，Master只发送断开连接期间接收到的写命令，Slave只要接收并执行这些命令就可以更新至Master当前所处的状态。</li>
+<li>部分重同步功能的实现：Master和Slave分别维护一个偏移量，通过判断偏移量是否一致，可以判断主从服务器是否处于一致状态；Master维护一个复制积压缓冲区，会将写命令复制到该缓冲区中，为每个字节记录相应的复制偏移量；当Slave连上Master，会把自己的偏移量发送给Master，如果偏移量之后的数据仍存在于缓冲区，执行部分重同步，否则执行完整同步。</li>
+<li>心跳检测：Slave每秒发送<code>REPLCONF ACK</code>心跳包给Master，检测主从服务器的连接状态，并报告自己的偏移量；如果Master发现超过一秒没有接收到<code>REPLCONF ACK</code>命令，可知发生了连接问题；如果Master发现Slave的偏移量少于自己的偏移量，会将复制积压缓冲区中对应的数据发送给Slave，使主从达到一致。</li>
+<li><code>min-slave</code>配置选项：举例，<code>min-slaves-to-write 3</code>、<code>min-slaves-max-lag 10</code>表示Slave少于3个、或者3个Slave的延迟大于等于10秒时，Master拒绝执行写命令。此选项用于减少异步复制的数据丢失。</li>
+</ul>
+<h2 id="哨兵模式"><a href="#哨兵模式" class="headerlink" title="哨兵模式"></a>哨兵模式</h2><ul>
+<li>主观下线：每个Sentinel以每秒一次的频率向所有与它创建了命令连接的实例发送<code>PING</code>命令，通过返回的命令回复判断实例是否在线。假如Master连续<code>down-after-milliseconds</code>毫秒都向Sentinel1发送无效回复，Sentinel1会把Master标记为主观下线，这称为主观下线。</li>
+<li>客观下线：当一个Sentinel把Master标记为主观下线后，会向同样监视这台Master的其他Sentinel询问，其他Sentinel检测到该Master不可用，并且数量达到<code>quorum</code>时，该Sentinel会认为Master进入客观下线状态。当Master被判断为客观下线状态，监视它的各个Sentinel会通过Raft算法选举出一个领头Sentinel对Master执行故障转移操作。</li>
+<li>故障转移：领头Sentinel从已下线的Master属下的所有Slave中，选举一个Slave升级为新的Master，然后通过发布订阅模式通知其他Slave，修改配置文件，切换主机；当所有Slave开始复制新的Master时，完成故障转移操作。Sentinel会继续监视已下线的旧Master，当它上线时，将它设置为新Master的Slave。</li>
+<li>Redis集群的脑裂问题：由于网络问题，Sentinel无法感知到Master的存在，把Slave提升为Master，此时存在两个不同的Master。客户端向原来的Master写入的数据无法同步到新的Master，当Sentinel与原来的Master的连接恢复，将它降级为Slave，会从新的Master同步数据，会造成数据丢失。解决方法：设置<code>min-slave</code>配置选项。</li>
+</ul>
+<h2 id="集群"><a href="#集群" class="headerlink" title="集群"></a>集群</h2><ul>
+<li>一个集群由若干个节点组成，每个节点之间通过<code>CLUSTER MEET</code>命令进行握手，加入集群。每个节点保存一个<code>clusterState</code>结构，记录当前集群中其它节点的状态。</li>
+<li>整个数据库被分为16384个槽，数据库中每一个键都属于这16384个槽中的一个，集群中的每个节点可以处理0到16384个槽。当数据库中的16384个槽都被指派给相应的节点，集群进入上线状态。</li>
+<li>每个节点通过<code>clusterNode</code>结构的<code>slots</code>属性得知该节点负责哪些槽，同时会把这些信息发送给集群中的其它节点，来告知其它节点自己负责哪些槽。</li>
+<li>当客服端发送与数据库键有关的命令，接收命令的节点先计算出该键属于哪个槽，并判断是否属于自己所负责的槽，如果键所在的槽刚好是当前节点所负责，那么该节点直接执行这个命令；否则会向客户端返回<code>MOVED</code>错误，并告知客户端正确的节点，让它再次发送命令至正确的节点。</li>
+<li>集群中的节点分为Master和Slave，其中Master负责处理槽，Slave用于复制某个Master，在Master下线时，代替下线的Master继续处理请求。集群中每个节点会定期向其它节点发送<code>PING</code>消息来检测是否在线，并将没有及时回复<code>PONG</code>消息的节点标记为疑似下线（<code>PFAIL</code>），如果集群中超过半数的节点把一个节点标记为<code>PFAIL</code>，那么这个节点会被标记为已下线（<code>FAIL</code>）。当某个Slave发现它的Master被标记为<code>FAIL</code>，会进行故障转移，从该Master的所有Slave中通过Raft算法选举出新的Master，将旧Master的槽全部指派给自己，向集群中其它节点发送广播，告知它成为了新的Master，完成故障转移。</li>
+</ul>
+<h3 id="一致性Hash算法"><a href="#一致性Hash算法" class="headerlink" title="一致性Hash算法"></a>一致性Hash算法</h3><ul>
+<li>Redis集群分片策略通常是根据key的CRC16校验值对16384取模，当集群中需要添加或删除节点时可能导致大规模的数据迁移，因此可以采用一致性Hash算法来分配key。</li>
+<li>一致性Hash算法将整个Hash空间（<code>[0, 2^32-1]</code>）视为一个圆环，将每个节点的IP地址通过Hash函数映射到圆环上，对于每个key，将其通过Hash函数映射到Hash圆环上，并沿着圆环顺时针行走，遇到的第一个节点就是它应该被分派的节点。</li>
+<li>当集群需要增加或删除节点时，只会影响到与它相邻的节点，对其它节点没有影响。</li>
+<li>当节点数较少时，容易产生数据分布不均匀的现象，可以通过增设虚拟节点的方式使得数据分布更加均衡。</li>
+</ul>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis%E5%A4%9A%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">1.</span> <span class="toc-text">Redis多机数据库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6"><span class="toc-number">2.</span> <span class="toc-text">主从复制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F"><span class="toc-number">3.</span> <span class="toc-text">哨兵模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9B%86%E7%BE%A4"><span class="toc-number">4.</span> <span class="toc-text">集群</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E8%87%B4%E6%80%A7Hash%E7%AE%97%E6%B3%95"><span class="toc-number">4.1.</span> <span class="toc-text">一致性Hash算法</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ster.im/redis_05/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ster.im/redis_05/&text=Redis学习笔记（5）——高可用"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ster.im/redis_05/&title=Redis学习笔记（5）——高可用"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ster.im/redis_05/&is_video=false&description=Redis学习笔记（5）——高可用"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Redis学习笔记（5）——高可用&body=Check out this article: https://ster.im/redis_05/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ster.im/redis_05/&title=Redis学习笔记（5）——高可用"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ster.im/redis_05/&title=Redis学习笔记（5）——高可用"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ster.im/redis_05/&title=Redis学习笔记（5）——高可用"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ster.im/redis_05/&title=Redis学习笔记（5）——高可用"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ster.im/redis_05/&name=Redis学习笔记（5）——高可用&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ster.im/redis_05/&t=Redis学习笔记（5）——高可用"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2012-2021
+    Rarit7
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.3/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdn.bootcdn.net/ajax/libs/clipboard.js/2.0.8/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>

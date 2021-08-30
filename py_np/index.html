@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Python numpy学习笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python机器学习库笔记（1）——numpy">
+<meta property="og:url" content="https://ster.im/py_np/index.html">
+<meta property="og:site_name" content="Rarit7&#39;s Blog">
+<meta property="og:description" content="Python numpy学习笔记">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-06-16T16:55:12.000Z">
+<meta property="article:modified_time" content="2018-12-03T09:52:34.571Z">
+<meta property="article:author" content="Rarit7">
+<meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Numpy">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Python机器学习库笔记（1）——numpy</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" "Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇 " href="/py_plt/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇 " href="/kaggle_04/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部 " href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章 " href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ster.im/py_np/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ster.im/py_np/&text=Python机器学习库笔记（1）——numpy"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ster.im/py_np/&title=Python机器学习库笔记（1）——numpy"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ster.im/py_np/&is_video=false&description=Python机器学习库笔记（1）——numpy"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Python机器学习库笔记（1）——numpy&body=Check out this article: https://ster.im/py_np/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ster.im/py_np/&title=Python机器学习库笔记（1）——numpy"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ster.im/py_np/&title=Python机器学习库笔记（1）——numpy"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ster.im/py_np/&title=Python机器学习库笔记（1）——numpy"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ster.im/py_np/&title=Python机器学习库笔记（1）——numpy"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ster.im/py_np/&name=Python机器学习库笔记（1）——numpy&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ster.im/py_np/&t=Python机器学习库笔记（1）——numpy"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E7%BB%84%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C"><span class="toc-number">1.</span> <span class="toc-text">数组的基本操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-number">2.</span> <span class="toc-text">数据类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%9F%E6%88%90%E6%95%B0%E7%BB%84"><span class="toc-number">3.</span> <span class="toc-text">生成数组</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9A%8F%E6%9C%BA%E6%95%B0"><span class="toc-number">4.</span> <span class="toc-text">随机数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E7%BB%84%E8%BF%90%E7%AE%97"><span class="toc-number">5.</span> <span class="toc-text">数组运算</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B9%BF%E6%92%AD"><span class="toc-number">6.</span> <span class="toc-text">广播</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Python机器学习库笔记（1）——numpy
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Rarit7</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2018-06-16T16:55:12.000Z" itemprop="datePublished">2018-06-17</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Numpy/" rel="tag">Numpy</a>, <a class="tag-link-link" href="/tags/Python/" rel="tag">Python</a>, <a class="tag-link-link" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag">机器学习</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>numpy是Python的一个线性代数库，其核心是提供了<code>ndarray</code>这一数据类型代替了原生的<code>list</code>，可以进行高效的并行计算，是几乎所有机器学习包的依赖库。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br></pre></td></tr></table></figure>
+
+<h2 id="数组的基本操作"><a href="#数组的基本操作" class="headerlink" title="数组的基本操作"></a>数组的基本操作</h2><p><code>ndarray</code>可以用于表示多维数组，与<code>list</code>不同的是，<code>ndarray</code>中的数据全是同一类型，这样大大提高了计算效率。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建数组对象并赋值</span></span><br><span class="line">a = np.array([[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>],[<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>]])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将list类型转换为np.ndarray类型</span></span><br><span class="line">a = [[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>],[<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>]]</span><br><span class="line">a = np.array(a)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取数组的维数</span></span><br><span class="line">a.ndim</span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取指定位置的值或数组</span></span><br><span class="line">a[<span class="number">0</span>]</span><br><span class="line">a[<span class="number">0</span>][<span class="number">1</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取数组各个维度的长度</span></span><br><span class="line">a.shape</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将数组变更为指定的维度</span></span><br><span class="line">a.reshape(<span class="number">1</span>, <span class="number">6</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取数组中元素的个数</span></span><br><span class="line">a.size</span><br><span class="line"></span><br><span class="line"><span class="comment"># 对所有元素求和</span></span><br><span class="line">a.<span class="built_in">sum</span>()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在指定的轴方向上求和</span></span><br><span class="line">a.<span class="built_in">sum</span>(axis=<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h2><p><code>ndarray</code>默认的数据类型是<code>np.float64</code>，即双精度。在大多数时候可以通过<code>dtype</code>参数来指定数组的数据类型。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看数组的数据类型</span></span><br><span class="line">a.dtype</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看数组中每个元素占用的字节，例如int32是4字节</span></span><br><span class="line">a.itemsize</span><br><span class="line"></span><br><span class="line"><span class="comment"># 更改数组的数据类型</span></span><br><span class="line">a.astype(np.float64)</span><br></pre></td></tr></table></figure>
+
+<h2 id="生成数组"><a href="#生成数组" class="headerlink" title="生成数组"></a>生成数组</h2><p>numpy提供多种方式快速构造数组。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 返回一个以0为起点，n为终点，步长为1的一维数组</span></span><br><span class="line">a = np.arange(n)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 返回一个以m为起点，n为终点，步长为1的一维数组</span></span><br><span class="line">a = np.arange(m, n)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 返回一个以m为起点，n为终点，步长为k的一维数组</span></span><br><span class="line">a = np.arange(m, n, k)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在[m, n]范围内等间隔取k个数字构造一维数组</span></span><br><span class="line">a = np.linspace(m, n, k, dtype=np.int32)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 返回一个指定维度的元素全为0的数组</span></span><br><span class="line">a = np.zeros((<span class="number">2</span>,<span class="number">4</span>), dtype=np.float64)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 返回一个指定维度的元素全为1的数组</span></span><br><span class="line">a = np.ones((<span class="number">3</span>,<span class="number">5</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 返回一个指定维度的单位矩阵</span></span><br><span class="line">a = np.eye(<span class="number">3</span>, dtype=np.int32)</span><br></pre></td></tr></table></figure>
+
+<h2 id="随机数"><a href="#随机数" class="headerlink" title="随机数"></a>随机数</h2><p>numpy.random提供多种方式生成随机数组。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 设置随机数种子，以便复现结果</span></span><br><span class="line">np.random.seed(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 从服从[0., 1.)均匀分布中随机生成指定维度的数组</span></span><br><span class="line">a = np.random.rand(<span class="number">3</span>,<span class="number">4</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 从标准正态分布中随机生成指定维度的数组</span></span><br><span class="line">a = np.random.randn(<span class="number">3</span>,<span class="number">4</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 从服从[n, m)均匀分布中随机生成指定维度的整数数组</span></span><br><span class="line">a = np.random.randint(<span class="number">1</span>,<span class="number">100</span>,(<span class="number">3</span>,<span class="number">4</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 从[0., 1.)之间随机抽取一个浮点数</span></span><br><span class="line">a = np.random.random()</span><br></pre></td></tr></table></figure>
+
+<h2 id="数组运算"><a href="#数组运算" class="headerlink" title="数组运算"></a>数组运算</h2><p>在实际应用中，二维数组（即矩阵）的运算最为多见，因此以二维数组运算举例。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">a = np.array([[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>],[<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>],[<span class="number">7</span>,<span class="number">8</span>,<span class="number">9</span>]])</span><br><span class="line">b = np.array([[<span class="number">9</span>,<span class="number">8</span>,<span class="number">7</span>],[<span class="number">6</span>,<span class="number">5</span>,<span class="number">4</span>],[<span class="number">3</span>,<span class="number">2</span>,<span class="number">1</span>]])</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 数组相加</span></span><br><span class="line">a+b</span><br><span class="line"></span><br><span class="line"><span class="comment"># 数组元素对位相乘（即点乘，要求两矩阵shape相等）</span></span><br><span class="line">a*b</span><br></pre></td></tr></table></figure>
+
+<p>$$\begin{bmatrix} 1&amp;2&amp;3\4&amp;5&amp;6\7&amp;8&amp;9 \end{bmatrix} \cdot \begin{bmatrix} 9&amp;8&amp;7\6&amp;5&amp;4\3&amp;2&amp;1 \end{bmatrix}=\begin{bmatrix} 9&amp;16&amp;21\24&amp;25&amp;24\21&amp;16&amp;9 \end{bmatrix}$$</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 矩阵乘法（即叉乘，要求左矩阵的列数等于右矩阵的行数）</span></span><br><span class="line">a.dot(b)</span><br><span class="line">np.dot(a,b)</span><br></pre></td></tr></table></figure>
+
+<p>$$\begin{bmatrix} 1&amp;2&amp;3\4&amp;5&amp;6\7&amp;8&amp;9 \end{bmatrix} \times \begin{bmatrix} 9&amp;8&amp;7\6&amp;5&amp;4\3&amp;2&amp;1 \end{bmatrix}=\begin{bmatrix} 30&amp;24&amp;18\84&amp;69&amp;54\138&amp;114&amp;90 \end{bmatrix}$$</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment"># 过滤数组，返回布尔型的数组</span></span><br><span class="line">a&gt;<span class="number">5</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 得到过滤后的数组</span></span><br><span class="line">a[a&gt;<span class="number">5</span>]</span><br></pre></td></tr></table></figure>
+
+<h2 id="广播"><a href="#广播" class="headerlink" title="广播"></a>广播</h2><p>numpy中的广播机制允许满足条件的两个shape不同的数组进行加、减、乘运算。</p>
+<ol>
+<li>若两个数组的维数不同，则在不足的数组的shape前补1。例如shape分别为(n,m)和(k,)的数组相加，则后者补为(1,k)。</li>
+<li>两个数组的各个维度的长度要么相等，要么其中一个为1，则可进行运算，否则报错。</li>
+<li>对长度为1的维度，复制这一行/列元素并使得shape与另一个数组相同，然后进行普通的运算。</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">np.array([[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>],[<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>]])+<span class="number">3</span></span><br></pre></td></tr></table></figure>
+
+<p>例如，([[1,2,3],[4,5,6]])与一个数3相加。3先被填充为shape(1,1)，再复制自身到所有行、列使自身shape等于(2,3)，即([[3,3,3],[3,3,3]])，那么就相当于([[1,2,3],[4,5,6]])与([[3,3,3],[3,3,3]])相加，结果为([[4,5,6],[7,8,9]])。</p>
+<p>$$\begin{bmatrix} 1&amp;2&amp;3\4&amp;5&amp;6 \end{bmatrix}+3=\begin{bmatrix} 1&amp;2&amp;3\4&amp;5&amp;6 \end{bmatrix}+\begin{bmatrix} 3&amp;3&amp;3\3&amp;3&amp;3 \end{bmatrix}=\begin{bmatrix} 4&amp;5&amp;6\7&amp;8&amp;9 \end{bmatrix}$$</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">np.array([[<span class="number">1</span>],[<span class="number">2</span>],[<span class="number">3</span>]])+np.array([<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>])</span><br></pre></td></tr></table></figure>
+
+<p>同理，([[1],[2],[3]])和([4,5,6])相加，相当于([[1,1,1],[2,2,2],[3,3,3]])和([[4,5,6],[4,5,6],[4,5,6]])相加。</p>
+<p>$$\begin{bmatrix} 1\2\3 \end{bmatrix}+\begin{bmatrix} 4&amp;5&amp;6 \end{bmatrix}=\begin{bmatrix} 1&amp;1&amp;1\2&amp;2&amp;2\3&amp;3&amp;3 \end{bmatrix}+\begin{bmatrix} 4&amp;5&amp;6\4&amp;5&amp;6\4&amp;5&amp;6 \end{bmatrix}=\begin{bmatrix} 5&amp;6&amp;7\6&amp;7&amp;8\7&amp;8&amp;9 \end{bmatrix}$$</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E7%BB%84%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C"><span class="toc-number">1.</span> <span class="toc-text">数组的基本操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-number">2.</span> <span class="toc-text">数据类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%9F%E6%88%90%E6%95%B0%E7%BB%84"><span class="toc-number">3.</span> <span class="toc-text">生成数组</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9A%8F%E6%9C%BA%E6%95%B0"><span class="toc-number">4.</span> <span class="toc-text">随机数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E7%BB%84%E8%BF%90%E7%AE%97"><span class="toc-number">5.</span> <span class="toc-text">数组运算</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B9%BF%E6%92%AD"><span class="toc-number">6.</span> <span class="toc-text">广播</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ster.im/py_np/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ster.im/py_np/&text=Python机器学习库笔记（1）——numpy"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ster.im/py_np/&title=Python机器学习库笔记（1）——numpy"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ster.im/py_np/&is_video=false&description=Python机器学习库笔记（1）——numpy"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Python机器学习库笔记（1）——numpy&body=Check out this article: https://ster.im/py_np/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ster.im/py_np/&title=Python机器学习库笔记（1）——numpy"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ster.im/py_np/&title=Python机器学习库笔记（1）——numpy"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ster.im/py_np/&title=Python机器学习库笔记（1）——numpy"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ster.im/py_np/&title=Python机器学习库笔记（1）——numpy"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ster.im/py_np/&name=Python机器学习库笔记（1）——numpy&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ster.im/py_np/&t=Python机器学习库笔记（1）——numpy"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2012-2021
+    Rarit7
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.3/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdn.bootcdn.net/ajax/libs/clipboard.js/2.0.8/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>

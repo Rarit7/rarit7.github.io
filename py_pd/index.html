@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Python pandas学习笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python机器学习库笔记（3）——pandas">
+<meta property="og:url" content="https://ster.im/py_pd/index.html">
+<meta property="og:site_name" content="Rarit7&#39;s Blog">
+<meta property="og:description" content="Python pandas学习笔记">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-07-17T15:02:39.000Z">
+<meta property="article:modified_time" content="2019-02-04T11:01:41.617Z">
+<meta property="article:author" content="Rarit7">
+<meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Pandas">
+<meta property="article:tag" content="数据清洗">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Python机器学习库笔记（3）——pandas</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" "Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇 " href="/py_sklearn_0/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇 " href="/py_plt/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部 " href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章 " href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ster.im/py_pd/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ster.im/py_pd/&text=Python机器学习库笔记（3）——pandas"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ster.im/py_pd/&title=Python机器学习库笔记（3）——pandas"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ster.im/py_pd/&is_video=false&description=Python机器学习库笔记（3）——pandas"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Python机器学习库笔记（3）——pandas&body=Check out this article: https://ster.im/py_pd/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ster.im/py_pd/&title=Python机器学习库笔记（3）——pandas"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ster.im/py_pd/&title=Python机器学习库笔记（3）——pandas"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ster.im/py_pd/&title=Python机器学习库笔记（3）——pandas"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ster.im/py_pd/&title=Python机器学习库笔记（3）——pandas"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ster.im/py_pd/&name=Python机器学习库笔记（3）——pandas&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ster.im/py_pd/&t=Python机器学习库笔记（3）——pandas"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-number">1.</span> <span class="toc-text">数据类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E6%95%B0%E6%8D%AE"><span class="toc-number">2.</span> <span class="toc-text">查看数据</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%8F%E8%BF%B0%E6%80%A7%E7%BB%9F%E8%AE%A1"><span class="toc-number">2.1.</span> <span class="toc-text">描述性统计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B4%A2%E5%BC%95"><span class="toc-number">2.2.</span> <span class="toc-text">索引</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%9F%E8%AE%A1%E9%87%8F"><span class="toc-number">2.3.</span> <span class="toc-text">统计量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%8F%E6%96%B9%E5%B7%AE%E3%80%81%E7%9B%B8%E5%85%B3%E7%B3%BB%E6%95%B0"><span class="toc-number">2.4.</span> <span class="toc-text">协方差、相关系数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%92%E5%BA%8F"><span class="toc-number">3.</span> <span class="toc-text">排序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%89%E6%8B%A9"><span class="toc-number">4.</span> <span class="toc-text">选择</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%89%E4%B8%AD"><span class="toc-number">4.1.</span> <span class="toc-text">选中</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9D%A1%E4%BB%B6%E7%AD%9B%E9%80%89"><span class="toc-number">4.2.</span> <span class="toc-text">条件筛选</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E7%BB%84"><span class="toc-number">4.3.</span> <span class="toc-text">分组</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A2%9E%E5%88%A0%E6%94%B9"><span class="toc-number">5.</span> <span class="toc-text">增删改</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%88%E5%B9%B6%E6%95%B0%E6%8D%AE%E8%A1%A8"><span class="toc-number">6.</span> <span class="toc-text">合并数据表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%BA%E5%A4%B1%E5%80%BC"><span class="toc-number">7.</span> <span class="toc-text">缺失值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%98%E5%9B%BE"><span class="toc-number">8.</span> <span class="toc-text">绘图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E8%AF%BB%E5%86%99"><span class="toc-number">9.</span> <span class="toc-text">文件读写</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Python机器学习库笔记（3）——pandas
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Rarit7</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2018-07-17T15:02:39.000Z" itemprop="datePublished">2018-07-17</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Pandas/" rel="tag">Pandas</a>, <a class="tag-link-link" href="/tags/Python/" rel="tag">Python</a>, <a class="tag-link-link" href="/tags/%E6%95%B0%E6%8D%AE%E6%B8%85%E6%B4%97/" rel="tag">数据清洗</a>, <a class="tag-link-link" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag">机器学习</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>Pandas全称”Python Data Analysis Library”，是python的数据分析库。</p>
+<p>本文仅列举在各类机器学习项目中常用的一些功能。更多功能详见<a target="_blank" rel="noopener" href="http://pandas.pydata.org/pandas-docs/stable/">官方文档</a>。</p>
+<p>本文参考了官方文档的<a target="_blank" rel="noopener" href="http://pandas.pydata.org/pandas-docs/stable/10min.html">《10分钟速成pandas》</a>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 调包</span></span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">%matplotlib inline</span><br></pre></td></tr></table></figure>
+
+<h2 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h2><p>Pandas提供两种数据类型：Series和DataFrame。</p>
+<p>Series是带索引的一维数据结构，如果未指定索引，则以数字自动生成。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建一个Series</span></span><br><span class="line">s = pd.Series([<span class="number">1</span>,<span class="number">3</span>,<span class="number">5</span>,np.nan,<span class="number">6</span>,<span class="number">8</span>])</span><br></pre></td></tr></table></figure>
+
+<p>DataFrame是二维数据结构，数据以行和列构成，每一行和每一列都是Series对象。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建一个DataFrame</span></span><br><span class="line">df = pd.DataFrame(np.random.randn(<span class="number">6</span>,<span class="number">4</span>), columns=[<span class="string">&#x27;A&#x27;</span>, <span class="string">&#x27;B&#x27;</span>, <span class="string">&#x27;C&#x27;</span>, <span class="string">&#x27;D&#x27;</span>])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 可从字典对象创建DataFrame</span></span><br><span class="line">dates = pd.date_range(<span class="string">&#x27;20180101&#x27;</span>, periods=<span class="number">6</span>)</span><br><span class="line">df = pd.DataFrame(&#123;</span><br><span class="line">    <span class="string">&#x27;A&#x27;</span> : pd.date_range(<span class="string">&#x27;20180101&#x27;</span>, periods=<span class="number">6</span>),</span><br><span class="line">    <span class="string">&#x27;B&#x27;</span> : np.random.randn(<span class="number">6</span>),</span><br><span class="line">    <span class="string">&#x27;C&#x27;</span> : s.values,</span><br><span class="line">    <span class="string">&#x27;D&#x27;</span> : np.array([<span class="number">3</span>] * <span class="number">6</span>, dtype=<span class="string">&#x27;int32&#x27;</span>),</span><br><span class="line">    <span class="string">&#x27;E&#x27;</span> : pd.Categorical([<span class="string">&quot;train&quot;</span>, <span class="string">&quot;train&quot;</span>, <span class="string">&quot;test&quot;</span>, <span class="string">&quot;train&quot;</span>, <span class="string">&quot;test&quot;</span>, <span class="string">&quot;train&quot;</span>]),</span><br><span class="line">    <span class="string">&#x27;F&#x27;</span> : <span class="string">&#x27;foo&#x27;</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="查看数据"><a href="#查看数据" class="headerlink" title="查看数据"></a>查看数据</h2><h3 id="描述性统计"><a href="#描述性统计" class="headerlink" title="描述性统计"></a>描述性统计</h3><p>Pandas的一大功能是对数据进行探索性数据分析（Exploratory Data Analysis）。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看数据表维度</span></span><br><span class="line">df.shape</span><br><span class="line"><span class="comment"># 查看前5行数据</span></span><br><span class="line">df.head(<span class="number">5</span>)</span><br><span class="line"><span class="comment"># 查看末尾5行数据</span></span><br><span class="line">df.tail(<span class="number">5</span>)</span><br><span class="line"><span class="comment"># 查看行标签</span></span><br><span class="line">df.index</span><br><span class="line"><span class="comment"># 查看列标签</span></span><br><span class="line">df.columns</span><br><span class="line"><span class="comment"># 查看数据表的值</span></span><br><span class="line">df.values</span><br><span class="line"><span class="comment"># 查看每列的数据类型</span></span><br><span class="line">df.dtypes</span><br></pre></td></tr></table></figure>
+
+<h3 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h3><p>索引是由行标签构成的列，一张表可以有不止一个索引列。未指定索引列时，默认使用从0开始的行号作为索引。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看索引列</span></span><br><span class="line">df.index</span><br><span class="line"><span class="comment"># 设置索引列</span></span><br><span class="line">df.set_index(<span class="string">&#x27;A&#x27;</span>)</span><br><span class="line"><span class="comment"># 重置索引列</span></span><br><span class="line">df.reset_index(drop=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="统计量"><a href="#统计量" class="headerlink" title="统计量"></a>统计量</h3><p>诸如求和（<code>sum</code>）等方法只对数值型的列有效，而求众数（<code>mode</code>）等方法对字符型的列也有效。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看主要统计信息</span></span><br><span class="line">df.describe()</span><br><span class="line"><span class="comment"># 求和，默认axis=0按列求和</span></span><br><span class="line">df.<span class="built_in">sum</span>()</span><br><span class="line"><span class="comment"># 非缺失值计数</span></span><br><span class="line">df.count()</span><br><span class="line"><span class="comment"># 均值</span></span><br><span class="line">df.mean()</span><br><span class="line"><span class="comment"># 标准差</span></span><br><span class="line">df.std()</span><br><span class="line"><span class="comment"># 中位数</span></span><br><span class="line">df.median()</span><br><span class="line"><span class="comment"># 众数</span></span><br><span class="line">df.mode()</span><br><span class="line"><span class="comment"># 偏度</span></span><br><span class="line">df.skew()</span><br><span class="line"><span class="comment"># 峰度</span></span><br><span class="line">df.kurt()</span><br></pre></td></tr></table></figure>
+
+<h3 id="协方差、相关系数"><a href="#协方差、相关系数" class="headerlink" title="协方差、相关系数"></a>协方差、相关系数</h3><p>DataFrame对象调用这两个方法会对全部数值型的列相互进行计算。Series对象调用这两个方法需要指定另一个Series对象。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># DataFrame协方差矩阵</span></span><br><span class="line">df.cov()</span><br><span class="line"><span class="comment"># DataFrame相关系数矩阵</span></span><br><span class="line">df.corr()</span><br><span class="line"></span><br><span class="line"><span class="comment"># Series协方差</span></span><br><span class="line">df[<span class="string">&#x27;B&#x27;</span>].cov(df[<span class="string">&#x27;C&#x27;</span>])</span><br><span class="line"><span class="comment"># Series相关系数</span></span><br><span class="line">df[<span class="string">&#x27;B&#x27;</span>].corr(df[<span class="string">&#x27;C&#x27;</span>])</span><br></pre></td></tr></table></figure>
+
+<h2 id="排序"><a href="#排序" class="headerlink" title="排序"></a>排序</h2><p>DataFrame有两种排序方法：<code>sort_values</code>按照值排序，<code>sort_index</code>按照索引号排序。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 按索引标签排序，默认axis=0为对行排序，ascending=True为升序</span></span><br><span class="line">df.sort_index(axis=<span class="number">1</span>, ascending=<span class="literal">False</span>)</span><br><span class="line"><span class="comment"># 按指定列的值排序</span></span><br><span class="line">df.sort_values(by=[<span class="string">&#x27;B&#x27;</span>])</span><br></pre></td></tr></table></figure>
+
+<h2 id="选择"><a href="#选择" class="headerlink" title="选择"></a>选择</h2><h3 id="选中"><a href="#选中" class="headerlink" title="选中"></a>选中</h3><p>直接索引：使用类似字典的索引方法得到的是列，使用切片得到的是行。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 选中一列（2种方法）</span></span><br><span class="line">df[<span class="string">&#x27;A&#x27;</span>]</span><br><span class="line">df.A <span class="comment">#不推荐</span></span><br><span class="line"><span class="comment"># 选中多列</span></span><br><span class="line">df[[<span class="string">&#x27;A&#x27;</span>, <span class="string">&#x27;B&#x27;</span>]]</span><br><span class="line"><span class="comment"># 切片选中多行</span></span><br><span class="line">df[<span class="number">1</span>:<span class="number">3</span>] <span class="comment">#不包括冒号后的那一行</span></span><br></pre></td></tr></table></figure>
+
+<p>此外还有<code>loc</code>和<code>iloc</code>两种方法用于选中操作，<code>loc</code>是基于索引标签的，而<code>iloc</code>基于位置（即行号）的。</p>
+<p><code>loc</code>：传入的第一个参数是索引列的标签。当索引是默认的行号时，要注意和<code>iloc</code>的区别。此方法切片时，注意冒号左右两边的行都会被选取到。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 选择一行</span></span><br><span class="line">df.loc[<span class="number">1</span>] <span class="comment">#注意：这里的整型数字并非行号，而是代表索引标签</span></span><br><span class="line"><span class="comment"># 切片选择指定的行和列</span></span><br><span class="line">df.loc[<span class="number">1</span>:<span class="number">3</span>, <span class="string">&#x27;B&#x27;</span>:<span class="string">&#x27;E&#x27;</span>] <span class="comment">#包括冒号后的那一行</span></span><br><span class="line"><span class="comment"># 选择不连续的多行和多列</span></span><br><span class="line">df.loc[[<span class="number">1</span>, <span class="number">3</span>], [<span class="string">&#x27;B&#x27;</span>,<span class="string">&#x27;D&#x27;</span>]] <span class="comment">#包括冒号后的那一行</span></span><br><span class="line"><span class="comment"># 获取特定位置的值（2种方法）</span></span><br><span class="line">df.loc[<span class="number">1</span>, <span class="string">&#x27;B&#x27;</span>]</span><br><span class="line">df.at[<span class="number">1</span>, <span class="string">&#x27;B&#x27;</span>]</span><br></pre></td></tr></table></figure>
+
+<p><code>iloc</code>：传入的第一个参数是索引所在的位置，即行号。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 选择第n行</span></span><br><span class="line">df.iloc[<span class="number">3</span>]</span><br><span class="line"><span class="comment"># 切片选择</span></span><br><span class="line">df.iloc[<span class="number">3</span>:<span class="number">5</span>, :<span class="number">2</span>]</span><br><span class="line"><span class="comment"># 选中指定位置</span></span><br><span class="line">df.iloc[[<span class="number">1</span>,<span class="number">2</span>,<span class="number">4</span>],[<span class="number">0</span>,<span class="number">2</span>]]</span><br><span class="line"><span class="comment"># 获取特定位置的值（2种方法）</span></span><br><span class="line">df.iloc[<span class="number">1</span>,<span class="number">1</span>]</span><br><span class="line">df.iat[<span class="number">1</span>,<span class="number">1</span>]</span><br></pre></td></tr></table></figure>
+
+<h3 id="条件筛选"><a href="#条件筛选" class="headerlink" title="条件筛选"></a>条件筛选</h3><p>可以用逻辑运算符连接多个条件表达式以进行复合筛选。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 筛选</span></span><br><span class="line">df[df.B &gt; <span class="number">0</span>]</span><br><span class="line"><span class="comment"># 复合筛选</span></span><br><span class="line">df[(df.B &gt; <span class="number">0</span>) &amp; (df.E==<span class="string">&#x27;test&#x27;</span>) ]</span><br><span class="line"><span class="comment"># 用isin筛选某列中包含指定元素的条目</span></span><br><span class="line">df[df[<span class="string">&#x27;E&#x27;</span>].isin([<span class="string">&#x27;train&#x27;</span>])]</span><br><span class="line"><span class="comment"># 筛选并选中指定的列</span></span><br><span class="line">df.loc[df.B &gt; <span class="number">0</span>, [<span class="string">&#x27;C&#x27;</span>]]</span><br></pre></td></tr></table></figure>
+
+<h3 id="分组"><a href="#分组" class="headerlink" title="分组"></a>分组</h3><p>对数据表进行分组，可以直观显示所需的部分数据、对部分数据运用函数或者利用所需数据构建新的数据表。可以利用<code>groupby</code>方法实现。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">df4 = pd.DataFrame(&#123;</span><br><span class="line">    <span class="string">&#x27;A&#x27;</span> : [<span class="string">&#x27;foo&#x27;</span>, <span class="string">&#x27;bar&#x27;</span>, <span class="string">&#x27;foo&#x27;</span>, <span class="string">&#x27;bar&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;foo&#x27;</span>, <span class="string">&#x27;bar&#x27;</span>, <span class="string">&#x27;foo&#x27;</span>, <span class="string">&#x27;foo&#x27;</span>],</span><br><span class="line">    <span class="string">&#x27;B&#x27;</span> : [<span class="string">&#x27;one&#x27;</span>, <span class="string">&#x27;one&#x27;</span>, <span class="string">&#x27;two&#x27;</span>, <span class="string">&#x27;three&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;two&#x27;</span>, <span class="string">&#x27;two&#x27;</span>, <span class="string">&#x27;one&#x27;</span>, <span class="string">&#x27;three&#x27;</span>],</span><br><span class="line">    <span class="string">&#x27;C&#x27;</span> : np.random.randn(<span class="number">8</span>),</span><br><span class="line">    <span class="string">&#x27;D&#x27;</span> : np.random.randn(<span class="number">8</span>)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 按一列分组并求和</span></span><br><span class="line">df4.groupby(<span class="string">&#x27;A&#x27;</span>).<span class="built_in">sum</span>()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 按多列分组并求和</span></span><br><span class="line">df4.groupby([<span class="string">&#x27;A&#x27;</span>, <span class="string">&#x27;B&#x27;</span>]).<span class="built_in">sum</span>()</span><br></pre></td></tr></table></figure>
+
+<h2 id="增删改"><a href="#增删改" class="headerlink" title="增删改"></a>增删改</h2><p>选中元素之后可以进行诸如赋值、改变数据类型等操作。</p>
+<p><strong>注意</strong>：涉及到对数据进行更改的方法，都会有<code>inplace</code>这个参数，默认值为<code>False</code>，不对原对象修改，创建副本并返回修改后的新值，设置为<code>True</code>时则不创建新的对象，直接对原始对象进行修改。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 数据表转置</span></span><br><span class="line">df.T</span><br><span class="line"><span class="comment"># 查看数据类型</span></span><br><span class="line">df[<span class="string">&#x27;C&#x27;</span>].dtype</span><br><span class="line"><span class="comment"># 更改数据类型</span></span><br><span class="line">df[<span class="string">&#x27;C&#x27;</span>].astype(<span class="string">&#x27;str&#x27;</span>)</span><br><span class="line"><span class="comment"># 查看唯一值</span></span><br><span class="line">df[<span class="string">&#x27;C&#x27;</span>].unique()</span><br><span class="line"><span class="comment"># 查看空值</span></span><br><span class="line">df[<span class="string">&#x27;C&#x27;</span>].isnull()</span><br><span class="line"><span class="comment"># 更改列名</span></span><br><span class="line">df[<span class="string">&#x27;C&#x27;</span>].rename(<span class="string">&#x27;newC&#x27;</span>)</span><br><span class="line"><span class="comment"># 对该列去重（保留第一次出现的值）</span></span><br><span class="line">df[<span class="string">&#x27;C&#x27;</span>].drop_duplicates()</span><br><span class="line"><span class="comment"># 全部替换</span></span><br><span class="line">df[<span class="string">&#x27;C&#x27;</span>].replace(<span class="number">8.</span>, <span class="number">9.</span>)</span><br><span class="line"><span class="comment"># 统计各唯一值出现的次数</span></span><br><span class="line">df[<span class="string">&#x27;E&#x27;</span>].value_counts()</span><br><span class="line"><span class="comment"># 字符串操作，以大小写为例</span></span><br><span class="line">df[<span class="string">&#x27;E&#x27;</span>].<span class="built_in">str</span>.upper()</span><br><span class="line"><span class="comment"># 将所有值应用同一个函数</span></span><br><span class="line">df[<span class="string">&#x27;B&#x27;</span>].apply(<span class="keyword">lambda</span> x:x**<span class="number">2</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="合并数据表"><a href="#合并数据表" class="headerlink" title="合并数据表"></a>合并数据表</h2><p>Pandas提供了<code>concat</code>、<code>append</code>、<code>merge</code>三种方法进行数据表合并。</p>
+<p><code>concat</code>：一种基本的数据表合并方式，支持横向和纵向合并。它主要接收以下参数：</p>
+<ul>
+<li><code>axis</code>：合并的方向，默认为0表示纵向合并。</li>
+<li><code>ignore_index</code>：是否重置索引，默认为<code>False</code>，这时保留原数据表的索引，设置为<code>True</code>则重置为新的索引。</li>
+<li><code>join</code>：默认为<code>outer</code>，表示取并集，若设置为<code>inner</code>则取交集。</li>
+<li><code>join_axes</code>：指定合并后采用的索引。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">df1 = df = pd.DataFrame(np.random.randn(<span class="number">2</span>, <span class="number">4</span>), columns=[<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;b&#x27;</span>,<span class="string">&#x27;c&#x27;</span>,<span class="string">&#x27;d&#x27;</span>])</span><br><span class="line">df2 = df = pd.DataFrame(np.random.randn(<span class="number">3</span>, <span class="number">4</span>), columns=[<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;b&#x27;</span>,<span class="string">&#x27;c&#x27;</span>,<span class="string">&#x27;d&#x27;</span>])</span><br><span class="line">df3 = df = pd.DataFrame(np.random.randn(<span class="number">2</span>, <span class="number">3</span>), columns=[<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;b&#x27;</span>,<span class="string">&#x27;c&#x27;</span>])</span><br><span class="line"></span><br><span class="line">pd.concat([df1, df2, df3], join=<span class="string">&#x27;inner&#x27;</span>, ignore_index=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<p><code>append</code>：用法类似于<code>concat</code>，但只能纵向合并。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">df1.append(df3, ignore_index=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<p><code>merge</code>：与<code>concat</code>的主要区别在于用<code>on</code>参数指定要连接的键。</p>
+<ul>
+<li><code>on</code>：指定要连接的一个或多个键，这个键在两张表中是一致的。</li>
+<li><code>how</code>：连接的方法，可选<code>inner</code>（取交集，默认）、<code>outer</code>（取并集）、<code>left</code>（以左表为主）、<code>right</code>（以右表为主）。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">left = pd.DataFrame(&#123;<span class="string">&#x27;key&#x27;</span>: [<span class="string">&#x27;foo&#x27;</span>, <span class="string">&#x27;bar&#x27;</span>], <span class="string">&#x27;lval&#x27;</span>: [<span class="number">1</span>, <span class="number">2</span>]&#125;)</span><br><span class="line">right = pd.DataFrame(&#123;<span class="string">&#x27;key&#x27;</span>: [<span class="string">&#x27;foo&#x27;</span>, <span class="string">&#x27;bar&#x27;</span>], <span class="string">&#x27;rval&#x27;</span>: [<span class="number">4</span>, <span class="number">5</span>]&#125;)</span><br><span class="line"></span><br><span class="line">pd.merge(left, right, on=<span class="string">&#x27;key&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="缺失值"><a href="#缺失值" class="headerlink" title="缺失值"></a>缺失值</h2><p>Pandas中，缺失值用<code>NaN</code>表示，当创建DataFrame对象时，使用<code>np.nan</code>代表缺失值。</p>
+<p>DataFrame对象使用<code>isnull</code>方法会返回一个布尔矩阵，显示每个位置是否是缺失值。可以灵活运用这一函数来定位缺失值。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">df4 = pd.DataFrame([[<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>],[<span class="number">3</span>,np.nan,np.nan],[<span class="number">4</span>,np.nan,np.nan],[<span class="number">5</span>,np.nan,<span class="number">6</span>],[<span class="number">7</span>,<span class="number">8</span>,<span class="number">9</span>]])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看是否是缺失值</span></span><br><span class="line">df4.isnull()</span><br><span class="line"><span class="comment"># 查看每列是否存在缺失值</span></span><br><span class="line">df4.isnull().<span class="built_in">any</span>()</span><br><span class="line"><span class="comment"># 只显示存在缺失值的行列，注意当一行存在n个缺失值时会重复输出该行n次</span></span><br><span class="line">df4[df4.isnull().values==<span class="literal">True</span>]</span><br><span class="line"><span class="comment"># 每列缺失值的总数</span></span><br><span class="line">df4.isnull().<span class="built_in">sum</span>()</span><br><span class="line"><span class="comment"># 计算每列缺失值的比例，并从高到低输出</span></span><br><span class="line">(df4.isnull().<span class="built_in">sum</span>()/df4.isnull().count()).sort_values(ascending=<span class="literal">False</span>)</span><br></pre></td></tr></table></figure>
+
+<p>Pandas提供了一些基础的处理缺失值的方法。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 直接舍去含有缺失值的行</span></span><br><span class="line">df4.dropna(how=<span class="string">&#x27;any&#x27;</span>)</span><br><span class="line"><span class="comment"># 用常数填充缺失值</span></span><br><span class="line">df4.fillna(value=<span class="number">10.</span>)</span><br><span class="line"><span class="comment"># 用前一个非缺失值填充缺失值，默认axis=0按列填充</span></span><br><span class="line">df4.fillna(method=<span class="string">&#x27;ffill&#x27;</span>, axis=<span class="number">1</span>)</span><br><span class="line"><span class="comment"># 用后一个非缺失值填充缺失值</span></span><br><span class="line">df4.fillna(method=<span class="string">&#x27;bfill&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="绘图"><a href="#绘图" class="headerlink" title="绘图"></a>绘图</h2><p>Series和DataFrame对象都具有快速绘图的功能。它们用法与matplotlib类似，可以参考我的另一篇文章：<a href="http://ster.im/py_plt/">《Python机器学习库笔记（2）——matplotlib.pyplot》</a>，本文不再赘述。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#Series</span></span><br><span class="line">ts = pd.Series(np.random.randn(<span class="number">1000</span>), index=pd.date_range(<span class="string">&#x27;1/1/2016&#x27;</span>, periods=<span class="number">1000</span>))</span><br><span class="line">ts = ts.cumsum()</span><br><span class="line">ts.plot()</span><br><span class="line"></span><br><span class="line"><span class="comment">#DataFrame</span></span><br><span class="line">df = pd.DataFrame(np.random.randn(<span class="number">1000</span>, <span class="number">4</span>), index=ts.index, columns=[<span class="string">&#x27;A&#x27;</span>, <span class="string">&#x27;B&#x27;</span>, <span class="string">&#x27;C&#x27;</span>, <span class="string">&#x27;D&#x27;</span>])</span><br><span class="line">df = df.cumsum()</span><br><span class="line">plt.figure()</span><br><span class="line">df.plot()</span><br><span class="line">plt.legend(loc=<span class="string">&#x27;best&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="文件读写"><a href="#文件读写" class="headerlink" title="文件读写"></a>文件读写</h2><p>Pandas支持读取csv、hdf5以及xlsx等类型的文件。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 读取csv格式的文件</span></span><br><span class="line">pd.read_csv(<span class="string">&#x27;input.csv&#x27;</span>)</span><br><span class="line"><span class="comment"># 将DataFrame写入到csv格式文件</span></span><br><span class="line">df.to_csv(<span class="string">&#x27;output.csv&#x27;</span>)</span><br><span class="line"><span class="comment"># 读取hdf5格式的文件</span></span><br><span class="line">pd.read_hdf(<span class="string">&#x27;input.h5&#x27;</span>, <span class="string">&#x27;df&#x27;</span>)</span><br><span class="line"><span class="comment"># 将DataFrame写入到hdf5格式文件</span></span><br><span class="line">df.to_hdf(<span class="string">&#x27;output.h5&#x27;</span>, <span class="string">&#x27;df&#x27;</span>)</span><br><span class="line"><span class="comment"># 读取excel文件</span></span><br><span class="line">pd.read_excel(<span class="string">&#x27;input.xlsx&#x27;</span>, <span class="string">&#x27;Sheet1&#x27;</span>, index_col=<span class="literal">None</span>, na_values=[<span class="string">&#x27;NA&#x27;</span>])</span><br><span class="line"><span class="comment"># 将DataFrame写入到xlsx格式文件</span></span><br><span class="line">df.to_excel(<span class="string">&#x27;output.xlsx&#x27;</span>, sheet_name=<span class="string">&#x27;Sheet1&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-number">1.</span> <span class="toc-text">数据类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E6%95%B0%E6%8D%AE"><span class="toc-number">2.</span> <span class="toc-text">查看数据</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%8F%E8%BF%B0%E6%80%A7%E7%BB%9F%E8%AE%A1"><span class="toc-number">2.1.</span> <span class="toc-text">描述性统计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B4%A2%E5%BC%95"><span class="toc-number">2.2.</span> <span class="toc-text">索引</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%9F%E8%AE%A1%E9%87%8F"><span class="toc-number">2.3.</span> <span class="toc-text">统计量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%8F%E6%96%B9%E5%B7%AE%E3%80%81%E7%9B%B8%E5%85%B3%E7%B3%BB%E6%95%B0"><span class="toc-number">2.4.</span> <span class="toc-text">协方差、相关系数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%92%E5%BA%8F"><span class="toc-number">3.</span> <span class="toc-text">排序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%89%E6%8B%A9"><span class="toc-number">4.</span> <span class="toc-text">选择</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%89%E4%B8%AD"><span class="toc-number">4.1.</span> <span class="toc-text">选中</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9D%A1%E4%BB%B6%E7%AD%9B%E9%80%89"><span class="toc-number">4.2.</span> <span class="toc-text">条件筛选</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E7%BB%84"><span class="toc-number">4.3.</span> <span class="toc-text">分组</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A2%9E%E5%88%A0%E6%94%B9"><span class="toc-number">5.</span> <span class="toc-text">增删改</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%88%E5%B9%B6%E6%95%B0%E6%8D%AE%E8%A1%A8"><span class="toc-number">6.</span> <span class="toc-text">合并数据表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%BA%E5%A4%B1%E5%80%BC"><span class="toc-number">7.</span> <span class="toc-text">缺失值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%98%E5%9B%BE"><span class="toc-number">8.</span> <span class="toc-text">绘图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E8%AF%BB%E5%86%99"><span class="toc-number">9.</span> <span class="toc-text">文件读写</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ster.im/py_pd/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ster.im/py_pd/&text=Python机器学习库笔记（3）——pandas"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ster.im/py_pd/&title=Python机器学习库笔记（3）——pandas"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ster.im/py_pd/&is_video=false&description=Python机器学习库笔记（3）——pandas"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Python机器学习库笔记（3）——pandas&body=Check out this article: https://ster.im/py_pd/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ster.im/py_pd/&title=Python机器学习库笔记（3）——pandas"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ster.im/py_pd/&title=Python机器学习库笔记（3）——pandas"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ster.im/py_pd/&title=Python机器学习库笔记（3）——pandas"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ster.im/py_pd/&title=Python机器学习库笔记（3）——pandas"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ster.im/py_pd/&name=Python机器学习库笔记（3）——pandas&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ster.im/py_pd/&t=Python机器学习库笔记（3）——pandas"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2012-2021
+    Rarit7
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.3/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdn.bootcdn.net/ajax/libs/clipboard.js/2.0.8/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>

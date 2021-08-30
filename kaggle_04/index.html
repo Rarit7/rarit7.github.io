@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Kaggle手写数字识别kernel（基于Keras）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kaggle机器学习实战（4）——MNIST（上）">
+<meta property="og:url" content="https://ster.im/kaggle_04/index.html">
+<meta property="og:site_name" content="Rarit7&#39;s Blog">
+<meta property="og:description" content="Kaggle手写数字识别kernel（基于Keras）">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-05-01T00:10:43.000Z">
+<meta property="article:modified_time" content="2019-04-04T09:47:10.382Z">
+<meta property="article:author" content="Rarit7">
+<meta property="article:tag" content="Kaggle">
+<meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="深度学习">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Keras">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Kaggle机器学习实战（4）——MNIST（上）</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" "Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇 " href="/py_np/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇 " href="/ng_04/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部 " href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章 " href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ster.im/kaggle_04/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ster.im/kaggle_04/&text=Kaggle机器学习实战（4）——MNIST（上）"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ster.im/kaggle_04/&title=Kaggle机器学习实战（4）——MNIST（上）"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ster.im/kaggle_04/&is_video=false&description=Kaggle机器学习实战（4）——MNIST（上）"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Kaggle机器学习实战（4）——MNIST（上）&body=Check out this article: https://ster.im/kaggle_04/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ster.im/kaggle_04/&title=Kaggle机器学习实战（4）——MNIST（上）"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ster.im/kaggle_04/&title=Kaggle机器学习实战（4）——MNIST（上）"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ster.im/kaggle_04/&title=Kaggle机器学习实战（4）——MNIST（上）"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ster.im/kaggle_04/&title=Kaggle机器学习实战（4）——MNIST（上）"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ster.im/kaggle_04/&name=Kaggle机器学习实战（4）——MNIST（上）&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ster.im/kaggle_04/&t=Kaggle机器学习实战（4）——MNIST（上）"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE"><span class="toc-number">1.</span> <span class="toc-text">读取数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86"><span class="toc-number">2.</span> <span class="toc-text">数据预处理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%BA%E5%A4%B1%E5%80%BC"><span class="toc-number">2.1.</span> <span class="toc-text">缺失值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%87%E5%87%86%E5%8C%96"><span class="toc-number">2.2.</span> <span class="toc-text">标准化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Reshape%E6%95%B0%E6%8D%AE"><span class="toc-number">2.3.</span> <span class="toc-text">Reshape数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%87%E7%AD%BE%E7%BC%96%E7%A0%81"><span class="toc-number">2.4.</span> <span class="toc-text">标签编码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E5%89%B2%E8%AE%AD%E7%BB%83%E9%9B%86%E4%B8%8E%E9%AA%8C%E8%AF%81%E9%9B%86"><span class="toc-number">2.5.</span> <span class="toc-text">分割训练集与验证集</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%EF%BC%9A%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="toc-number">3.</span> <span class="toc-text">模型：卷积神经网络</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89%E6%A8%A1%E5%9E%8B"><span class="toc-number">3.1.</span> <span class="toc-text">定义模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E5%99%A8"><span class="toc-number">3.2.</span> <span class="toc-text">优化器</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%A2%9E%E5%BC%BA"><span class="toc-number">4.</span> <span class="toc-text">数据增强</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E8%AF%84%E4%BC%B0"><span class="toc-number">5.</span> <span class="toc-text">模型评估</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E9%9B%86%E5%92%8C%E9%AA%8C%E8%AF%81%E9%9B%86%E6%9B%B2%E7%BA%BF"><span class="toc-number">5.1.</span> <span class="toc-text">训练集和验证集曲线</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%B7%E6%B7%86%E7%9F%A9%E9%98%B5"><span class="toc-number">5.2.</span> <span class="toc-text">混淆矩阵</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">6.</span> <span class="toc-text">总结</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Kaggle机器学习实战（4）——MNIST（上）
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Rarit7</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2018-05-01T00:10:43.000Z" itemprop="datePublished">2018-05-01</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Kaggle/" rel="tag">Kaggle</a>, <a class="tag-link-link" href="/tags/Keras/" rel="tag">Keras</a>, <a class="tag-link-link" href="/tags/Python/" rel="tag">Python</a>, <a class="tag-link-link" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag">机器学习</a>, <a class="tag-link-link" href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" rel="tag">深度学习</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>MNIST是非常经典的深度学习入门数据集。<a target="_blank" rel="noopener" href="https://www.kaggle.com/c/digit-recognizer">Kaggle</a>上也为新手安排了这样一个练习。它是一个10分类任务，图像每幅图像是一个手写数字（0<del>9），其尺寸为28×28，每个像素为一个灰度值通道（0</del>255），因此每个图片包含784个维度。我们要做的就是预测测试集中图像所示的数字，评价的标准是准确度。</p>
+<p>本文翻译自一篇<a target="_blank" rel="noopener" href="https://www.kaggle.com/yassineghouzam/introduction-to-cnn-keras-0-997-top-6">kernel</a>，原作者运用Keras这一简易的深度学习工具来入门卷积神经网络。</p>
+<h2 id="读取数据"><a href="#读取数据" class="headerlink" title="读取数据"></a>读取数据</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 调包</span></span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> matplotlib.image <span class="keyword">as</span> mpimg</span><br><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns</span><br><span class="line">%matplotlib inline</span><br><span class="line"></span><br><span class="line">np.random.seed(<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> confusion_matrix</span><br><span class="line"><span class="keyword">import</span> itertools</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> keras.utils.np_utils <span class="keyword">import</span> to_categorical</span><br><span class="line"><span class="keyword">from</span> keras.models <span class="keyword">import</span> Sequential</span><br><span class="line"><span class="keyword">from</span> keras.layers <span class="keyword">import</span> Dense, Dropout, Flatten, Conv2D, MaxPool2D</span><br><span class="line"><span class="keyword">from</span> keras.optimizers <span class="keyword">import</span> RMSprop</span><br><span class="line"><span class="keyword">from</span> keras.preprocessing.image <span class="keyword">import</span> ImageDataGenerator</span><br><span class="line"><span class="keyword">from</span> keras.callbacks <span class="keyword">import</span> ReduceLROnPlateau</span><br><span class="line"></span><br><span class="line">sns.<span class="built_in">set</span>(style=<span class="string">&#x27;white&#x27;</span>, context=<span class="string">&#x27;notebook&#x27;</span>, palette=<span class="string">&#x27;deep&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>整理数据：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">train = pd.read_csv(<span class="string">&quot;train.csv&quot;</span>)</span><br><span class="line">test = pd.read_csv(<span class="string">&quot;test.csv&quot;</span>)</span><br><span class="line"></span><br><span class="line">Y_train = train[<span class="string">&quot;label&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除“label”列</span></span><br><span class="line">X_train = train.drop(labels = [<span class="string">&quot;label&quot;</span>],axis = <span class="number">1</span>) </span><br><span class="line"></span><br><span class="line"><span class="comment"># 释放内存</span></span><br><span class="line"><span class="keyword">del</span> train </span><br><span class="line"></span><br><span class="line"><span class="comment"># 显示10个数字分布的柱状图</span></span><br><span class="line">g = sns.countplot(Y_train)</span><br><span class="line"></span><br><span class="line">Y_train.value_counts()</span><br></pre></td></tr></table></figure>
+
+<p>10个数字的分布比较均匀。</p>
+<h2 id="数据预处理"><a href="#数据预处理" class="headerlink" title="数据预处理"></a>数据预处理</h2><h3 id="缺失值"><a href="#缺失值" class="headerlink" title="缺失值"></a>缺失值</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 检查缺失值</span></span><br><span class="line">X_train.isnull().<span class="built_in">any</span>().describe()</span><br><span class="line"></span><br><span class="line">test.isnull().<span class="built_in">any</span>().describe()</span><br></pre></td></tr></table></figure>
+
+<p>没有缺失值。</p>
+<h3 id="标准化"><a href="#标准化" class="headerlink" title="标准化"></a>标准化</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 标准化</span></span><br><span class="line">X_train = X_train / <span class="number">255.0</span></span><br><span class="line">test = test / <span class="number">255.0</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Reshape数据"><a href="#Reshape数据" class="headerlink" title="Reshape数据"></a>Reshape数据</h3><p>在当前的数据集中，每一行784个特征代表一张图像，每个图宽28个像素、高28个像素，每个像素1个通道（如果图片是彩色的，则需要3个通道），将其转换为三维的张量以便于后续处理。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 把每一行数据转换为28*28*1</span></span><br><span class="line">X_train = X_train.values.reshape(-<span class="number">1</span>,<span class="number">28</span>,<span class="number">28</span>,<span class="number">1</span>)</span><br><span class="line">test = test.values.reshape(-<span class="number">1</span>,<span class="number">28</span>,<span class="number">28</span>,<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="标签编码"><a href="#标签编码" class="headerlink" title="标签编码"></a>标签编码</h3><p>原始数据集给出的标签是0~9十个数字，需要将其one-hot化。例如，”2”转化为[0,0,1,0,0,0,0,0,0,0]。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 把标签变为one-hot向量</span></span><br><span class="line">Y_train = to_categorical(Y_train, num_classes = <span class="number">10</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="分割训练集与验证集"><a href="#分割训练集与验证集" class="headerlink" title="分割训练集与验证集"></a>分割训练集与验证集</h3><p>将训练集分成两部分：一小部分（10%）作为评估模型的验证集，剩下的（90%）用于训练模型。从前面的探索性分析可以得知10个数字出现的频率较为均衡，随机分割训练集不会导致某些数字在验证集中过于频繁地出现。<strong>注意</strong>：在一些非平衡数据集中，简单的随机分割可能会导致不准确的评估。为了避免这种情况，可以在<code>train_test_split</code>中使用<code>stratify=True</code>选项。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 设置随机种子（非必要）</span></span><br><span class="line">random_seed = <span class="number">2</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 分割训练集和验证集</span></span><br><span class="line">X_train, X_val, Y_train, Y_val = train_test_split(X_train, Y_train, test_size = <span class="number">0.1</span>, random_state=random_seed)</span><br></pre></td></tr></table></figure>
+
+<p>这样就可以显示一张图片。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 例子</span></span><br><span class="line">g = plt.imshow(X_train[<span class="number">0</span>][:,:,<span class="number">0</span>])</span><br></pre></td></tr></table></figure>
+<h2 id="模型：卷积神经网络"><a href="#模型：卷积神经网络" class="headerlink" title="模型：卷积神经网络"></a>模型：卷积神经网络</h2><p>这次要利用Keras来从头到尾构建CNN。<br>Keras相对于Tensorflow、Theano等框架，最大的好处就是简单易懂，新手用几遍就很容易上手，而且有<a target="_blank" rel="noopener" href="https://keras.io/zh/">中文版的文档</a>。缺点是无法理解深度模型背后的原理，也就是不懂如何“造轮子”。因此之后我会写一篇如何使用Tensorflow来复现LeNet5的博客。</p>
+<h3 id="定义模型"><a href="#定义模型" class="headerlink" title="定义模型"></a>定义模型</h3><p>原作者利用的是Keras的序贯模型（<code>Sequential</code>），通过<code>.add()</code>方法一个个的将layer加入模型中。</p>
+<p>层的顺序是：[(CONV → Relu) × 2 → POOL → Dropout] × 2 → Flatten → Dense → Dropout → Softmax。</p>
+<ol>
+<li><code>Conv2D</code>（二维卷积层）：该层对二维输入进行滑动窗卷积。当使用该层作为第一层时，应提供<code>input_shape</code>参数，例如<code>input_shape = (28,28,1)</code>代表28×28的灰度图像。之后的层无需提供shape参数。<code>filters</code>输出空间的维度 （即卷积中滤波器的输出数量）。<code>kernel_size</code> 指明 2D 卷积窗口的宽度和高度。<code>strides</code>指明卷积沿宽度和高度方向的步长。<code>padding</code>指明是否填充输入数据以及填充的方法。</li>
+<li><code>MaxPool2D</code>（最大池化层）：主要是在保留主要特征的同时减少参数，防止过拟合。<code>pool_size</code>为缩小比例的因数，例如通常情况下会使用<code>pool_size=(2,2)</code>，把输入张量的两个维度都缩小一半。<code>strides</code>是步长值， 如果是 <code>None</code>，那么默认值是<code>pool_size</code>。</li>
+<li><code>Dropout</code>：是一种正则化方法，对于每个训练样本，随机抽取一定比例的节点将其值设为零。该方法可以提高模型泛化度，减少过拟合。主要参数为<code>rate</code>，取0~1，是需要drop掉的比例。</li>
+<li><code>relu</code>：是一种常用的激活函数，返回max(x,0)。</li>
+<li><code>Flatten</code>：用于将最终的feature map转换为一维向量，以传入全连接层。</li>
+<li><code>Dense</code>（全连接层）：所实现的运算是<code>output = activation(dot(input, kernel)+bias)</code>。第一个参数<code>units</code>指定输出维度。<code>activation</code>指定激活函数。</li>
+<li><code>Softmax</code>：作为输出层的激活函数，输出样本属于每个类的概率分布。</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># CNN序贯模型</span></span><br><span class="line">model = Sequential()</span><br><span class="line"></span><br><span class="line">model.add(Conv2D(filters = <span class="number">32</span>, kernel_size = (<span class="number">5</span>,<span class="number">5</span>),padding = <span class="string">&#x27;Same&#x27;</span>, </span><br><span class="line">                 activation =<span class="string">&#x27;relu&#x27;</span>, input_shape = (<span class="number">28</span>,<span class="number">28</span>,<span class="number">1</span>)))</span><br><span class="line">model.add(Conv2D(filters = <span class="number">32</span>, kernel_size = (<span class="number">5</span>,<span class="number">5</span>),padding = <span class="string">&#x27;Same&#x27;</span>, </span><br><span class="line">                 activation =<span class="string">&#x27;relu&#x27;</span>))</span><br><span class="line">model.add(MaxPool2D(pool_size=(<span class="number">2</span>,<span class="number">2</span>)))</span><br><span class="line">model.add(Dropout(<span class="number">0.25</span>))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">model.add(Conv2D(filters = <span class="number">64</span>, kernel_size = (<span class="number">3</span>,<span class="number">3</span>),padding = <span class="string">&#x27;Same&#x27;</span>, </span><br><span class="line">                 activation =<span class="string">&#x27;relu&#x27;</span>))</span><br><span class="line">model.add(Conv2D(filters = <span class="number">64</span>, kernel_size = (<span class="number">3</span>,<span class="number">3</span>),padding = <span class="string">&#x27;Same&#x27;</span>, </span><br><span class="line">                 activation =<span class="string">&#x27;relu&#x27;</span>))</span><br><span class="line">model.add(MaxPool2D(pool_size=(<span class="number">2</span>,<span class="number">2</span>), strides=(<span class="number">2</span>,<span class="number">2</span>)))</span><br><span class="line">model.add(Dropout(<span class="number">0.25</span>))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">model.add(Flatten())</span><br><span class="line">model.add(Dense(<span class="number">256</span>, activation = <span class="string">&quot;relu&quot;</span>))</span><br><span class="line">model.add(Dropout(<span class="number">0.5</span>))</span><br><span class="line">model.add(Dense(<span class="number">10</span>, activation = <span class="string">&quot;softmax&quot;</span>))</span><br></pre></td></tr></table></figure>
+
+<h3 id="优化器"><a href="#优化器" class="headerlink" title="优化器"></a>优化器</h3><p>定义完模型，还需要建立一个得分函数，一个损失函数和一个优化算法。</p>
+<p><strong>损失函数</strong>用于度量模型在已知标签的图像集合上的表现。对于多分类任务，通常采用<code>categorical_crossentropy</code>，即多分类的对数损失函数。</p>
+<p><strong>优化器（optimizer）</strong>的目的是最小化损失函数。大多数机器学习都是基于梯度的优化，选择优化器就是选择对于梯度下降算法的优化。常见的优化器包括SGD、Adam、Adagrad、RMSProp等几种，这里原作者选择了RMSprop（使用默认参数），它以一种非常简单的方式改进了Adagrad方法，可缓解Adagrad算法学习率下降较快的问题。</p>
+<p><strong>得分函数</strong>用精度（正确的样本数/总样本数）来评估模型的性能。</p>
+<p>用<code>compile</code>配置训练模型，前三个参数分别为<code>optimizer</code>（优化器），<code>loss</code>（损失函数）和<code>metrics</code>（得分函数）。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 优化方法</span></span><br><span class="line">optimizer = RMSprop(lr=<span class="number">0.001</span>, rho=<span class="number">0.9</span>, epsilon=<span class="number">1e-08</span>, decay=<span class="number">0.0</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 编译模型</span></span><br><span class="line">model.<span class="built_in">compile</span>(optimizer = optimizer , loss = <span class="string">&quot;categorical_crossentropy&quot;</span>, metrics=[<span class="string">&quot;accuracy&quot;</span>])</span><br></pre></td></tr></table></figure>
+
+<p>为了使优化器收敛得更快，更接近损失函数的全局最小值，原作者使用了学习率退火方法，也就是一种学习率自适应方法。这样就能在保证模型训练速度时防止收敛到局部最优点。本例使用了<code>Keras.callbacks</code>的<code>ReduceLROnPlateau</code>函数，这个回调函数被设置为如果3个epoch后精度没有提高，那么学习率就会变为原来的一半。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 学习率退火</span></span><br><span class="line">learning_rate_reduction = ReduceLROnPlateau(monitor=<span class="string">&#x27;val_acc&#x27;</span>, </span><br><span class="line">                                            patience=<span class="number">3</span>, </span><br><span class="line">                                            verbose=<span class="number">1</span>, </span><br><span class="line">                                            factor=<span class="number">0.5</span>, </span><br><span class="line">                                            min_lr=<span class="number">0.00001</span>)</span><br></pre></td></tr></table></figure>
+
+<p>依据机器的性能设置迭代次数。原作者的epoch设置为30，准确率可达0.9967。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 在完整训练集上的迭代次数</span></span><br><span class="line">epochs = <span class="number">1</span></span><br><span class="line">batch_size = <span class="number">86</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="数据增强"><a href="#数据增强" class="headerlink" title="数据增强"></a>数据增强</h2><p>为了避免过拟合，需要用一些技巧扩展数据集。</p>
+<p>以保持标签不变的方式改变训练数据的方法称为<strong>数据增强</strong>。常用的增强方法有裁剪、缩放、彩色变换、翻转等。在训练数据中应用数据增强方法可以轻松地将训练样本数量增加一倍或三倍，可以得到更加健壮的模型。例如本例，原作者在没有数据增强的情况下，准确率为98.114%；通过数据增强，准确率达到99.67%。</p>
+<p>这里使用的方法包括：</p>
+<ul>
+<li>随机旋转训练图像，10度以内；</li>
+<li>随机缩放训练图像，10%以内；</li>
+<li>随机水平平移图像，宽度的10%以内；</li>
+<li>随机垂直平移图像，高度的10%以内；</li>
+<li>没有翻转图像，避免“6”和“9”的冲突。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 数据增强</span></span><br><span class="line">datagen = ImageDataGenerator(</span><br><span class="line">        featurewise_center=<span class="literal">False</span>,  <span class="comment"># 将输入数据的均值设置为0，逐特征进行</span></span><br><span class="line">        samplewise_center=<span class="literal">False</span>,  <span class="comment"># 将每个样本的均值设置为0</span></span><br><span class="line">        featurewise_std_normalization=<span class="literal">False</span>,  <span class="comment"># 将输入除以数据标准差，逐特征进行</span></span><br><span class="line">        samplewise_std_normalization=<span class="literal">False</span>,  <span class="comment"># 将每个输入除以其标准差</span></span><br><span class="line">        zca_whitening=<span class="literal">False</span>,  <span class="comment"># 是否应用ZCA白化</span></span><br><span class="line">        rotation_range=<span class="number">10</span>,  <span class="comment"># 随机旋转的度数范围</span></span><br><span class="line">        zoom_range = <span class="number">0.1</span>, <span class="comment"># 随机缩放范围</span></span><br><span class="line">        width_shift_range=<span class="number">0.1</span>,  <span class="comment"># 随机水平平移</span></span><br><span class="line">        height_shift_range=<span class="number">0.1</span>,  <span class="comment"># 随机垂直平移</span></span><br><span class="line">        horizontal_flip=<span class="literal">False</span>,  <span class="comment"># 随机水平翻转</span></span><br><span class="line">        vertical_flip=<span class="literal">False</span>)  <span class="comment"># 随机垂直翻转</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">datagen.fit(X_train)</span><br></pre></td></tr></table></figure>
+
+<p>训练模型。默认情况下用<code>fit</code>方法载入数据是一次性全部载入。此处使用<code>fit_generator</code>方法，用<code>yield</code>分批将训练集送入内存/显存，避免内存/显存不足的情况。</p>
+<p><code>fit_generator</code>接收第一个参数<code>generator</code>为一个生成器，这里用了<code>ImageDataGenerator</code>类的<code>.flow()</code>方法，每次调用输出<code>batch_size</code>个样本及其对应的标签用于训练。<code>steps_per_epoch</code>为一个<code>epoch</code>分成多少个<code>batch_size</code>。<code>epochs</code>为数据的迭代总轮数。<code>verbose</code>为日志显示模式，可选0、1或2。<code>callbacks</code>为在训练时调用的一系列回调函数，例如学习率衰减方法。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 训练</span></span><br><span class="line">history = model.fit_generator(datagen.flow(X_train,Y_train, batch_size=batch_size),</span><br><span class="line">                              epochs = epochs, validation_data = (X_val,Y_val),</span><br><span class="line">                              verbose = <span class="number">2</span>, steps_per_epoch=X_train.shape[<span class="number">0</span>] // batch_size</span><br><span class="line">                              , callbacks=[learning_rate_reduction])</span><br></pre></td></tr></table></figure>
+
+<p><strong>输出</strong>：Epoch 1/1 …… loss: 0.4215 - acc: 0.8656 - val_loss: 0.0649 - val_acc: 0.9781（epochs设置为1）</p>
+<h2 id="模型评估"><a href="#模型评估" class="headerlink" title="模型评估"></a>模型评估</h2><h3 id="训练集和验证集曲线"><a href="#训练集和验证集曲线" class="headerlink" title="训练集和验证集曲线"></a>训练集和验证集曲线</h3><p>绘制训练集和验证集上的loss函数以及精度曲线。设置<code>epochs=30</code>，模型在验证集上的精度接近99%，并且高于训练集上的精度，说明这个模型没有过拟合。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制训练集和验证集上的loss函数和精度曲线</span></span><br><span class="line">fig, ax = plt.subplots(<span class="number">2</span>,<span class="number">1</span>)</span><br><span class="line">ax[<span class="number">0</span>].plot(history.history[<span class="string">&#x27;loss&#x27;</span>], color=<span class="string">&#x27;b&#x27;</span>, label=<span class="string">&quot;Training loss&quot;</span>)</span><br><span class="line">ax[<span class="number">0</span>].plot(history.history[<span class="string">&#x27;val_loss&#x27;</span>], color=<span class="string">&#x27;r&#x27;</span>, label=<span class="string">&quot;validation loss&quot;</span>,axes =ax[<span class="number">0</span>])</span><br><span class="line">legend = ax[<span class="number">0</span>].legend(loc=<span class="string">&#x27;best&#x27;</span>, shadow=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">ax[<span class="number">1</span>].plot(history.history[<span class="string">&#x27;acc&#x27;</span>], color=<span class="string">&#x27;b&#x27;</span>, label=<span class="string">&quot;Training accuracy&quot;</span>)</span><br><span class="line">ax[<span class="number">1</span>].plot(history.history[<span class="string">&#x27;val_acc&#x27;</span>], color=<span class="string">&#x27;r&#x27;</span>,label=<span class="string">&quot;Validation accuracy&quot;</span>)</span><br><span class="line">legend = ax[<span class="number">1</span>].legend(loc=<span class="string">&#x27;best&#x27;</span>, shadow=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="混淆矩阵"><a href="#混淆矩阵" class="headerlink" title="混淆矩阵"></a>混淆矩阵</h3><p>混淆矩阵每一列代表预测的标签，每一行代表真正的标签。通过混淆矩阵可以直观看出哪些容易被错误分类。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制混淆矩阵</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">plot_confusion_matrix</span>(<span class="params">cm, classes,</span></span></span><br><span class="line"><span class="params"><span class="function">                          normalize=<span class="literal">False</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                          title=<span class="string">&#x27;Confusion matrix&#x27;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                          cmap=plt.cm.Blues</span>):</span></span><br><span class="line">    plt.imshow(cm, interpolation=<span class="string">&#x27;nearest&#x27;</span>, cmap=cmap)</span><br><span class="line">    plt.title(title)</span><br><span class="line">    plt.colorbar()</span><br><span class="line">    tick_marks = np.arange(<span class="built_in">len</span>(classes))</span><br><span class="line">    plt.xticks(tick_marks, classes, rotation=<span class="number">45</span>)</span><br><span class="line">    plt.yticks(tick_marks, classes)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># normalize参数决定是否归一化，默认为否</span></span><br><span class="line">    <span class="keyword">if</span> normalize:</span><br><span class="line">        cm = cm.astype(<span class="string">&#x27;float&#x27;</span>) / cm.<span class="built_in">sum</span>(axis=<span class="number">1</span>)[:, np.newaxis]</span><br><span class="line"></span><br><span class="line">    thresh = cm.<span class="built_in">max</span>() / <span class="number">2.</span></span><br><span class="line">    <span class="keyword">for</span> i, j <span class="keyword">in</span> itertools.product(<span class="built_in">range</span>(cm.shape[<span class="number">0</span>]), <span class="built_in">range</span>(cm.shape[<span class="number">1</span>])):</span><br><span class="line">        plt.text(j, i, cm[i, j],</span><br><span class="line">                 horizontalalignment=<span class="string">&quot;center&quot;</span>,</span><br><span class="line">                 color=<span class="string">&quot;white&quot;</span> <span class="keyword">if</span> cm[i, j] &gt; thresh <span class="keyword">else</span> <span class="string">&quot;black&quot;</span>)</span><br><span class="line"></span><br><span class="line">    plt.tight_layout()</span><br><span class="line">    plt.ylabel(<span class="string">&#x27;True label&#x27;</span>)</span><br><span class="line">    plt.xlabel(<span class="string">&#x27;Predicted label&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 验证集上的预测</span></span><br><span class="line">Y_pred = model.predict(X_val)</span><br><span class="line"><span class="comment"># 将其转化为one-hot向量</span></span><br><span class="line">Y_pred_classes = np.argmax(Y_pred,axis = <span class="number">1</span>) </span><br><span class="line"><span class="comment"># 转化验证集的真实标签为one-hot向量</span></span><br><span class="line">Y_true = np.argmax(Y_val,axis = <span class="number">1</span>) </span><br><span class="line"><span class="comment"># 计算混淆矩阵</span></span><br><span class="line">confusion_mtx = confusion_matrix(Y_true, Y_pred_classes) </span><br><span class="line"><span class="comment"># 绘图</span></span><br><span class="line">plot_confusion_matrix(confusion_mtx, classes = <span class="built_in">range</span>(<span class="number">10</span>)) </span><br></pre></td></tr></table></figure>
+
+<p>如果按照原作者的参数设置（迭代30个epoch），误分类的情况已经相当少了。较为多见的误分类是把“4”识别为“9”。</p>
+<p>进一步探索误分类样本种预测标签的概率与实际标签的概率分布的差值。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 预测标签与实际标签的概率差值</span></span><br><span class="line">errors = (Y_pred_classes - Y_true != <span class="number">0</span>)</span><br><span class="line">Y_pred_classes_errors = Y_pred_classes[errors]</span><br><span class="line">Y_pred_errors = Y_pred[errors]</span><br><span class="line">Y_true_errors = Y_true[errors]</span><br><span class="line">X_val_errors = X_val[errors]</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">display_errors</span>(<span class="params">errors_index,img_errors,pred_errors, obs_errors</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot; 这个函数展示6幅图像及其预测标签和真实标签&quot;&quot;&quot;</span></span><br><span class="line">    n = <span class="number">0</span></span><br><span class="line">    nrows = <span class="number">2</span></span><br><span class="line">    ncols = <span class="number">3</span></span><br><span class="line">    fig, ax = plt.subplots(nrows,ncols,sharex=<span class="literal">True</span>,sharey=<span class="literal">True</span>)</span><br><span class="line">    <span class="keyword">for</span> row <span class="keyword">in</span> <span class="built_in">range</span>(nrows):</span><br><span class="line">        <span class="keyword">for</span> col <span class="keyword">in</span> <span class="built_in">range</span>(ncols):</span><br><span class="line">            error = errors_index[n]</span><br><span class="line">            ax[row,col].imshow((img_errors[error]).reshape((<span class="number">28</span>,<span class="number">28</span>)))</span><br><span class="line">            ax[row,col].set_title(<span class="string">&quot;Predicted label :&#123;&#125;\nTrue label :&#123;&#125;&quot;</span>.<span class="built_in">format</span>(pred_errors[error],obs_errors[error]))</span><br><span class="line">            n += <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 误分类项的预测标签的预测概率</span></span><br><span class="line">Y_pred_errors_prob = np.<span class="built_in">max</span>(Y_pred_errors,axis = <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 误分类项的真实标签的预测概率</span></span><br><span class="line">true_prob_errors = np.diagonal(np.take(Y_pred_errors, Y_true_errors, axis=<span class="number">1</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 两者的差值</span></span><br><span class="line">delta_pred_true_errors = Y_pred_errors_prob - true_prob_errors</span><br><span class="line"></span><br><span class="line"><span class="comment"># 排序</span></span><br><span class="line">sorted_dela_errors = np.argsort(delta_pred_true_errors)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Top6误差</span></span><br><span class="line">most_important_errors = sorted_dela_errors[-<span class="number">6</span>:]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 展示Top6误差</span></span><br><span class="line">display_errors(most_important_errors, X_val_errors, Y_pred_classes_errors, Y_true_errors)</span><br></pre></td></tr></table></figure>
+<p>通过展示一些误分类的图像，可以发现一些误分类可能并非模型的问题，例如非常像“4”的“9”可能属于人为标记时的错误。</p>
+<p>到此，这个模型已经基本构建完成。接下来在测试集上运用模型。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 在测试集上预测</span></span><br><span class="line">results = model.predict(test)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 选取预测结果</span></span><br><span class="line">results = np.argmax(results,axis = <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">results = pd.Series(results,name=<span class="string">&quot;Label&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>MNIST是一个被“用烂了”的数据集，在深度学习领域相当于“Hello World”。但动手实现一遍还是会有不小的成就感。</li>
+<li>Keras的序贯模型层次清晰，有助于新手理解卷积网络。如果能用它从头到尾实现一遍CNN，就恭喜你成为了“调参侠”。</li>
+<li>本例用了一些CNN中常见（甚至说必见）的小Trick，比如数据增强、学习率衰减等，没有用到什么奇技淫巧，回归数据竞赛的本真。</li>
+<li>对于新手而言，不必过于纠结网络结构。不如尝试复现一些经典网络，例如LeNet、AlexNet等，加深对深度网络的理解。之后可以尝试Inception，ResNet等当下热门的网络，处理真正的图片。当然，首先需要一台配备高档显卡的电脑。</li>
+</ul>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE"><span class="toc-number">1.</span> <span class="toc-text">读取数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86"><span class="toc-number">2.</span> <span class="toc-text">数据预处理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%BA%E5%A4%B1%E5%80%BC"><span class="toc-number">2.1.</span> <span class="toc-text">缺失值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%87%E5%87%86%E5%8C%96"><span class="toc-number">2.2.</span> <span class="toc-text">标准化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Reshape%E6%95%B0%E6%8D%AE"><span class="toc-number">2.3.</span> <span class="toc-text">Reshape数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%87%E7%AD%BE%E7%BC%96%E7%A0%81"><span class="toc-number">2.4.</span> <span class="toc-text">标签编码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E5%89%B2%E8%AE%AD%E7%BB%83%E9%9B%86%E4%B8%8E%E9%AA%8C%E8%AF%81%E9%9B%86"><span class="toc-number">2.5.</span> <span class="toc-text">分割训练集与验证集</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%EF%BC%9A%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="toc-number">3.</span> <span class="toc-text">模型：卷积神经网络</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89%E6%A8%A1%E5%9E%8B"><span class="toc-number">3.1.</span> <span class="toc-text">定义模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E5%99%A8"><span class="toc-number">3.2.</span> <span class="toc-text">优化器</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%A2%9E%E5%BC%BA"><span class="toc-number">4.</span> <span class="toc-text">数据增强</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E8%AF%84%E4%BC%B0"><span class="toc-number">5.</span> <span class="toc-text">模型评估</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E9%9B%86%E5%92%8C%E9%AA%8C%E8%AF%81%E9%9B%86%E6%9B%B2%E7%BA%BF"><span class="toc-number">5.1.</span> <span class="toc-text">训练集和验证集曲线</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%B7%E6%B7%86%E7%9F%A9%E9%98%B5"><span class="toc-number">5.2.</span> <span class="toc-text">混淆矩阵</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">6.</span> <span class="toc-text">总结</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ster.im/kaggle_04/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ster.im/kaggle_04/&text=Kaggle机器学习实战（4）——MNIST（上）"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ster.im/kaggle_04/&title=Kaggle机器学习实战（4）——MNIST（上）"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ster.im/kaggle_04/&is_video=false&description=Kaggle机器学习实战（4）——MNIST（上）"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Kaggle机器学习实战（4）——MNIST（上）&body=Check out this article: https://ster.im/kaggle_04/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ster.im/kaggle_04/&title=Kaggle机器学习实战（4）——MNIST（上）"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ster.im/kaggle_04/&title=Kaggle机器学习实战（4）——MNIST（上）"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ster.im/kaggle_04/&title=Kaggle机器学习实战（4）——MNIST（上）"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ster.im/kaggle_04/&title=Kaggle机器学习实战（4）——MNIST（上）"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ster.im/kaggle_04/&name=Kaggle机器学习实战（4）——MNIST（上）&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ster.im/kaggle_04/&t=Kaggle机器学习实战（4）——MNIST（上）"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2012-2021
+    Rarit7
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.3/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdn.bootcdn.net/ajax/libs/clipboard.js/2.0.8/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>

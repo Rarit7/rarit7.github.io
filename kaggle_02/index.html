@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Kaggle《房价预测》kernel">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kaggle机器学习实战（2）——房价预测（上）">
+<meta property="og:url" content="https://ster.im/kaggle_02/index.html">
+<meta property="og:site_name" content="Rarit7&#39;s Blog">
+<meta property="og:description" content="Kaggle《房价预测》kernel">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-03-30T10:00:00.000Z">
+<meta property="article:modified_time" content="2018-12-02T16:20:00.052Z">
+<meta property="article:author" content="Rarit7">
+<meta property="article:tag" content="Kaggle">
+<meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="数据清洗">
+<meta property="article:tag" content="数据可视化">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Kaggle机器学习实战（2）——房价预测（上）</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" "Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇 " href="/kaggle_03/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇 " href="/kaggle_01/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部 " href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章 " href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ster.im/kaggle_02/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ster.im/kaggle_02/&text=Kaggle机器学习实战（2）——房价预测（上）"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ster.im/kaggle_02/&title=Kaggle机器学习实战（2）——房价预测（上）"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ster.im/kaggle_02/&is_video=false&description=Kaggle机器学习实战（2）——房价预测（上）"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Kaggle机器学习实战（2）——房价预测（上）&body=Check out this article: https://ster.im/kaggle_02/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ster.im/kaggle_02/&title=Kaggle机器学习实战（2）——房价预测（上）"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ster.im/kaggle_02/&title=Kaggle机器学习实战（2）——房价预测（上）"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ster.im/kaggle_02/&title=Kaggle机器学习实战（2）——房价预测（上）"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ster.im/kaggle_02/&title=Kaggle机器学习实战（2）——房价预测（上）"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ster.im/kaggle_02/&name=Kaggle机器学习实战（2）——房价预测（上）&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ster.im/kaggle_02/&t=Kaggle机器学习实战（2）——房价预测（上）"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%BC%E5%85%A5%E6%95%B0%E6%8D%AE"><span class="toc-number">1.</span> <span class="toc-text">导入数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%82%E5%AF%9F%E5%8F%98%E9%87%8F"><span class="toc-number">2.</span> <span class="toc-text">观察变量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="toc-number">3.</span> <span class="toc-text">数据可视化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8E%E6%95%B0%E5%80%BC%E5%9E%8B%E5%8F%98%E9%87%8F%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">3.1.</span> <span class="toc-text">与数值型变量的关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8E%E6%A0%87%E7%A7%B0%E5%9E%8B%E5%8F%98%E9%87%8F%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">3.2.</span> <span class="toc-text">与标称型变量的关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8E%E5%85%B6%E4%BB%96%E5%8F%98%E9%87%8F%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">3.3.</span> <span class="toc-text">与其他变量的关系</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%84%E7%90%86%E7%BC%BA%E5%A4%B1%E5%80%BC"><span class="toc-number">4.</span> <span class="toc-text">处理缺失值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%84%E7%90%86%E7%A6%BB%E7%BE%A4%E5%80%BC"><span class="toc-number">5.</span> <span class="toc-text">处理离群值</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%95%E5%8F%98%E9%87%8F%E5%88%86%E6%9E%90"><span class="toc-number">5.1.</span> <span class="toc-text">单变量分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8C%E5%8F%98%E9%87%8F%E5%88%86%E6%9E%90"><span class="toc-number">5.2.</span> <span class="toc-text">双变量分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AD%A3%E6%80%81%E5%8C%96%E6%95%B0%E6%8D%AE"><span class="toc-number">6.</span> <span class="toc-text">正态化数据</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%8C%E6%96%B9%E5%B7%AE%E6%80%A7"><span class="toc-number">6.1.</span> <span class="toc-text">同方差性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%99%9A%E6%8B%9F%E5%8F%98%E9%87%8F"><span class="toc-number">7.</span> <span class="toc-text">虚拟变量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">8.</span> <span class="toc-text">总结</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Kaggle机器学习实战（2）——房价预测（上）
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Rarit7</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2018-03-30T10:00:00.000Z" itemprop="datePublished">2018-03-30</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Kaggle/" rel="tag">Kaggle</a>, <a class="tag-link-link" href="/tags/Python/" rel="tag">Python</a>, <a class="tag-link-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96/" rel="tag">数据可视化</a>, <a class="tag-link-link" href="/tags/%E6%95%B0%E6%8D%AE%E6%B8%85%E6%B4%97/" rel="tag">数据清洗</a>, <a class="tag-link-link" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag">机器学习</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p><a target="_blank" rel="noopener" href="https://www.kaggle.com/c/house-prices-advanced-regression-techniques">kaggle房价预测</a>是一个典型的回归问题。该问题提供了数千条房屋的房价和大量的特征变量，需要挑战者训练回归模型并预测测试集上房屋的房价，追求最小的均方误差。</p>
+<p>这篇文章翻译自其中点赞数量最多的一篇<a target="_blank" rel="noopener" href="https://www.kaggle.com/pmarcelino/comprehensive-data-exploration-with-python">kernel</a>，它主要讲的是探索性数据分析这一方面。</p>
+<h2 id="导入数据"><a href="#导入数据" class="headerlink" title="导入数据"></a>导入数据</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 调包</span></span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> scipy.stats <span class="keyword">import</span> norm</span><br><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> StandardScaler</span><br><span class="line"><span class="keyword">from</span> scipy <span class="keyword">import</span> stats</span><br><span class="line"><span class="keyword">import</span> warnings</span><br><span class="line">warnings.filterwarnings(<span class="string">&#x27;ignore&#x27;</span>)</span><br><span class="line">%matplotlib inline</span><br></pre></td></tr></table></figure>
+<p>注意：<code>%matplotlib inline</code>是一个魔法函数，可以让matplotlib在Jupter Notebook中直接绘图，否则要使用<code>plt.show()</code>才能显示图片。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 读取csv格式的训练集</span></span><br><span class="line">df_train = pd.read_csv(<span class="string">&#x27;path/train.csv&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="观察变量"><a href="#观察变量" class="headerlink" title="观察变量"></a>观察变量</h2><p>训练集包含1460个样本，每个样本包含详细概括房子的各个信息的变量共计79个，以及它们的房价。</p>
+<p>首先，搞清这79个变量是<strong>数值型</strong>（<strong>numerical</strong>）还是<strong>标称型</strong>（<strong>categorical</strong>）变量。然后我们根据生活中的实际经验，对可能影响房价的因素分成三大类：建筑本身，空间大小和区位。接着，对每个因子的重要性进行预估。</p>
+<p>在依靠直觉对每个变量的重要性进行评估时，可以用三个问题作为标准：</p>
+<ul>
+<li>假如你在买房，你会考虑这个因素吗？</li>
+<li>如果你要考虑这个因素，你会把它摆在第几位？</li>
+<li>这个因素是否和其他因素有些重合？  </li>
+</ul>
+<p>据此就可以筛选出主观上较重要的因子。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 显示变量名 </span></span><br><span class="line"><span class="built_in">print</span>(df_train.columns)</span><br></pre></td></tr></table></figure>
+<p>参考<a target="_blank" rel="noopener" href="https://www.kaggle.com/c/house-prices-advanced-regression-techniques/data">data_description.txt</a>。  </p>
+<p>主观上认定以下变量与房价存在显著的相关性：</p>
+<ul>
+<li><code>OverallQual</code>（房屋的总体质量）：代表房屋质量的一个重要变量。</li>
+<li><code>YearBuilt</code>（房龄）：代表房屋质量的另一个重要变量。</li>
+<li><code>TotalBsmtSF</code>（地下室总面积）、<code>GrLivArea</code>（地上居住面积）：这个很容易理解。</li>
+</ul>
+<p>除了“房屋本身的质量”和“面积”这两大因素之外，很显然“区位”也是影响房价必须考虑的一项，但原数据给出的区位相关变量都是诸如周围有哪些地标建筑、靠近哪些交通枢纽这些无法直接体现区位优劣的变量，并且它们难以可视化。我们暂时不考虑它们。</p>
+<h2 id="数据可视化"><a href="#数据可视化" class="headerlink" title="数据可视化"></a>数据可视化</h2><p>先观察预测变量Y：房价。它是一个连续型的变量。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 描述性统计</span></span><br><span class="line"><span class="built_in">print</span>(df_train[<span class="string">&#x27;SalePrice&#x27;</span>].describe())</span><br><span class="line"><span class="comment"># 可视化Y</span></span><br><span class="line">sns.distplot(df_train[<span class="string">&#x27;SalePrice&#x27;</span>])</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p>从图可知，训练集的房价呈现偏态分布。分析偏度和峰度：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 偏度和峰度</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Skewness: %f&quot;</span> % df_train[<span class="string">&#x27;SalePrice&#x27;</span>].skew())</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Kurtosis: %f&quot;</span> % df_train[<span class="string">&#x27;SalePrice&#x27;</span>].kurt())</span><br></pre></td></tr></table></figure>
+<p>我们希望因变量能服从正态分布，因为这将大大提升线性模型的性能。之后会使之变换为正态分布。</p>
+<p>接下来可视化“主观上认为比较重要的变量”。</p>
+<h3 id="与数值型变量的关系"><a href="#与数值型变量的关系" class="headerlink" title="与数值型变量的关系"></a>与数值型变量的关系</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 地上居住面积/房价散点图</span></span><br><span class="line">var = <span class="string">&#x27;GrLivArea&#x27;</span></span><br><span class="line">data = pd.concat([df_train[<span class="string">&#x27;SalePrice&#x27;</span>], df_train[var]], axis=<span class="number">1</span>)</span><br><span class="line">data.plot.scatter(x=var, y=<span class="string">&#x27;SalePrice&#x27;</span>, ylim=(<span class="number">0</span>, <span class="number">800000</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 地下室面积/房价散点图</span></span><br><span class="line">var = <span class="string">&#x27;TotalBsmtSF&#x27;</span></span><br><span class="line">data = pd.concat([df_train[<span class="string">&#x27;SalePrice&#x27;</span>], df_train[var]], axis=<span class="number">1</span>)</span><br><span class="line">data.plot.scatter(x=var, y=<span class="string">&#x27;SalePrice&#x27;</span>, ylim=(<span class="number">0</span>, <span class="number">800000</span>))</span><br></pre></td></tr></table></figure>
+<p>以上两个图可以在Jupter Notebook中自行绘制。从图上可以直观的看出，这两个变量都与房价正相关。值得注意的是这两个散点图出现了很多零散的不符合规律的点（离群值）。</p>
+<h3 id="与标称型变量的关系"><a href="#与标称型变量的关系" class="headerlink" title="与标称型变量的关系"></a>与标称型变量的关系</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 房屋质量/房价箱型图</span></span><br><span class="line">var = <span class="string">&#x27;OverallQual&#x27;</span></span><br><span class="line">data = pd.concat([df_train[<span class="string">&#x27;SalePrice&#x27;</span>], df_train[var]], axis=<span class="number">1</span>)</span><br><span class="line">f, ax = plt.subplots(figsize=(<span class="number">8</span>, <span class="number">6</span>))</span><br><span class="line">fig = sns.boxplot(x=var, y=<span class="string">&quot;SalePrice&quot;</span>, data=data)</span><br><span class="line">fig.axis(ymin=<span class="number">0</span>, ymax=<span class="number">800000</span>)</span><br></pre></td></tr></table></figure>
+<p>很显然，房价与房屋质量(<code>OverallQual</code>)呈正相关。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 房子修建的年份/房价箱型图</span></span><br><span class="line">var = <span class="string">&#x27;YearBuilt&#x27;</span></span><br><span class="line">data = pd.concat([df_train[<span class="string">&#x27;SalePrice&#x27;</span>], df_train[var]], axis=<span class="number">1</span>)</span><br><span class="line">f, ax = plt.subplots(figsize=(<span class="number">16</span>, <span class="number">8</span>))</span><br><span class="line">fig = sns.boxplot(x=var, y=<span class="string">&quot;SalePrice&quot;</span>, data=data)</span><br><span class="line">fig.axis(ymin=<span class="number">0</span>, ymax=<span class="number">800000</span>)</span><br><span class="line">plt.xticks(rotation=<span class="number">90</span>)</span><br></pre></td></tr></table></figure>
+<p>这里，房屋的修建年份(<code>YearBuilt</code>)和房价似乎只有微弱的正相关性，但仍可以认为绝大多数情况下，越新的房子越能卖个高价。</p>
+<p>对以上四个变量的可视化做个总结：</p>
+<ol>
+<li>“地上居住面积”(<code>GrLivArea</code>)和“地下室面积”(<code>TotalBsmtSF</code>)与房价呈显著的正相关，且“地下室面积”与房价拟合的直线斜率较大。</li>
+<li>“房屋质量”(<code>OverallQual</code>)和“修建年份”(<code>YearBuilt</code>)与房价也具有相关性，其中“房屋质量”相关性更强。</li>
+</ol>
+<p>接下来，观察其他变量。客观地讲，它们是同等重要的。</p>
+<h3 id="与其他变量的关系"><a href="#与其他变量的关系" class="headerlink" title="与其他变量的关系"></a>与其他变量的关系</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 所有变量的相关性矩阵热图</span></span><br><span class="line">corrmat = df_train.corr()</span><br><span class="line">f, ax = plt.subplots(figsize=(<span class="number">12</span>, <span class="number">9</span>))</span><br><span class="line">sns.heatmap(corrmat, vmax=<span class="number">.8</span>, square=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 与Y的相关性矩阵top10热图</span></span><br><span class="line">k = <span class="number">10</span>  <span class="comment"># 热力图变量数目</span></span><br><span class="line">cols = corrmat.nlargest(k, <span class="string">&#x27;SalePrice&#x27;</span>)[<span class="string">&#x27;SalePrice&#x27;</span>].index</span><br><span class="line">cm = np.corrcoef(df_train[cols].values.T)</span><br><span class="line">sns.<span class="built_in">set</span>(font_scale=<span class="number">1.25</span>)</span><br><span class="line">hm = sns.heatmap(cm, cbar=<span class="literal">True</span>, annot=<span class="literal">True</span>, square=<span class="literal">True</span>, fmt=<span class="string">&#x27;.2f&#x27;</span>, annot_kws=&#123;<span class="string">&#x27;size&#x27;</span>: <span class="number">10</span>&#125;, yticklabels=cols.values, xticklabels=cols.values)</span><br></pre></td></tr></table></figure>
+<p><code>seaborn</code>的热图是快速了解变量之间关系的极佳方法。我们主要关心浅色和深色区块，它表示两个变量之间具有强烈的正/负相关。在线性模型中，若自变量之间具有线性关系会对模型的性能产生影响，因为它们包含重复的信息，应当舍去。</p>
+<p>从第一张图我们看出，“地下室面积”(<code>TotalBsmtSF</code>)和“一楼面积”(<code>1stFlrSF</code>)这两个变量高度正相关，以及车库系列变量(<code>GarageCars</code>, <code>GarageArea</code>)之间具有很强的关联（这些也符合我们的生活经验），我们将会只保留其中一个与房价相关性更高的变量。</p>
+<p>第二张图主要是看与预测变量Y最相关的10个变量之间的相关性。我们可以更加清楚的看到这些变量之间的相关系数。这top10里面出现了地上面积、地下室面积、建筑质量和修建年份这些指标，证实了我们第一步的猜想；“地上居住面积”(<code>GrLivArea</code>)和“地上房间总数”(<code>TotRmsAbvGrd</code>)非常相关，因此我们只保留其中一个。</p>
+<p>得到了与Y有较高关联性的特征（并剔除了一些相似的特征），我们接下来用散点图来进一步查看变量之间的联系。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 房价与一些变量的关系的散点图</span></span><br><span class="line">sns.<span class="built_in">set</span>()</span><br><span class="line">cols = [<span class="string">&#x27;SalePrice&#x27;</span>, <span class="string">&#x27;OverallQual&#x27;</span>, <span class="string">&#x27;GrLivArea&#x27;</span>, <span class="string">&#x27;GarageCars&#x27;</span>, <span class="string">&#x27;TotalBsmtSF&#x27;</span>, <span class="string">&#x27;FullBath&#x27;</span>, <span class="string">&#x27;YearBuilt&#x27;</span>]</span><br><span class="line">sns.pairplot(df_train[cols], size=<span class="number">2.5</span>)</span><br></pre></td></tr></table></figure>
+<p>我们发现“地下室面积”(<code>TotalBsmtSF</code>)和“地上面积”(<code>GrLiveArea</code>)的散点图上，有一串点可以连成一条直线。观察房价与修建年份的散点图，这些点云的上界和下界呈指数函数状分布，而近几年修建的新房的房价保持在指数函数上方，推测近几年房价涨的更快了。</p>
+<p>至此我们初步完成了数据的可视化。</p>
+<h2 id="处理缺失值"><a href="#处理缺失值" class="headerlink" title="处理缺失值"></a>处理缺失值</h2><p>在着手处理缺失值之前，我们要考虑清楚：</p>
+<ol>
+<li>数据缺失的现象有多普遍？</li>
+<li>丢失的数据是随机的，还是有规律可循的？</li>
+</ol>
+<p>缺失值的处理要谨慎，我们显然不希望训练样本大量流失。此外，数据的缺失可能导致预测结果出现偏见以及歪曲事实。</p>
+<p>首先，统计出缺失的变量及其频率。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 缺失值查看</span></span><br><span class="line">total = df_train.isnull().<span class="built_in">sum</span>().sort_values(ascending=<span class="literal">False</span>)</span><br><span class="line">percent = (df_train.isnull().<span class="built_in">sum</span>() / df_train.isnull().count()).sort_values(ascending=<span class="literal">False</span>)</span><br><span class="line">missing_data = pd.concat([total, percent], axis=<span class="number">1</span>, keys=[<span class="string">&#x27;Total&#x27;</span>, <span class="string">&#x27;Percent&#x27;</span>])</span><br><span class="line"><span class="built_in">print</span>(missing_data.head(<span class="number">20</span>))</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th align="left"></th>
+<th align="right">Total</th>
+<th align="right">Percent</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">PoolQC</td>
+<td align="right">1453</td>
+<td align="right">0.995205</td>
+</tr>
+<tr>
+<td align="left">MiscFeature</td>
+<td align="right">1406</td>
+<td align="right">0.963014</td>
+</tr>
+<tr>
+<td align="left">Alley</td>
+<td align="right">1369</td>
+<td align="right">0.937671</td>
+</tr>
+<tr>
+<td align="left">Fence</td>
+<td align="right">1179</td>
+<td align="right">0.807534</td>
+</tr>
+<tr>
+<td align="left">FireplaceQu</td>
+<td align="right">690</td>
+<td align="right">0.472603</td>
+</tr>
+<tr>
+<td align="left">LotFrontage</td>
+<td align="right">259</td>
+<td align="right">0.177397</td>
+</tr>
+<tr>
+<td align="left">GarageCond</td>
+<td align="right">81</td>
+<td align="right">0.055479</td>
+</tr>
+<tr>
+<td align="left">GarageType</td>
+<td align="right">81</td>
+<td align="right">0.055479</td>
+</tr>
+<tr>
+<td align="left">GarageYrBlt</td>
+<td align="right">81</td>
+<td align="right">0.055479</td>
+</tr>
+<tr>
+<td align="left">GarageFinish</td>
+<td align="right">81</td>
+<td align="right">0.055479</td>
+</tr>
+<tr>
+<td align="left">GarageQual</td>
+<td align="right">81</td>
+<td align="right">0.055479</td>
+</tr>
+<tr>
+<td align="left">BsmtExposure</td>
+<td align="right">38</td>
+<td align="right">0.026027</td>
+</tr>
+<tr>
+<td align="left">BsmtFinType2</td>
+<td align="right">38</td>
+<td align="right">0.026027</td>
+</tr>
+<tr>
+<td align="left">BsmtFinType1</td>
+<td align="right">37</td>
+<td align="right">0.025342</td>
+</tr>
+<tr>
+<td align="left">BsmtCond</td>
+<td align="right">37</td>
+<td align="right">0.025342</td>
+</tr>
+<tr>
+<td align="left">BsmtQual</td>
+<td align="right">37</td>
+<td align="right">0.025342</td>
+</tr>
+<tr>
+<td align="left">MasVnrArea</td>
+<td align="right">8</td>
+<td align="right">0.005479</td>
+</tr>
+<tr>
+<td align="left">MasVnrType</td>
+<td align="right">8</td>
+<td align="right">0.005479</td>
+</tr>
+<tr>
+<td align="left">Electrical</td>
+<td align="right">1</td>
+<td align="right">0.000685</td>
+</tr>
+<tr>
+<td align="left">Utilities</td>
+<td align="right">0</td>
+<td align="right">0.000000</td>
+</tr>
+</tbody></table>
+<p>通常情况下，我们考虑当某一个变量的缺失值超过15%，就直接删除这个变量，而不是尝试去填充它。按这个思路，“泳池质量”(<code>PoolQC</code>)、“杂项（电梯等）”(<code>MiscFeature</code>)、“屋旁小巷类型”(<code>Alley</code>)、“栅栏质量”(<code>Fence</code>)等几个变量就应当剔除。关键在于我们抛弃这些数据会错失一些有用信息吗？我认为不会，因为我们在买房时不会重视这些信息。所以可以放心删除它们。</p>
+<p>在剩下来的变量中，车库系列变量(<code>GarageX</code>)缺失的数目相同。考虑到有关车库的信息中最重要的是容量(<code>GarageCars</code>)，因此我们可以删除这些不怎么重要的变量。同理，我们对地下室系列变量(<code>BsmtX</code>)做同样的处理。</p>
+<p>对于“砌砖面积”(<code>MasVnrArea</code>)及其材质(<code>MasVnrType</code>)这两个变量，我们认为它不重要，并且它们与“修建年份”(<code>YearBuilt</code>)和“房屋总体质量”(<code>OverallQual</code>)有很强的相关性。因此，抛弃这两个变量不会丢失重要信息。</p>
+<p>最后，在“电气系统”(<code>Electrical</code>)这个变量中有一个确失值，我们选择删除包含这个缺失值的样本，并保留这一变量。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 缺失值处理</span></span><br><span class="line">df_train = df_train.drop((missing_data[missing_data[<span class="string">&#x27;Total&#x27;</span>] &gt; <span class="number">1</span>]).index, <span class="number">1</span>)</span><br><span class="line">df_train = df_train.drop(df_train.loc[df_train[<span class="string">&#x27;Electrical&#x27;</span>].isnull()].index)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 验证一下是否处理了全部的缺失值</span></span><br><span class="line">df_train.isnull().<span class="built_in">sum</span>().<span class="built_in">max</span>()</span><br></pre></td></tr></table></figure>
+<h2 id="处理离群值"><a href="#处理离群值" class="headerlink" title="处理离群值"></a>处理离群值</h2><p>离群值就是指数据中偏离其他数值较大的数值。离群值可以显著地影响模型，并且提供了一些特例以供我们解读。这里就以预测变量Y——房价的标准差来分析。</p>
+<h3 id="单变量分析"><a href="#单变量分析" class="headerlink" title="单变量分析"></a>单变量分析</h3><p>我们要设定一个阈值，把部分观测值设定为离群值。首先，需要标准化数据。这里的标准化包括把数据的平均值化为0，同时标准差化为1。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 数据标准化</span></span><br><span class="line">saleprice_scaled = StandardScaler().fit_transform(df_train[<span class="string">&#x27;SalePrice&#x27;</span>][:, np.newaxis]);</span><br><span class="line">low_range = saleprice_scaled[saleprice_scaled[:, <span class="number">0</span>].argsort()][:<span class="number">10</span>]</span><br><span class="line">high_range = saleprice_scaled[saleprice_scaled[:, <span class="number">0</span>].argsort()][-<span class="number">10</span>:]</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;outer range (low) of the distribution:&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(low_range)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;\nouter range (high) of the distribution:&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(high_range)</span><br></pre></td></tr></table></figure>
+<p>从结果中可以看出，最低的10个值偏离0都不太远，而最高的10个值中，距离0都较远。尤其是需要注意两个大于7的值。我们再做进一步的分析。</p>
+<h3 id="双变量分析"><a href="#双变量分析" class="headerlink" title="双变量分析"></a>双变量分析</h3><p>重新绘制与房价相关变量的散点图，这次的目的是观察离群值。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 地上居住面积/房价双变量分析</span></span><br><span class="line">var = <span class="string">&#x27;GrLivArea&#x27;</span></span><br><span class="line">data = pd.concat([df_train[<span class="string">&#x27;SalePrice&#x27;</span>], df_train[var]], axis=<span class="number">1</span>)</span><br><span class="line">data.plot.scatter(x=var, y=<span class="string">&#x27;SalePrice&#x27;</span>, ylim=(<span class="number">0</span>, <span class="number">800000</span>))</span><br></pre></td></tr></table></figure>
+<p>现在重新审视这张图可以发现：地上面积最大的两个房子，它们的价格却反常的低，我们可以推测比如这两个房子在乡下。我们要做的是把这两个样本定义为离群值并剔除，因为它们不能代表典型的情况。</p>
+<p>上文说要留意两个偏离较大的值，也就是图中房价最高的两个点。但从这张散点图上看，这两个特殊案例符合主流趋势，因此对这两个点予以保留。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 删除离群值</span></span><br><span class="line">df_train.sort_values(by=<span class="string">&#x27;GrLivArea&#x27;</span>, ascending=<span class="literal">False</span>)[:<span class="number">2</span>]</span><br><span class="line">df_train = df_train.drop(df_train[df_train[<span class="string">&#x27;Id&#x27;</span>] == <span class="number">1299</span>].index)</span><br><span class="line">df_train = df_train.drop(df_train[df_train[<span class="string">&#x27;Id&#x27;</span>] == <span class="number">524</span>].index)</span><br></pre></td></tr></table></figure>
+<p>同样，我们重新观察一下地下室面积与房价的散点图。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 地下室面积/房价双变量分析</span></span><br><span class="line">var = <span class="string">&#x27;TotalBsmtSF&#x27;</span></span><br><span class="line">data = pd.concat([df_train[<span class="string">&#x27;SalePrice&#x27;</span>], df_train[var]], axis=<span class="number">1</span>)</span><br><span class="line">data.plot.scatter(x=var, y=<span class="string">&#x27;SalePrice&#x27;</span>, ylim=(<span class="number">0</span>, <span class="number">800000</span>))</span><br></pre></td></tr></table></figure>
+<p>可以观察到部分点（例如面积大于3000的3个）有离群的迹象，但可以接受，因此予以保留。</p>
+<h2 id="正态化数据"><a href="#正态化数据" class="headerlink" title="正态化数据"></a>正态化数据</h2><p>根据多重线性回归的假设检验，我们要确保数据具有以下特性：</p>
+<ol>
+<li>正态性：残差e服从正态分布。</li>
+<li>方差齐性：残差e的大小不随变量取值水平的改变而改变。</li>
+<li>线性：自变量与因变量之间存在线性关系。</li>
+<li>独立性：各个自变量之间不存在多重共线性问题。</li>
+</ol>
+<p>现在要解决正态性问题。单变量的正态化并不能保证整个多元回归的正态性，但有一定效果。这同时可以解决异方差性的问题。</p>
+<p>数据服从标准正态分布是我们的追求。对数据正态化的方法有很多，比如Box-Cox变换。我们已经知道这组数据中有些变量，例如因变量房价，服从偏态分布，可以用更简单的方法使之正态化。</p>
+<p>首先我们绘制所要考察变量的柱状图和正态概率分布图。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 房价的柱状图和正太概率分布图</span></span><br><span class="line">sns.distplot(df_train[<span class="string">&#x27;SalePrice&#x27;</span>], fit=norm)</span><br><span class="line">fig = plt.figure()</span><br><span class="line">res = stats.probplot(df_train[<span class="string">&#x27;SalePrice&#x27;</span>], plot=plt)</span><br></pre></td></tr></table></figure>
+<p>很明显这组房价满足偏态分布；用一种简单的转换方法可以使这组数据符合正态分布——取对数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 对房价取对数</span></span><br><span class="line">df_train[<span class="string">&#x27;SalePrice&#x27;</span>] = np.log(df_train[<span class="string">&#x27;SalePrice&#x27;</span>])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 转换后的房价的柱状图和正太概率分布图</span></span><br><span class="line">sns.distplot(df_train[<span class="string">&#x27;SalePrice&#x27;</span>], fit=norm)</span><br><span class="line">fig = plt.figure()</span><br><span class="line">res = stats.probplot(df_train[<span class="string">&#x27;SalePrice&#x27;</span>], plot=plt)</span><br></pre></td></tr></table></figure>
+
+<p>然后处理一个重要的自变量“地上居住面积”(<code>GrLiveArea</code>)：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 地上面积的柱状图和正太概率分布图</span></span><br><span class="line">sns.distplot(df_train[<span class="string">&#x27;GrLivArea&#x27;</span>], fit=norm);</span><br><span class="line">fig = plt.figure()</span><br><span class="line">res = stats.probplot(df_train[<span class="string">&#x27;GrLivArea&#x27;</span>], plot=plt)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 对地上面积取对数</span></span><br><span class="line">df_train[<span class="string">&#x27;GrLivArea&#x27;</span>] = np.log(df_train[<span class="string">&#x27;GrLivArea&#x27;</span>])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 转换后的地上面积的柱状图和正太概率分布图</span></span><br><span class="line">sns.distplot(df_train[<span class="string">&#x27;GrLivArea&#x27;</span>], fit=norm);</span><br><span class="line">fig = plt.figure()</span><br><span class="line">res = stats.probplot(df_train[<span class="string">&#x27;GrLivArea&#x27;</span>], plot=plt)</span><br></pre></td></tr></table></figure>
+<p>“地下室面积”(<code>totalBesmtSF</code>)：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 地下室面积的柱状图和正太概率分布图</span></span><br><span class="line">sns.distplot(df_train[<span class="string">&#x27;TotalBsmtSF&#x27;</span>], fit=norm);</span><br><span class="line">fig = plt.figure()</span><br><span class="line">res = stats.probplot(df_train[<span class="string">&#x27;TotalBsmtSF&#x27;</span>], plot=plt)</span><br></pre></td></tr></table></figure>
+<p>处理这个变量相对比较棘手，因为有相当一部分的观测值为0。而0值是无法取对数的。除去这些0，总体上还是满足偏态分布的。因此，我们会新建一个二值变量来反映这个样本是否包含地下室，对于有地下室的样本进行对数转换，忽略无地下室的样本。（因为无法确定这种做法对不对，原作者称之为‘high risk engineering’。）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 建立一个新的列来存储新的变量</span></span><br><span class="line"><span class="comment"># 如果area&gt;0则新变量为1，如果area==0则为0</span></span><br><span class="line">df_train[<span class="string">&#x27;HasBsmt&#x27;</span>] = pd.Series(<span class="built_in">len</span>(df_train[<span class="string">&#x27;TotalBsmtSF&#x27;</span>]), index=df_train.index)</span><br><span class="line">df_train[<span class="string">&#x27;HasBsmt&#x27;</span>] = <span class="number">0</span> </span><br><span class="line">df_train.loc[df_train[<span class="string">&#x27;TotalBsmtSF&#x27;</span>]&gt;<span class="number">0</span>,<span class="string">&#x27;HasBsmt&#x27;</span>] = <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 对符合条件的地下室面积取对数</span></span><br><span class="line">df_train.loc[df_train[<span class="string">&#x27;HasBsmt&#x27;</span>]==<span class="number">1</span>,<span class="string">&#x27;TotalBsmtSF&#x27;</span>] = np.log(df_train[<span class="string">&#x27;TotalBsmtSF&#x27;</span>])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 转换后的地下室面积的柱状图和正太概率分布图</span></span><br><span class="line">sns.distplot(df_train[df_train[<span class="string">&#x27;TotalBsmtSF&#x27;</span>]&gt;<span class="number">0</span>][<span class="string">&#x27;TotalBsmtSF&#x27;</span>], fit=norm);</span><br><span class="line">fig = plt.figure()</span><br><span class="line">res = stats.probplot(df_train[df_train[<span class="string">&#x27;TotalBsmtSF&#x27;</span>]&gt;<span class="number">0</span>][<span class="string">&#x27;TotalBsmtSF&#x27;</span>], plot=plt)</span><br></pre></td></tr></table></figure>
+<h3 id="同方差性"><a href="#同方差性" class="headerlink" title="同方差性"></a>同方差性</h3><p>以地上居住面积与房价关系的散点图为例，早先版本的散点图左下角密集而右上角稀疏，呈现圆锥状，这就是具有同方差性的问题。</p>
+<p>绘制对数转换后的散点图：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 地上居住面积/房价散点图</span></span><br><span class="line">plt.scatter(df_train[<span class="string">&#x27;GrLivArea&#x27;</span>], df_train[<span class="string">&#x27;SalePrice&#x27;</span>])</span><br></pre></td></tr></table></figure>
+<p>可以看见我们已经解决了同方差性的问题，数据变得正态了。再来看看房价和地下室面积的关系：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 地下室面积/房价散点图</span></span><br><span class="line">plt.scatter(df_train[df_train[<span class="string">&#x27;TotalBsmtSF&#x27;</span>]&gt;<span class="number">0</span>][<span class="string">&#x27;TotalBsmtSF&#x27;</span>], df_train[df_train[<span class="string">&#x27;TotalBsmtSF&#x27;</span>]&gt;<span class="number">0</span>][<span class="string">&#x27;SalePrice&#x27;</span>])</span><br></pre></td></tr></table></figure>
+<p>至此，我们可以认为这几个重要变量的正态化已经完成了。</p>
+<h2 id="虚拟变量"><a href="#虚拟变量" class="headerlink" title="虚拟变量"></a>虚拟变量</h2><p>这一步将把标称型的数据one-hot化：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 把标称性变量虚拟化</span></span><br><span class="line">df_train = pd.get_dummies(df_train)</span><br></pre></td></tr></table></figure>
+<p>这篇探索性数据分析的kernel就到此为止了。接下来要做的就是训练模型，将会参考另外一篇<a target="_blank" rel="noopener" href="https://www.kaggle.com/serigne/stacked-regressions-top-4-on-leaderboard">kernel</a>。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>对于大多数Kaggle数据科学竞赛，处理数据是耗费的时间最多的、并且是对结果精度影响最大的环节。因此这篇kernel尽管没有到训练那一步，却获得了极高的点赞数。</li>
+<li>探索性数据分析，包含数据可视化、处理缺失值、离群值以及数据标准化、正态化、虚拟化等等，对于数据挖掘和统计机器学习非常重要。作为初学者，要熟练运用numpy、matplotlib、pandas这三大利器。</li>
+</ul>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%BC%E5%85%A5%E6%95%B0%E6%8D%AE"><span class="toc-number">1.</span> <span class="toc-text">导入数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%82%E5%AF%9F%E5%8F%98%E9%87%8F"><span class="toc-number">2.</span> <span class="toc-text">观察变量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="toc-number">3.</span> <span class="toc-text">数据可视化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8E%E6%95%B0%E5%80%BC%E5%9E%8B%E5%8F%98%E9%87%8F%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">3.1.</span> <span class="toc-text">与数值型变量的关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8E%E6%A0%87%E7%A7%B0%E5%9E%8B%E5%8F%98%E9%87%8F%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">3.2.</span> <span class="toc-text">与标称型变量的关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8E%E5%85%B6%E4%BB%96%E5%8F%98%E9%87%8F%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">3.3.</span> <span class="toc-text">与其他变量的关系</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%84%E7%90%86%E7%BC%BA%E5%A4%B1%E5%80%BC"><span class="toc-number">4.</span> <span class="toc-text">处理缺失值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%84%E7%90%86%E7%A6%BB%E7%BE%A4%E5%80%BC"><span class="toc-number">5.</span> <span class="toc-text">处理离群值</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%95%E5%8F%98%E9%87%8F%E5%88%86%E6%9E%90"><span class="toc-number">5.1.</span> <span class="toc-text">单变量分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8C%E5%8F%98%E9%87%8F%E5%88%86%E6%9E%90"><span class="toc-number">5.2.</span> <span class="toc-text">双变量分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AD%A3%E6%80%81%E5%8C%96%E6%95%B0%E6%8D%AE"><span class="toc-number">6.</span> <span class="toc-text">正态化数据</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%8C%E6%96%B9%E5%B7%AE%E6%80%A7"><span class="toc-number">6.1.</span> <span class="toc-text">同方差性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%99%9A%E6%8B%9F%E5%8F%98%E9%87%8F"><span class="toc-number">7.</span> <span class="toc-text">虚拟变量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">8.</span> <span class="toc-text">总结</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ster.im/kaggle_02/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ster.im/kaggle_02/&text=Kaggle机器学习实战（2）——房价预测（上）"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ster.im/kaggle_02/&title=Kaggle机器学习实战（2）——房价预测（上）"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ster.im/kaggle_02/&is_video=false&description=Kaggle机器学习实战（2）——房价预测（上）"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Kaggle机器学习实战（2）——房价预测（上）&body=Check out this article: https://ster.im/kaggle_02/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ster.im/kaggle_02/&title=Kaggle机器学习实战（2）——房价预测（上）"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ster.im/kaggle_02/&title=Kaggle机器学习实战（2）——房价预测（上）"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ster.im/kaggle_02/&title=Kaggle机器学习实战（2）——房价预测（上）"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ster.im/kaggle_02/&title=Kaggle机器学习实战（2）——房价预测（上）"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ster.im/kaggle_02/&name=Kaggle机器学习实战（2）——房价预测（上）&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ster.im/kaggle_02/&t=Kaggle机器学习实战（2）——房价预测（上）"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2012-2021
+    Rarit7
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.3/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdn.bootcdn.net/ajax/libs/clipboard.js/2.0.8/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>

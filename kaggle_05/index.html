@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Kaggle《泰坦尼克号生还预测》实战">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kaggle机器学习实战（5）——再探泰坦尼克">
+<meta property="og:url" content="https://ster.im/kaggle_05/index.html">
+<meta property="og:site_name" content="Rarit7&#39;s Blog">
+<meta property="og:description" content="Kaggle《泰坦尼克号生还预测》实战">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-10-10T13:39:01.000Z">
+<meta property="article:modified_time" content="2019-03-25T14:02:31.893Z">
+<meta property="article:author" content="Rarit7">
+<meta property="article:tag" content="Kaggle">
+<meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="Python">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Kaggle机器学习实战（5）——再探泰坦尼克</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" "Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇 " href="/kaggle_06/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇 " href="/py_sklearn_4/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部 " href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章 " href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ster.im/kaggle_05/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ster.im/kaggle_05/&text=Kaggle机器学习实战（5）——再探泰坦尼克"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ster.im/kaggle_05/&title=Kaggle机器学习实战（5）——再探泰坦尼克"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ster.im/kaggle_05/&is_video=false&description=Kaggle机器学习实战（5）——再探泰坦尼克"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Kaggle机器学习实战（5）——再探泰坦尼克&body=Check out this article: https://ster.im/kaggle_05/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ster.im/kaggle_05/&title=Kaggle机器学习实战（5）——再探泰坦尼克"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ster.im/kaggle_05/&title=Kaggle机器学习实战（5）——再探泰坦尼克"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ster.im/kaggle_05/&title=Kaggle机器学习实战（5）——再探泰坦尼克"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ster.im/kaggle_05/&title=Kaggle机器学习实战（5）——再探泰坦尼克"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ster.im/kaggle_05/&name=Kaggle机器学习实战（5）——再探泰坦尼克&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ster.im/kaggle_05/&t=Kaggle机器学习实战（5）——再探泰坦尼克"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE"><span class="toc-number">1.</span> <span class="toc-text">读取数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%BA%E5%A4%B1%E5%80%BC%E5%A4%84%E7%90%86"><span class="toc-number">2.</span> <span class="toc-text">缺失值处理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E7%BC%BA%E5%A4%B1%E5%80%BC"><span class="toc-number">2.1.</span> <span class="toc-text">查看缺失值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%84%E7%90%86%E2%80%99Cabin%E2%80%99%E7%9A%84%E7%BC%BA%E5%A4%B1%E5%80%BC"><span class="toc-number">2.2.</span> <span class="toc-text">处理’Cabin’的缺失值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%84%E7%90%86%E2%80%99Age%E2%80%99%E7%9A%84%E7%BC%BA%E5%A4%B1%E5%80%BC"><span class="toc-number">2.3.</span> <span class="toc-text">处理’Age’的缺失值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%84%E7%90%86%E2%80%99Embarked%E2%80%99%E5%92%8C%E2%80%99Fare%E2%80%99%E7%9A%84%E7%BC%BA%E5%A4%B1%E5%80%BC"><span class="toc-number">2.4.</span> <span class="toc-text">处理’Embarked’和’Fare’的缺失值</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%89%B9%E5%BE%81%E5%B7%A5%E7%A8%8B"><span class="toc-number">3.</span> <span class="toc-text">特征工程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%84%E7%90%86%E2%80%99Name%E2%80%99"><span class="toc-number">3.1.</span> <span class="toc-text">处理’Name’</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%84%E7%90%86%E2%80%99SibSp%E2%80%99%E5%92%8C%E2%80%99Parch%E2%80%99"><span class="toc-number">3.2.</span> <span class="toc-text">处理’SibSp’和’Parch’</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E8%BD%AC%E5%8C%96"><span class="toc-number">3.3.</span> <span class="toc-text">数据转化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%90%E7%94%A8%E5%8D%95%E4%B8%AA%E6%A8%A1%E5%9E%8B"><span class="toc-number">4.</span> <span class="toc-text">运用单个模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%90%E7%94%A8Stacking%E6%A8%A1%E5%9E%8B"><span class="toc-number">5.</span> <span class="toc-text">运用Stacking模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">6.</span> <span class="toc-text">总结</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Kaggle机器学习实战（5）——再探泰坦尼克
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Rarit7</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2018-10-10T13:39:01.000Z" itemprop="datePublished">2018-10-10</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Kaggle/" rel="tag">Kaggle</a>, <a class="tag-link-link" href="/tags/Python/" rel="tag">Python</a>, <a class="tag-link-link" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag">机器学习</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>之前已经看过一篇<a href="http://ster.im/kaggle_01/">Megan Risdal的kernel</a>，她使用R语言、随机森林进行了建模。那时我是个纯新手，连依葫芦画瓢都不会。现在通过周志华老师的《机器学习》、吴恩达老师的coursera课程、查阅相关文档掌握的调包侠知识，总算是可以把这个经典入门案例拿过来练练手。</p>
+<p>关于EDA部分，由于和其他人的步骤大同小异，也没有新的发现，就略过不谈。在模型方面，首先是调用sklearn包中一些常见的分类器查看其分类效果，其次是使用Stacking方法进行集成，最后的结果会提交到kaggle上。</p>
+<p>本文参考了4篇点赞数量较高的kernel：</p>
+<ul>
+<li>Anisotropic：<a target="_blank" rel="noopener" href="https://www.kaggle.com/arthurtok/introduction-to-ensembling-stacking-in-python">《Introduction to Ensembling/Stacking in Python》</a></li>
+<li>Megan Risdal：<a target="_blank" rel="noopener" href="https://www.kaggle.com/mrisdal/exploring-survival-on-the-titanic">《Exploring Survival on the Titanic》</a></li>
+<li>Manav Sehgal：<a target="_blank" rel="noopener" href="https://www.kaggle.com/startupsci/titanic-data-science-solutions">《Titanic Data Science Solutions》</a></li>
+<li>Yassine Ghouzam：<a target="_blank" rel="noopener" href="https://www.kaggle.com/yassineghouzam/titanic-top-4-with-ensemble-modeling">《Titanic Top 4% with ensemble modeling》</a></li>
+</ul>
+<h2 id="读取数据"><a href="#读取数据" class="headerlink" title="读取数据"></a>读取数据</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 调包</span></span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">%matplotlib inline</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">import</span> warnings</span><br><span class="line">warnings.filterwarnings(<span class="string">&quot;ignore&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> KFold</span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> cross_val_score</span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> GridSearchCV</span><br><span class="line"><span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> LogisticRegressionCV</span><br><span class="line"><span class="keyword">from</span> sklearn.neural_network <span class="keyword">import</span> MLPClassifier</span><br><span class="line"><span class="keyword">from</span> sklearn.tree <span class="keyword">import</span> DecisionTreeClassifier</span><br><span class="line"><span class="keyword">from</span> sklearn.svm <span class="keyword">import</span> SVC</span><br><span class="line"><span class="keyword">from</span> sklearn.neighbors <span class="keyword">import</span> KNeighborsClassifier</span><br><span class="line"><span class="keyword">from</span> sklearn.naive_bayes <span class="keyword">import</span> BernoulliNB</span><br><span class="line"><span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> RandomForestClassifier</span><br><span class="line"><span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> ExtraTreesClassifier</span><br><span class="line"><span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> AdaBoostClassifier</span><br><span class="line"><span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> GradientBoostingClassifier</span><br><span class="line"><span class="keyword">from</span> xgboost <span class="keyword">import</span> XGBClassifier</span><br><span class="line"><span class="keyword">from</span> lightgbm <span class="keyword">import</span> LGBMClassifier</span><br></pre></td></tr></table></figure>
+
+<p>对数据进行简单预处理。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">train = pd.read_csv(<span class="string">&quot;train.csv&quot;</span>)</span><br><span class="line">test = pd.read_csv(<span class="string">&quot;test.csv&quot;</span>)</span><br><span class="line"></span><br><span class="line">y = train[<span class="string">&quot;Survived&quot;</span>]</span><br><span class="line">train = train.drop([<span class="string">&quot;Survived&quot;</span>], axis=<span class="number">1</span>)</span><br><span class="line">all_data = pd.concat([train, test])</span><br><span class="line">PassengerId = test[<span class="string">&quot;PassengerId&quot;</span>]</span><br><span class="line">all_data = all_data.drop([<span class="string">&quot;PassengerId&quot;</span>], axis=<span class="number">1</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;训练集和测试集共有&#123;0&#125;个样本和&#123;1&#125;个特征。&#x27;</span>.<span class="built_in">format</span>(all_data.shape[<span class="number">0</span>], all_data.shape[<span class="number">1</span>]))</span><br><span class="line">all_data.head()</span><br></pre></td></tr></table></figure>
+
+<h2 id="缺失值处理"><a href="#缺失值处理" class="headerlink" title="缺失值处理"></a>缺失值处理</h2><h3 id="查看缺失值"><a href="#查看缺失值" class="headerlink" title="查看缺失值"></a>查看缺失值</h3><p>使用<code>isnull()</code>方法查看缺失值，并按降序排列。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">all_data.isnull().<span class="built_in">sum</span>().sort_values(ascending=<span class="literal">False</span>)</span><br></pre></td></tr></table></figure>
+
+<p>可以看到：<code>Cabin</code>具有1014个缺失值；<code>Age</code>具有263个缺失值；<code>Embarked</code>具有2个缺失值；<code>Fare</code>具有1个缺失值。我们将分别用不同的手段处理它们。</p>
+<h3 id="处理’Cabin’的缺失值"><a href="#处理’Cabin’的缺失值" class="headerlink" title="处理’Cabin’的缺失值"></a>处理’Cabin’的缺失值</h3><p><code>Cabin</code>（客舱号）缺失值达到77%，我们可以考虑舍弃掉这个变量。仔细分析，可以理解成：不为空的表示该乘客有客舱，为空的表示没有客舱。因此，把这个变量转换为一个二值变量，即“有客舱”，就实现了对数据的利用。或许提取客舱号第一位的字母能更进一步的利用此条数据，但从他人的kernel中看出似乎没有太大的效果。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">all_data[<span class="string">&quot;Cabin&quot;</span>] = all_data[<span class="string">&quot;Cabin&quot;</span>].apply(<span class="keyword">lambda</span> x: <span class="number">0</span> <span class="keyword">if</span> <span class="built_in">type</span>(x) == <span class="built_in">float</span> <span class="keyword">else</span> <span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="处理’Age’的缺失值"><a href="#处理’Age’的缺失值" class="headerlink" title="处理’Age’的缺失值"></a>处理’Age’的缺失值</h3><p><code>Age</code>（年龄）缺失值达到了20%，已经超过可以舍弃的阈值了。但年龄绝对是一个非常重要的变量，因此要好好地去填充缺失值。一种方法是使用随机数填充，随机数的上下限是（均值±标准差）。另一种是使用其他变量（如票价、船舱等级）来“猜”年龄。</p>
+<p>这里参照Anisotropic和Yassine Ghouzam，结合了两种方法。Yassine发现年龄与船舱等级、亲属数量有较强的相关性，因此找缺失年龄的样本是否具有与其同样<code>Pclass</code>、<code>SibSp</code>和<code>Parch</code>的样本，有的话就取这些样本年龄的中值，否则取所有样本年龄的中值。我在处理没有类似的样本时，取（均值±标准差）中的随机整数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 获取空值的index</span></span><br><span class="line">index_NaN_age = <span class="built_in">list</span>(all_data[<span class="string">&quot;Age&quot;</span>][all_data[<span class="string">&quot;Age&quot;</span>].isnull()].index)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 默认用随机数填充</span></span><br><span class="line">age_mean = all_data[<span class="string">&quot;Age&quot;</span>].mean()</span><br><span class="line">age_std = all_data[<span class="string">&quot;Age&quot;</span>].std()</span><br><span class="line">age_random_list = np.random.randint(age_mean-age_std, age_mean+age_std, size=<span class="built_in">len</span>(index_NaN_age))</span><br><span class="line">all_data[<span class="string">&quot;Age&quot;</span>][all_data[<span class="string">&quot;Age&quot;</span>].isnull()] = age_random_list</span><br><span class="line"></span><br><span class="line"><span class="comment"># 当存在类似情况时，用类似样本的中位数填充空值</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> index_NaN_age:</span><br><span class="line">    same_samples_age = all_data[<span class="string">&quot;Age&quot;</span>][((all_data[<span class="string">&quot;SibSp&quot;</span>] == all_data[<span class="string">&quot;SibSp&quot;</span>].iloc[i]) &amp; (all_data[<span class="string">&quot;Parch&quot;</span>] == all_data[<span class="string">&quot;Parch&quot;</span>].iloc[i]) &amp; (all_data[<span class="string">&quot;Pclass&quot;</span>] == all_data[<span class="string">&quot;Pclass&quot;</span>].iloc[i]))].median()</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> np.isnan(same_samples_age):</span><br><span class="line">        all_data[<span class="string">&quot;Age&quot;</span>].iloc[i] = same_samples_age</span><br><span class="line"></span><br><span class="line"><span class="comment"># 检查是否完全填充</span></span><br><span class="line"><span class="keyword">assert</span> all_data[<span class="string">&quot;Age&quot;</span>].isnull().<span class="built_in">sum</span>() == <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="处理’Embarked’和’Fare’的缺失值"><a href="#处理’Embarked’和’Fare’的缺失值" class="headerlink" title="处理’Embarked’和’Fare’的缺失值"></a>处理’Embarked’和’Fare’的缺失值</h3><p>这两项缺失值很少，可以逐个填充。</p>
+<p>先来看<code>Embarked</code>（登船港口），只有两个缺失值。将他们挑出：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 筛出两条缺失值</span></span><br><span class="line">all_data[all_data[<span class="string">&quot;Embarked&quot;</span>].isnull()]</span><br></pre></td></tr></table></figure>
+
+<p>大多数人使用众数<code>S</code>填充，因为从<code>S</code>登船的占对大多数；而Megan Risdal则通过观察，选择了用<code>C</code>填充。</p>
+<p>可以发现：她们票号一致，所以必然是同一个港口上船的。观察同为头等舱的三个港口上船乘客的票价的均值、中位数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">all_data[all_data[<span class="string">&quot;Pclass&quot;</span>]==<span class="number">1</span>].groupby(<span class="string">&quot;Embarked&quot;</span>)[<span class="string">&quot;Fare&quot;</span>].describe()</span><br></pre></td></tr></table></figure>
+
+<p>其实无论是用<code>C</code>还是<code>S</code>填充都是合理的。80刀的票价，在C港口登船的头等舱的所有票价中位于中位数附近，且与在S港口登船的头等舱票价均值相近（接近75%四分位点）。由于<code>S</code>是众数（无论实在样本里，还是在众多解答者的选择中），最终决定用<code>S</code>填充。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">all_data[<span class="string">&quot;Embarked&quot;</span>] = all_data[<span class="string">&quot;Embarked&quot;</span>].fillna(<span class="string">&quot;S&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>对于存在唯一缺失值的<code>Fare</code>，我先找了找存不存在与其<code>Ticket</code>一样的样本，没有找到。于是就找同为三等舱、S港口登船的样本的中位数来填充。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">fare_med = all_data[<span class="string">&quot;Fare&quot;</span>][(all_data[<span class="string">&quot;Embarked&quot;</span>]==<span class="string">&#x27;S&#x27;</span>) &amp; (all_data[<span class="string">&quot;Pclass&quot;</span>]==<span class="number">3</span>)].median()</span><br><span class="line">all_data[<span class="string">&quot;Fare&quot;</span>] = all_data[<span class="string">&quot;Fare&quot;</span>].fillna(fare_med)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 确认所有缺失值处理完毕</span></span><br><span class="line">all_data.isnull().<span class="built_in">sum</span>()</span><br></pre></td></tr></table></figure>
+
+<h2 id="特征工程"><a href="#特征工程" class="headerlink" title="特征工程"></a>特征工程</h2><h3 id="处理’Name’"><a href="#处理’Name’" class="headerlink" title="处理’Name’"></a>处理’Name’</h3><p>毫不奇怪地，大多数高分kernel都提取了姓名中的称谓，比如<code>Mr</code>、<code>Miss</code>等，其他一些稀少的称谓归为<code>Rare</code>一类，将称谓作为一个新的变量使用，并抛弃原“姓名”这个没有用的变量。这里需要使用到正则表达式，详细用法参见<a target="_blank" rel="noopener" href="https://docs.python.org/3/library/re.html">python re的官方文档</a>。</p>
+<p>数据的<code>Name</code>形如<code>Braund, Mr. Owen Harris</code>，我们要提取的<code>Mr.</code>这些称谓冠词的共同点是末尾有一个缩写点，所以用<code>re.search()</code>查找点号前的子串。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getTitle</span>(<span class="params">name</span>):</span></span><br><span class="line">    title_search = re.search(<span class="string">&#x27;([A-Za-z]+)\.&#x27;</span>, name)</span><br><span class="line">    <span class="keyword">if</span> title_search:</span><br><span class="line">        <span class="keyword">return</span> title_search.group(<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">all_data[<span class="string">&quot;Title&quot;</span>] = all_data[<span class="string">&quot;Name&quot;</span>].apply(getTitle)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看各种称谓出现的次数</span></span><br><span class="line">all_data[<span class="string">&quot;Title&quot;</span>].value_counts()</span><br></pre></td></tr></table></figure>
+
+<p>我打算只保留”Mr”、”Miss”（同义词”Mlle”、”Ms” ）、”Mrs”（同义词”Mme”）、”Master”这四个比较常见的称谓，其他归入”Rare”。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">rare_title = [<span class="string">&quot;Dr&quot;</span>,<span class="string">&quot;Rev&quot;</span>,<span class="string">&quot;Col&quot;</span>,<span class="string">&quot;Major&quot;</span>,<span class="string">&quot;Don&quot;</span>,<span class="string">&quot;Jonkheer&quot;</span>,<span class="string">&quot;Sir&quot;</span>,<span class="string">&quot;Lady&quot;</span>,<span class="string">&quot;Countess&quot;</span>,<span class="string">&quot;Capt&quot;</span>,<span class="string">&quot;Dona&quot;</span>]</span><br><span class="line"></span><br><span class="line">all_data[<span class="string">&quot;Title&quot;</span>].replace(rare_title, <span class="string">&quot;Rare&quot;</span>, inplace=<span class="literal">True</span>)</span><br><span class="line">all_data[<span class="string">&quot;Title&quot;</span>].replace([<span class="string">&quot;Mlle&quot;</span>,<span class="string">&quot;Ms&quot;</span>], <span class="string">&quot;Miss&quot;</span>, inplace=<span class="literal">True</span>)</span><br><span class="line">all_data[<span class="string">&quot;Title&quot;</span>].replace([<span class="string">&quot;Mme&quot;</span>], <span class="string">&quot;Mrs&quot;</span>, inplace=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 检查是否完成合并</span></span><br><span class="line">all_data[<span class="string">&quot;Title&quot;</span>].value_counts()</span><br></pre></td></tr></table></figure>
+
+<p>对于<code>Name</code>变量的操作就到此为止。</p>
+<h3 id="处理’SibSp’和’Parch’"><a href="#处理’SibSp’和’Parch’" class="headerlink" title="处理’SibSp’和’Parch’"></a>处理’SibSp’和’Parch’</h3><p>我所阅读的3篇kernel都是把这两项相加（还要把自己算进去），得到<code>familySize</code>（家庭人数）这一新特征，其中如果该新特征等于1，就表示是他是孤身一人登船，他遇难的概率会大大增加。这就是一个对预测生还率有用的变量。</p>
+<p>参考Anisotropic和Manav Sehgal的解答，我会创建一个名为“孤身一人”的二值变量，其它变量均舍去。Yassine Ghouzam还考虑了人数大于4的大家庭，以后也可以考虑一下。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">all_data[<span class="string">&quot;FamilySize&quot;</span>] = all_data[<span class="string">&quot;SibSp&quot;</span>] + all_data[<span class="string">&quot;Parch&quot;</span>] + <span class="number">1</span></span><br><span class="line">all_data[<span class="string">&quot;IsAlone&quot;</span>] = <span class="number">0</span></span><br><span class="line">all_data.loc[all_data[<span class="string">&quot;FamilySize&quot;</span>] == <span class="number">1</span>, <span class="string">&quot;IsAlone&quot;</span>] = <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看是否为一人的人数</span></span><br><span class="line">all_data[<span class="string">&quot;IsAlone&quot;</span>].value_counts()</span><br></pre></td></tr></table></figure>
+
+<h3 id="数据转化"><a href="#数据转化" class="headerlink" title="数据转化"></a>数据转化</h3><p>通过阅读了这几篇kernel，我发现部分解答对数据的处理存在如下共同点：</p>
+<ul>
+<li><code>Age</code>、<code>Fare</code>分段：这两项是连续的数值型数据，由于我们采用的集成模型大多数是基于决策树的，决策树模型本质上是将它当离散值处理的，因此手动将其分为我们想要的几段，可能会获得更好的性能。</li>
+<li>将字符型变量标签编码，以及虚拟变量，由于模型在处理字符型变量时会自动转换为哑变量，这一步似乎不做也无妨？</li>
+<li>由于最后选择的变量全是代表类别的离散型，无需做特征缩放。</li>
+</ul>
+<p>对连续值分段，pandas有<code>cut</code>和<code>qcut</code>两种方式可用，前者依据值本身的大小来确定切割点，后者依据出现的频率来确定切割点。参考Anisotropic和Manav Sehgal的解答，对<code>Age</code>采用<code>cut</code>划分为5个分段，对<code>Fare</code>采用<code>qcut</code>划分为4个分段。这一步帮助我们确定分割点，下一步是手动创建分割后的标签变量。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">all_data[<span class="string">&quot;AgeCut&quot;</span>] = pd.cut(all_data[<span class="string">&quot;Age&quot;</span>], <span class="number">5</span>)</span><br><span class="line">all_data[<span class="string">&quot;AgeCut&quot;</span>].value_counts()</span><br><span class="line"></span><br><span class="line">all_data[<span class="string">&quot;FareCut&quot;</span>] = pd.qcut(all_data[<span class="string">&quot;Fare&quot;</span>], <span class="number">4</span>)</span><br><span class="line">all_data[<span class="string">&quot;FareCut&quot;</span>].value_counts()</span><br></pre></td></tr></table></figure>
+
+<p>年龄以16岁为一个阶梯，票价的分割点则是[7.896, 14.454, 31.275]。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 年龄分段</span></span><br><span class="line">all_data.loc[all_data[<span class="string">&quot;Age&quot;</span>]&lt;<span class="number">16</span>, <span class="string">&quot;AgeGroup&quot;</span>] = <span class="number">0</span></span><br><span class="line">all_data.loc[(all_data[<span class="string">&quot;Age&quot;</span>]&gt;=<span class="number">16</span>) &amp; (all_data[<span class="string">&quot;Age&quot;</span>]&lt;<span class="number">32</span>), <span class="string">&quot;AgeGroup&quot;</span>] = <span class="number">1</span></span><br><span class="line">all_data.loc[(all_data[<span class="string">&quot;Age&quot;</span>]&gt;=<span class="number">32</span>) &amp; (all_data[<span class="string">&quot;Age&quot;</span>]&lt;<span class="number">48</span>), <span class="string">&quot;AgeGroup&quot;</span>] = <span class="number">2</span></span><br><span class="line">all_data.loc[(all_data[<span class="string">&quot;Age&quot;</span>]&gt;=<span class="number">48</span>) &amp; (all_data[<span class="string">&quot;Age&quot;</span>]&lt;<span class="number">64</span>), <span class="string">&quot;AgeGroup&quot;</span>] = <span class="number">3</span></span><br><span class="line">all_data.loc[all_data[<span class="string">&quot;Age&quot;</span>]&gt;=<span class="number">64</span>, <span class="string">&quot;AgeGroup&quot;</span>] = <span class="number">4</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 票价分段</span></span><br><span class="line">all_data.loc[all_data[<span class="string">&quot;Fare&quot;</span>]&lt;<span class="number">7.896</span>, <span class="string">&quot;FareGroup&quot;</span>] = <span class="number">0</span></span><br><span class="line">all_data.loc[(all_data[<span class="string">&quot;Fare&quot;</span>]&gt;=<span class="number">7.896</span>) &amp; (all_data[<span class="string">&quot;Fare&quot;</span>]&lt;<span class="number">14.454</span>), <span class="string">&quot;FareGroup&quot;</span>] = <span class="number">1</span></span><br><span class="line">all_data.loc[(all_data[<span class="string">&quot;Fare&quot;</span>]&gt;=<span class="number">14.454</span>) &amp; (all_data[<span class="string">&quot;Fare&quot;</span>]&lt;<span class="number">31.275</span>), <span class="string">&quot;FareGroup&quot;</span>] = <span class="number">2</span></span><br><span class="line">all_data.loc[all_data[<span class="string">&quot;Fare&quot;</span>]&gt;=<span class="number">31.275</span>, <span class="string">&quot;FareGroup&quot;</span>] = <span class="number">3</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 取整</span></span><br><span class="line">all_data[<span class="string">&quot;AgeGroup&quot;</span>] = all_data[<span class="string">&quot;AgeGroup&quot;</span>].astype(<span class="string">&quot;int&quot;</span>)</span><br><span class="line">all_data[<span class="string">&quot;FareGroup&quot;</span>] = all_data[<span class="string">&quot;FareGroup&quot;</span>].astype(<span class="string">&quot;int&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>接着进行特征选择，把没有用的特征抛弃掉。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">drop_features = [<span class="string">&quot;Name&quot;</span>,<span class="string">&quot;Age&quot;</span>,<span class="string">&quot;SibSp&quot;</span>,<span class="string">&quot;Parch&quot;</span>,<span class="string">&quot;Ticket&quot;</span>,<span class="string">&quot;Fare&quot;</span>,<span class="string">&quot;FamilySize&quot;</span>,<span class="string">&quot;AgeCut&quot;</span>,<span class="string">&quot;FareCut&quot;</span>]</span><br><span class="line">all_data.drop(drop_features, axis=<span class="number">1</span>, inplace=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看结果</span></span><br><span class="line">all_data.head()</span><br></pre></td></tr></table></figure>
+
+<p>剩下来的变量均为类别型变量，且不存在明确的顺序关系，因此将其虚拟化。由于<code>get_dummies()</code>仅将字符型变量虚拟化，因此一些变量需要手动转换。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 性别转换为二值变量</span></span><br><span class="line">all_data[<span class="string">&quot;Sex&quot;</span>] = all_data[<span class="string">&quot;Sex&quot;</span>].<span class="built_in">map</span>(&#123;<span class="string">&quot;female&quot;</span>: <span class="number">0</span>, <span class="string">&quot;male&quot;</span>: <span class="number">1</span>&#125;).astype(<span class="built_in">int</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 整型转换为字符型</span></span><br><span class="line">all_data[<span class="string">&quot;Pclass&quot;</span>] = all_data[<span class="string">&quot;Pclass&quot;</span>].astype(<span class="string">&quot;str&quot;</span>)</span><br><span class="line">all_data[<span class="string">&quot;AgeGroup&quot;</span>] = all_data[<span class="string">&quot;AgeGroup&quot;</span>].astype(<span class="string">&quot;str&quot;</span>)</span><br><span class="line">all_data[<span class="string">&quot;FareGroup&quot;</span>] = all_data[<span class="string">&quot;FareGroup&quot;</span>].astype(<span class="string">&quot;str&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 虚拟变量</span></span><br><span class="line">all_data = pd.get_dummies(all_data)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看虚拟化后的变量名</span></span><br><span class="line">all_data.columns</span><br></pre></td></tr></table></figure>
+
+<p>至此我们已经完成了特征工程，我们把训练集和测试集分开，准备进行下一步。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 分离训练集和测试集</span></span><br><span class="line">X_train = all_data[:y.shape[<span class="number">0</span>]]</span><br><span class="line">X_test = all_data[y.shape[<span class="number">0</span>]:]</span><br></pre></td></tr></table></figure>
+
+<h2 id="运用单个模型"><a href="#运用单个模型" class="headerlink" title="运用单个模型"></a>运用单个模型</h2><p>作为一次机器学习训练，自然是把所有能用的分类模型都拿过来试一试。除了scikit-learn自带的几个模型之外，还使用了XGBoost和LightGBM这两个比赛中常用的集成模型。把每个模型都调用来比较一下，找到最优的分类器，看看其精度如何，最后和Stacking模型的精度比一比。</p>
+<p>尝试使用的模型：</p>
+<ul>
+<li>逻辑回归</li>
+<li>神经网络</li>
+<li>CART</li>
+<li>SVM</li>
+<li>KNN</li>
+<li>朴素贝叶斯</li>
+<li>随机森林</li>
+<li>极端随机树</li>
+<li>AdaBoost</li>
+<li>GBDT</li>
+<li>XGBoost</li>
+<li>LightGBM</li>
+</ul>
+<p>先使用默认参数都跑一遍，用交叉验证查看准确率的均值和标准差。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">models = &#123;&#125;</span><br><span class="line">models[<span class="string">&#x27;LogisticRegression&#x27;</span>] = LogisticRegressionCV()</span><br><span class="line">models[<span class="string">&#x27;NeuralNetwork&#x27;</span>] = MLPClassifier()</span><br><span class="line">models[<span class="string">&#x27;CART&#x27;</span>] = DecisionTreeClassifier()</span><br><span class="line">models[<span class="string">&#x27;SVM&#x27;</span>] = SVC()</span><br><span class="line">models[<span class="string">&#x27;KNN&#x27;</span>] = KNeighborsClassifier()</span><br><span class="line">models[<span class="string">&#x27;NaiveBayes&#x27;</span>] = BernoulliNB()</span><br><span class="line">models[<span class="string">&#x27;RandomForest&#x27;</span>] = RandomForestClassifier()</span><br><span class="line">models[<span class="string">&#x27;ExtraTree&#x27;</span>] = ExtraTreesClassifier()</span><br><span class="line">models[<span class="string">&#x27;AdaBoost&#x27;</span>] = AdaBoostClassifier()</span><br><span class="line">models[<span class="string">&#x27;GBDT&#x27;</span>] = GradientBoostingClassifier()</span><br><span class="line">models[<span class="string">&#x27;XGBoost&#x27;</span>] = XGBClassifier()</span><br><span class="line">models[<span class="string">&#x27;LightGBM&#x27;</span>] = LGBMClassifier()</span><br><span class="line"></span><br><span class="line">kf = KFold(<span class="number">10</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> model <span class="keyword">in</span> models:</span><br><span class="line">    cv_result = cross_val_score(models[model], X_train, y, cv=kf, scoring=<span class="string">&#x27;accuracy&#x27;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;%s模型的交叉验证得分平均值%.2f%%，标准差%.2f%%。&#x27;</span> % (model, cv_result.mean()*<span class="number">100</span>, cv_result.std()*<span class="number">100</span>))</span><br></pre></td></tr></table></figure>
+
+<p>这里没有设置随机数种子，因此每次跑模型，结果都是不一样的。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">LogisticRegression模型的交叉验证得分平均值80.47%，标准差3.86%。</span><br><span class="line">NeuralNetwork模型的交叉验证得分平均值80.81%，标准差4.46%。</span><br><span class="line">CART模型的交叉验证得分平均值80.36%，标准差3.30%。</span><br><span class="line">SVM模型的交叉验证得分平均值79.58%，标准差4.06%。</span><br><span class="line">KNN模型的交叉验证得分平均值79.13%，标准差4.39%。</span><br><span class="line">NaiveBayes模型的交叉验证得分平均值74.98%，标准差5.07%。</span><br><span class="line">RandomForest模型的交叉验证得分平均值80.93%，标准差3.55%。</span><br><span class="line">ExtraTree模型的交叉验证得分平均值80.59%，标准差3.24%。</span><br><span class="line">AdaBoost模型的交叉验证得分平均值79.01%，标准差4.40%。</span><br><span class="line">GBDT模型的交叉验证得分平均值81.71%，标准差3.35%。</span><br><span class="line">XGBoost模型的交叉验证得分平均值82.27%，标准差3.63%。</span><br><span class="line">LightGBM模型的交叉验证得分平均值81.15%，标准差3.81%。</span><br></pre></td></tr></table></figure>
+
+<p>可以看出大多数模型的准确率在80%附近，XGBoost效果最好，可以进一步调参优化；朴素贝叶斯较差，可以放弃。</p>
+<p>下面使用网格搜索法对随机森林、极端随机树、AdaBoost、GBDT、XGBoost、LightGBM进行调参。主要调试<code>n_estimators</code>，对于Boosting类的模型，还会调试<code>learnig_rate</code>这个参数，其余保持默认设置。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">bagging_models = &#123;<span class="string">&#x27;RandomForest&#x27;</span>: RandomForestClassifier(), <span class="string">&#x27;ExtraTree&#x27;</span>: ExtraTreesClassifier()&#125;</span><br><span class="line">boosting_models = &#123;<span class="string">&#x27;AdaBoost&#x27;</span>: AdaBoostClassifier(), <span class="string">&#x27;GBDT&#x27;</span>: GradientBoostingClassifier(), <span class="string">&#x27;XGBoost&#x27;</span>: XGBClassifier(), <span class="string">&#x27;LightGBM&#x27;</span>: LGBMClassifier()&#125;</span><br><span class="line"></span><br><span class="line">bagging_params = &#123;<span class="string">&#x27;n_estimators&#x27;</span>: [<span class="number">10</span>, <span class="number">50</span>, <span class="number">100</span>, <span class="number">200</span>, <span class="number">500</span>, <span class="number">800</span>]&#125;</span><br><span class="line">boosting_params = &#123;<span class="string">&#x27;n_estimators&#x27;</span>: [<span class="number">10</span>, <span class="number">50</span>, <span class="number">100</span>, <span class="number">200</span>, <span class="number">500</span>, <span class="number">800</span>], <span class="string">&#x27;learning_rate&#x27;</span>:[<span class="number">0.005</span>, <span class="number">0.01</span>, <span class="number">0.1</span>, <span class="number">1</span>]&#125;</span><br><span class="line"></span><br><span class="line">kf = KFold(<span class="number">10</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> model <span class="keyword">in</span> bagging_models:</span><br><span class="line">    grid = GridSearchCV(estimator=bagging_models[model], param_grid=bagging_params, cv=kf, scoring=<span class="string">&#x27;accuracy&#x27;</span>)</span><br><span class="line">    grid_result = grid.fit(X_train, y)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;%s模型的最优参数是%s，得分%.2f%%。&#x27;</span> % (model, grid_result.best_params_, grid_result.best_score_*<span class="number">100</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> model <span class="keyword">in</span> boosting_models:</span><br><span class="line">    grid = GridSearchCV(estimator=boosting_models[model], param_grid=boosting_params, cv=kf, scoring=<span class="string">&#x27;accuracy&#x27;</span>)</span><br><span class="line">    grid_result = grid.fit(X_train, y)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;%s模型的最优参数是%s，得分%.2f%%。&#x27;</span> % (model, grid_result.best_params_, grid_result.best_score_*<span class="number">100</span>))</span><br></pre></td></tr></table></figure>
+
+<p>一次跑下来的结果为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">RandomForest模型的最优参数是&#123;&#x27;n_estimators&#x27;: 50&#125;，得分81.37%。</span><br><span class="line">ExtraTree模型的最优参数是&#123;&#x27;n_estimators&#x27;: 200&#125;，得分80.81%。</span><br><span class="line">AdaBoost模型的最优参数是&#123;&#x27;learning_rate&#x27;: 0.01, &#x27;n_estimators&#x27;: 800&#125;，得分80.25%。</span><br><span class="line">GBDT模型的最优参数是&#123;&#x27;learning_rate&#x27;: 0.1, &#x27;n_estimators&#x27;: 50&#125;，得分82.15%。</span><br><span class="line">XGBoost模型的最优参数是&#123;&#x27;learning_rate&#x27;: 0.005, &#x27;n_estimators&#x27;: 800&#125;，得分82.49%。</span><br><span class="line">LightGBM模型的最优参数是&#123;&#x27;learning_rate&#x27;: 0.01, &#x27;n_estimators&#x27;: 500&#125;，得分81.82%。</span><br></pre></td></tr></table></figure>
+
+<p>如果使用单一模型，则XGBoost效果最好。接下来，尝试使用Stacking模型。</p>
+<h2 id="运用Stacking模型"><a href="#运用Stacking模型" class="headerlink" title="运用Stacking模型"></a>运用Stacking模型</h2><p>之前在<a href="http://ster.im/kaggle_03/#%E8%BF%9B%E9%98%B6%EF%BC%9AStacking%E9%9B%86%E6%88%90%E6%A8%A1%E5%9E%8B">房价预测</a>中，接触到了Stacking这一kaggle神器，这次来亲手尝试一下，构造一个Stacking类，虽然代码是直接抄过来的。</p>
+<p>原作者kernel地址：<a target="_blank" rel="noopener" href="https://www.kaggle.com/serigne/stacked-regressions-top-4-on-leaderboard">《Stacked Regressions : Top 4% on LeaderBoard》</a>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.base <span class="keyword">import</span> BaseEstimator, TransformerMixin, ClassifierMixin, clone</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">StackingAveragedModels</span>(<span class="params">BaseEstimator, ClassifierMixin, TransformerMixin</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, base_models, meta_model, n_folds=<span class="number">5</span></span>):</span></span><br><span class="line">        self.base_models = base_models</span><br><span class="line">        self.meta_model = meta_model</span><br><span class="line">        self.n_folds = n_folds</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 定义fit方法</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">fit</span>(<span class="params">self, X, y</span>):</span></span><br><span class="line">        self.base_models_ = [<span class="built_in">list</span>() <span class="keyword">for</span> x <span class="keyword">in</span> self.base_models]</span><br><span class="line">        self.meta_model_ = clone(self.meta_model)</span><br><span class="line">        kfold = KFold(n_splits=self.n_folds, shuffle=<span class="literal">True</span>, random_state=<span class="number">1</span>)</span><br><span class="line">        out_of_fold_predictions = np.zeros((X.shape[<span class="number">0</span>], <span class="built_in">len</span>(self.base_models)))</span><br><span class="line">        <span class="comment"># 用K折后的数据训练每一个初级分类器</span></span><br><span class="line">        <span class="keyword">for</span> i, model <span class="keyword">in</span> <span class="built_in">enumerate</span>(self.base_models):</span><br><span class="line">            <span class="keyword">for</span> train_index, holdout_index <span class="keyword">in</span> kfold.split(X, y):</span><br><span class="line">                instance = clone(model)</span><br><span class="line">                self.base_models_[i].append(instance)</span><br><span class="line">                instance.fit(X.iloc[train_index], y.iloc[train_index])</span><br><span class="line">                y_pred = instance.predict(X.iloc[holdout_index])</span><br><span class="line">                out_of_fold_predictions[holdout_index, i] = y_pred</span><br><span class="line">        <span class="comment"># 使用次级分类器拟合初级分类器预测的结果</span></span><br><span class="line">        self.meta_model_.fit(out_of_fold_predictions, y)</span><br><span class="line">        <span class="keyword">return</span> self</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 定义predict方法</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">predict</span>(<span class="params">self, X</span>):</span></span><br><span class="line">        meta_features = np.column_stack([np.column_stack([model.predict(X) <span class="keyword">for</span> model <span class="keyword">in</span> base_models]).mean(axis=<span class="number">1</span>) <span class="keyword">for</span> base_models <span class="keyword">in</span> self.base_models_])</span><br><span class="line">        <span class="keyword">return</span> self.meta_model_.predict(meta_features)</span><br></pre></td></tr></table></figure>
+
+<p>Anisotropic使用的Stacking是以随机森林、极端随机树、AdaBoost、GBDT、SVM作为元分类器，XGBoost作为次级分类器。于是我这样做：随机森林、极端随机树、AdaBoost、GBDT、LightGBM作为元分类器，XGBoost作为次级分类器。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">rf = RandomForestClassifier(n_estimators=<span class="number">50</span>)</span><br><span class="line">et = ExtraTreesClassifier(n_estimators=<span class="number">200</span>)</span><br><span class="line">ab = AdaBoostClassifier(n_estimators=<span class="number">800</span>, learning_rate=<span class="number">0.01</span>)</span><br><span class="line">gb = GradientBoostingClassifier(n_estimators=<span class="number">50</span>, learning_rate=<span class="number">0.1</span>)</span><br><span class="line">xg = XGBClassifier(n_estimators=<span class="number">800</span>, learning_rate=<span class="number">0.005</span>)</span><br><span class="line">lg = LGBMClassifier(n_estimators=<span class="number">500</span>, learning_rate=<span class="number">0.01</span>)</span><br><span class="line"></span><br><span class="line">stacked_averaged_models = StackingAveragedModels(base_models=(rf, et, ab, gb, lg), meta_model=xg)</span><br><span class="line">score = cross_val_score(stacked_averaged_models, X_train, y, cv=kf, scoring=<span class="string">&#x27;accuracy&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;Stacking模型的交叉验证得分平均值%.2f%%，标准差%.2f%%。&#x27;</span> % (score.mean()*<span class="number">100</span>, score.std()*<span class="number">100</span>))</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Stacking模型的交叉验证得分平均值81.37%，标准差3.92%。</span><br></pre></td></tr></table></figure>
+
+<p>结果令人失望：验证集精度不如单一模型。无论如何，分别提交XGBoost和Stacking的结果看看测试集精度如何。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># XGBoost</span></span><br><span class="line">xg = XGBClassifier(n_estimators=<span class="number">800</span>, learning_rate=<span class="number">0.005</span>)</span><br><span class="line">xg.fit(X_train, y)</span><br><span class="line">xg_pred = xg.predict(X_test)</span><br><span class="line">XGBoostSubmission = pd.DataFrame(&#123;<span class="string">&#x27;PassengerId&#x27;</span>: PassengerId, <span class="string">&#x27;Survived&#x27;</span>: xg_pred&#125;)</span><br><span class="line">XGBoostSubmission.to_csv(<span class="string">&quot;XGBoostSubmission.csv&quot;</span>, index=<span class="literal">False</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Stacking</span></span><br><span class="line">stacked_averaged_models.fit(X_train, y)</span><br><span class="line">stacking_pred = stacked_averaged_models.predict(X_test)</span><br><span class="line">StackingSubmission = pd.DataFrame(&#123;<span class="string">&#x27;PassengerId&#x27;</span>: PassengerId, <span class="string">&#x27;Survived&#x27;</span>: stacking_pred&#125;)</span><br><span class="line">StackingSubmission.to_csv(<span class="string">&quot;StackingSubmission.csv&quot;</span>, index=<span class="literal">False</span>)</span><br></pre></td></tr></table></figure>
+
+<p>Stacking模型在测试集上的得分为0.77990；XGBoost模型在测试集上的得分为0.79904，位列前14.9%。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>泰坦尼克号生还预测是一个非常适合入门的机器学习项目。通过这一次实战训练，有以下收获：</p>
+<ul>
+<li>掌握pandas的数据清洗和特征工程方法。</li>
+<li>熟悉sklearn的各种分类模型及其调参。</li>
+<li>了解Stacking，虽然这个任务中性能似乎不如XGBoost，但可能适合别的任务。</li>
+<li>在Kaggle阅读了越来越多的kernel，了解机器学习的前沿方法。</li>
+</ul>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE"><span class="toc-number">1.</span> <span class="toc-text">读取数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%BA%E5%A4%B1%E5%80%BC%E5%A4%84%E7%90%86"><span class="toc-number">2.</span> <span class="toc-text">缺失值处理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E7%BC%BA%E5%A4%B1%E5%80%BC"><span class="toc-number">2.1.</span> <span class="toc-text">查看缺失值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%84%E7%90%86%E2%80%99Cabin%E2%80%99%E7%9A%84%E7%BC%BA%E5%A4%B1%E5%80%BC"><span class="toc-number">2.2.</span> <span class="toc-text">处理’Cabin’的缺失值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%84%E7%90%86%E2%80%99Age%E2%80%99%E7%9A%84%E7%BC%BA%E5%A4%B1%E5%80%BC"><span class="toc-number">2.3.</span> <span class="toc-text">处理’Age’的缺失值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%84%E7%90%86%E2%80%99Embarked%E2%80%99%E5%92%8C%E2%80%99Fare%E2%80%99%E7%9A%84%E7%BC%BA%E5%A4%B1%E5%80%BC"><span class="toc-number">2.4.</span> <span class="toc-text">处理’Embarked’和’Fare’的缺失值</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%89%B9%E5%BE%81%E5%B7%A5%E7%A8%8B"><span class="toc-number">3.</span> <span class="toc-text">特征工程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%84%E7%90%86%E2%80%99Name%E2%80%99"><span class="toc-number">3.1.</span> <span class="toc-text">处理’Name’</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%84%E7%90%86%E2%80%99SibSp%E2%80%99%E5%92%8C%E2%80%99Parch%E2%80%99"><span class="toc-number">3.2.</span> <span class="toc-text">处理’SibSp’和’Parch’</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E8%BD%AC%E5%8C%96"><span class="toc-number">3.3.</span> <span class="toc-text">数据转化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%90%E7%94%A8%E5%8D%95%E4%B8%AA%E6%A8%A1%E5%9E%8B"><span class="toc-number">4.</span> <span class="toc-text">运用单个模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%90%E7%94%A8Stacking%E6%A8%A1%E5%9E%8B"><span class="toc-number">5.</span> <span class="toc-text">运用Stacking模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">6.</span> <span class="toc-text">总结</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ster.im/kaggle_05/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ster.im/kaggle_05/&text=Kaggle机器学习实战（5）——再探泰坦尼克"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ster.im/kaggle_05/&title=Kaggle机器学习实战（5）——再探泰坦尼克"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ster.im/kaggle_05/&is_video=false&description=Kaggle机器学习实战（5）——再探泰坦尼克"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Kaggle机器学习实战（5）——再探泰坦尼克&body=Check out this article: https://ster.im/kaggle_05/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ster.im/kaggle_05/&title=Kaggle机器学习实战（5）——再探泰坦尼克"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ster.im/kaggle_05/&title=Kaggle机器学习实战（5）——再探泰坦尼克"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ster.im/kaggle_05/&title=Kaggle机器学习实战（5）——再探泰坦尼克"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ster.im/kaggle_05/&title=Kaggle机器学习实战（5）——再探泰坦尼克"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ster.im/kaggle_05/&name=Kaggle机器学习实战（5）——再探泰坦尼克&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ster.im/kaggle_05/&t=Kaggle机器学习实战（5）——再探泰坦尼克"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2012-2021
+    Rarit7
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.3/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdn.bootcdn.net/ajax/libs/clipboard.js/2.0.8/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>

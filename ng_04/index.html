@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Deeplearning.ai网课《深度学习》第五章笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="吴恩达深度学习笔记（4）——序列模型">
+<meta property="og:url" content="https://ster.im/ng_04/index.html">
+<meta property="og:site_name" content="Rarit7&#39;s Blog">
+<meta property="og:description" content="Deeplearning.ai网课《深度学习》第五章笔记">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-04-20T14:20:42.000Z">
+<meta property="article:modified_time" content="2018-04-21T16:09:55.745Z">
+<meta property="article:author" content="Rarit7">
+<meta property="article:tag" content="深度学习">
+<meta property="article:tag" content="Andrew Ng">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>吴恩达深度学习笔记（4）——序列模型</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" "Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇 " href="/kaggle_04/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇 " href="/ng_03/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部 " href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章 " href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ster.im/ng_04/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ster.im/ng_04/&text=吴恩达深度学习笔记（4）——序列模型"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ster.im/ng_04/&title=吴恩达深度学习笔记（4）——序列模型"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ster.im/ng_04/&is_video=false&description=吴恩达深度学习笔记（4）——序列模型"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=吴恩达深度学习笔记（4）——序列模型&body=Check out this article: https://ster.im/ng_04/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ster.im/ng_04/&title=吴恩达深度学习笔记（4）——序列模型"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ster.im/ng_04/&title=吴恩达深度学习笔记（4）——序列模型"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ster.im/ng_04/&title=吴恩达深度学习笔记（4）——序列模型"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ster.im/ng_04/&title=吴恩达深度学习笔记（4）——序列模型"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ster.im/ng_04/&name=吴恩达深度学习笔记（4）——序列模型&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ster.im/ng_04/&t=吴恩达深度学习笔记（4）——序列模型"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BE%AA%E7%8E%AF%E5%BA%8F%E5%88%97%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.</span> <span class="toc-text">循环序列模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BA%8F%E5%88%97%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">1.1.</span> <span class="toc-text">序列模型应用场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E5%AD%A6%E7%AC%A6%E5%8F%B7"><span class="toc-number">1.2.</span> <span class="toc-text">数学符号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BE%AA%E7%8E%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.3.</span> <span class="toc-text">循环神经网络模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E6%97%B6%E9%97%B4%E7%9A%84%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD"><span class="toc-number">1.4.</span> <span class="toc-text">基于时间的反向传播</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8D%E5%90%8C%E7%B1%BB%E5%9E%8B%E7%9A%84RNN"><span class="toc-number">1.5.</span> <span class="toc-text">不同类型的RNN</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%92%8C%E5%BA%8F%E5%88%97%E7%94%9F%E6%88%90"><span class="toc-number">1.6.</span> <span class="toc-text">语言模型和序列生成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%8E%E8%AE%AD%E7%BB%83%E5%A5%BD%E7%9A%84RNN%E4%B8%AD%E9%87%8D%E9%87%87%E6%A0%B7"><span class="toc-number">1.7.</span> <span class="toc-text">从训练好的RNN中重采样</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A2%AF%E5%BA%A6%E6%B6%88%E5%A4%B1"><span class="toc-number">1.8.</span> <span class="toc-text">梯度消失</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GRU%E5%8D%95%E5%85%83"><span class="toc-number">1.9.</span> <span class="toc-text">GRU单元</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%95%BF%E7%9F%AD%E6%97%B6%E8%AE%B0%E5%BF%86%EF%BC%88LSTM%EF%BC%89"><span class="toc-number">1.10.</span> <span class="toc-text">长短时记忆（LSTM）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8C%E5%90%91RNN"><span class="toc-number">1.11.</span> <span class="toc-text">双向RNN</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%B1%E5%B1%82RNN"><span class="toc-number">1.12.</span> <span class="toc-text">深层RNN</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86"><span class="toc-number">2.</span> <span class="toc-text">自然语言处理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%8D%E5%B5%8C%E5%85%A5"><span class="toc-number">2.1.</span> <span class="toc-text">词嵌入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%86%E8%AF%8D%E5%B5%8C%E5%85%A5%E8%BF%90%E7%94%A8%E5%88%B0NLP%E4%B8%AD"><span class="toc-number">2.2.</span> <span class="toc-text">将词嵌入运用到NLP中</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%8D%E5%B5%8C%E5%85%A5%E7%9A%84%E7%89%B9%E6%80%A7"><span class="toc-number">2.3.</span> <span class="toc-text">词嵌入的特性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%8D%E5%B5%8C%E5%85%A5%E7%9F%A9%E9%98%B5"><span class="toc-number">2.4.</span> <span class="toc-text">词嵌入矩阵</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%A6%E4%B9%A0%E8%AF%8D%E5%B5%8C%E5%85%A5"><span class="toc-number">2.5.</span> <span class="toc-text">学习词嵌入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Word2Vec"><span class="toc-number">2.6.</span> <span class="toc-text">Word2Vec</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B4%9F%E9%87%87%E6%A0%B7"><span class="toc-number">2.7.</span> <span class="toc-text">负采样</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GloVe%E8%AF%8D%E5%90%91%E9%87%8F"><span class="toc-number">2.8.</span> <span class="toc-text">GloVe词向量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%83%85%E7%BB%AA%E5%88%86%E7%B1%BB"><span class="toc-number">2.9.</span> <span class="toc-text">情绪分类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%8D%E5%B5%8C%E5%85%A5%E9%99%A4%E5%81%8F"><span class="toc-number">2.10.</span> <span class="toc-text">词嵌入除偏</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%8F%E5%88%97%E6%A8%A1%E5%9E%8B%E5%92%8C%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6"><span class="toc-number">3.</span> <span class="toc-text">序列模型和注意力机制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Seq2Seq%E6%A8%A1%E5%9E%8B"><span class="toc-number">3.1.</span> <span class="toc-text">Seq2Seq模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E4%B8%8E%E6%9C%BA%E5%99%A8%E7%BF%BB%E8%AF%91"><span class="toc-number">3.2.</span> <span class="toc-text">语言模型与机器翻译</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9B%86%E6%9D%9F%E6%90%9C%E7%B4%A2"><span class="toc-number">3.3.</span> <span class="toc-text">集束搜索</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%95%BF%E5%BA%A6%E5%BD%92%E4%B8%80%E5%8C%96"><span class="toc-number">3.4.</span> <span class="toc-text">长度归一化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9B%86%E6%9D%9F%E6%90%9C%E7%B4%A2%E8%AF%AF%E5%B7%AE%E5%88%86%E6%9E%90"><span class="toc-number">3.5.</span> <span class="toc-text">集束搜索误差分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Bleu%E5%BE%97%E5%88%86"><span class="toc-number">3.6.</span> <span class="toc-text">Bleu得分</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%A8%A1%E5%9E%8B"><span class="toc-number">3.7.</span> <span class="toc-text">注意力模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB"><span class="toc-number">3.8.</span> <span class="toc-text">语音识别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A6%E5%8F%91%E5%AD%97%E6%A3%80%E6%B5%8B"><span class="toc-number">3.9.</span> <span class="toc-text">触发字检测</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        吴恩达深度学习笔记（4）——序列模型
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Rarit7</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2018-04-20T14:20:42.000Z" itemprop="datePublished">2018-04-20</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Andrew-Ng/" rel="tag">Andrew Ng</a>, <a class="tag-link-link" href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" rel="tag">深度学习</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="循环序列模型"><a href="#循环序列模型" class="headerlink" title="循环序列模型"></a>循环序列模型</h2><h3 id="序列模型应用场景"><a href="#序列模型应用场景" class="headerlink" title="序列模型应用场景"></a>序列模型应用场景</h3><ul>
+<li>声音转文字</li>
+<li>音乐生成</li>
+<li>自然语言情感分析</li>
+<li>DNA序列分析</li>
+<li>机器翻译</li>
+<li>视频行为识别</li>
+<li>人名识别</li>
+</ul>
+<h3 id="数学符号"><a href="#数学符号" class="headerlink" title="数学符号"></a>数学符号</h3><ul>
+<li>在NLP中，用$T_X^{(i)}$表示第$i$个训练样本的输入序列长度，$T_y^{(i)}$表示第$i$个训练样本的输出序列长度</li>
+<li>在词典中，遍历训练样本上的词汇，将样本中出现的词标注为1，其余为0</li>
+</ul>
+<h3 id="循环神经网络模型"><a href="#循环神经网络模型" class="headerlink" title="循环神经网络模型"></a>循环神经网络模型</h3><p>$$a^{&lt;0&gt;}=\vec{0}$$<br>$$a^{<t>}=g(W_{aa}a^{<t-1>}+W_{ax}X^{<t>}+b_a)$$<br>$$\hat{y}^{<t>}=g(W_{ya}a^{<t>}+b_y)$$</p>
+<ul>
+<li>为了简化计算，把上一次的激活值与这一次的输入合并为一个矩阵</li>
+</ul>
+<p>$$[W_{aa}\vdots W_{ax}]=W_a$$<br>$$a^{<t>}=g(W_a[a^{<t-1>},X^{<t>}]+b_a)$$</p>
+<ul>
+<li>循环神经网络的输出不仅取决于这一次的输入，也与上几次的输入有关</li>
+<li>一般的循环神经网络在某一时刻的预测只取决于之前的信息，与之后的信息无关，双向循环神经网络（BRNN）则取决于之前与之后的信息</li>
+<li>循环神经网络的激活函数通常选择<code>tanh</code>，有时也用<code>ReLU</code>，输出层一般是<code>sigmoid</code>或<code>softmax</code>函数</li>
+</ul>
+<h3 id="基于时间的反向传播"><a href="#基于时间的反向传播" class="headerlink" title="基于时间的反向传播"></a>基于时间的反向传播</h3><p>$$\mathcal{L}^{<t>}(\hat{y}^{<t>},y^{<t>})=-y^{<t>}\log\hat{y}^{<t>}-(1-y^{<t>})\log(1-\hat{y}^{<t>})$$<br>$$\mathcal{L}(\hat{y},y)=\sum^{T_y}_{t=1}\mathcal{L}^{<t>}(\hat{y}^{<t>},y^{<t>})$$</p>
+<h3 id="不同类型的RNN"><a href="#不同类型的RNN" class="headerlink" title="不同类型的RNN"></a>不同类型的RNN</h3><ul>
+<li>RNN经常用来处理$T_X^{(i)}\not=T_y^{(i)}$的情况</li>
+<li>文本情感分析：输入一整句话，只在最后的时刻输出，称为多对一结构</li>
+<li>音乐生成：输入一个向量（可以为零向量），每一时刻都有输出，并把输出输入到下一层，称为一对多结构</li>
+<li>机器翻译：输入和输出的长度不同，称为多对多结构</li>
+<li>其他：一对一结构、注意力结构</li>
+</ul>
+<h3 id="语言模型和序列生成"><a href="#语言模型和序列生成" class="headerlink" title="语言模型和序列生成"></a>语言模型和序列生成</h3><ul>
+<li>包含大量单词的语料库（<code>corpus</code>）</li>
+<li>某个词在词典中的位置为1，其余为0的向量：<code>1-hot</code>向量</li>
+<li>增加句子结尾的标识符<code>&lt;EOS&gt;</code></li>
+<li>对不存在字典中的词替换成<code>&lt;UNK&gt;</code>代表未知字符</li>
+<li>对于每时刻的输入，模型通过softmax函数给出预测，下一层通过输入上一层的$a$以及真实的$y$，预测这一时刻的输出</li>
+</ul>
+<h3 id="从训练好的RNN中重采样"><a href="#从训练好的RNN中重采样" class="headerlink" title="从训练好的RNN中重采样"></a>从训练好的RNN中重采样</h3><ul>
+<li>输入$a_0$和$X_1$，输出$\hat{y}_1$，将其作为下一个时刻的输入，直到最后输出<code>&lt;EOS&gt;</code>或达到设定长度为止</li>
+<li>除了基于单词的词典外，也有基于字符的词典，其优点是不会输出<code>&lt;UNK&gt;</code>，缺点是难以捕捉长句的前文关系，且计算代价高昂</li>
+</ul>
+<h3 id="梯度消失"><a href="#梯度消失" class="headerlink" title="梯度消失"></a>梯度消失</h3><ul>
+<li>基础的RNN模型不擅长捕获长期依赖效应（例如生成一个长句子很难记住单复数的形式），这与RNN模型梯度易消失有关</li>
+</ul>
+<h3 id="GRU单元"><a href="#GRU单元" class="headerlink" title="GRU单元"></a>GRU单元</h3><ul>
+<li>门控循环单元：改善梯度消失问题</li>
+<li>$c$称为记忆细胞，它具有记忆功能</li>
+</ul>
+<p>$$c^{<t>}=a^{<t>}$$<br>$$\tilde{c}^{<t>}=tanh(W_c[c^{<t-1>},X^{<t>}]+b_c)$$<br>$$\Gamma_u=\sigma(W_u[c^{<t-1>},X^{<t>}]+b_u)$$<br>$$c^{<t>}=\Gamma_u*\tilde{c}^{<t>}+(1-\Gamma_u)*c^{<t-1>}$$</p>
+<ul>
+<li>门$\Gamma_u$决定什么时候更新$c$的值，如果$\Gamma_u=1$则使用新值，如果$\Gamma_u=0$则使用旧值</li>
+</ul>
+<h3 id="长短时记忆（LSTM）"><a href="#长短时记忆（LSTM）" class="headerlink" title="长短时记忆（LSTM）"></a>长短时记忆（LSTM）</h3><ul>
+<li>通常，LSTM比GRU更加强大和灵活</li>
+</ul>
+<p>$$\tilde{c}^{<t>}=tanh(W_c[a^{<t-1>},X^{<t>}]+b_c)$$<br>$$\Gamma_u=\sigma(W_u[a^{<t-1>},X^{<t>}]+b_u)\ \text{(update)}$$<br>$$\Gamma_f=\sigma(W_f[a^{<t-1>},X^{<t>}]+b_f)\ \text{(forget)}$$<br>$$\Gamma_o=\sigma(W_o[a^{<t-1>},X^{<t>}]+b_o)\ \text{(output)}$$<br>$$c^{<t>}=\Gamma_u<em>\tilde{c}^{<t>}+\Gamma_f</em>c^{<t-1>}$$<br>$$a^{<t>}=\Gamma_o*\tanh\ c^{<t>}$$</p>
+<ul>
+<li>偷窥孔连接（Peephole Connection）：门值不仅取决于上一个激活值和X，也取决于上一个记忆细胞的值</li>
+</ul>
+<h3 id="双向RNN"><a href="#双向RNN" class="headerlink" title="双向RNN"></a>双向RNN</h3><ul>
+<li>增加反向连接层，前向传播一部分计算从左到右，另一部分从右到左，计算两部分的激活值</li>
+</ul>
+<p>$$\hat{y}^{<t>}=g(W_y[\overrightarrow{a^{<t>}},\overleftarrow{a^{<t>}}]+b_y)$$</p>
+<ul>
+<li>NLP问题首选LSTM+BRNN模型</li>
+<li>缺点是需要完整的数据序列</li>
+</ul>
+<h3 id="深层RNN"><a href="#深层RNN" class="headerlink" title="深层RNN"></a>深层RNN</h3><ul>
+<li>通常，循环神经网络只有一个隐藏层，当使用两个以上隐藏层时得到深度循环神经网络</li>
+</ul>
+<h2 id="自然语言处理"><a href="#自然语言处理" class="headerlink" title="自然语言处理"></a>自然语言处理</h2><h3 id="词嵌入"><a href="#词嵌入" class="headerlink" title="词嵌入"></a>词嵌入</h3><ul>
+<li>词汇表与<code>1-hot</code>向量：任何词向量的内积都是0，因此对相关词的泛化性能不强</li>
+<li>使用词的高维特征表示（词嵌入），能够得到更好的泛化性能</li>
+<li><code>t-SNE</code>算法能将词的高维特征可视化到二维空间里</li>
+</ul>
+<h3 id="将词嵌入运用到NLP中"><a href="#将词嵌入运用到NLP中" class="headerlink" title="将词嵌入运用到NLP中"></a>将词嵌入运用到NLP中</h3><ul>
+<li>词嵌入算法会考察非常大的文本量（或者来自互联网上的预先训练好的模型），迁移学习到只有少量标记的训练集中，并可以利用新数据微调词嵌入模型</li>
+</ul>
+<h3 id="词嵌入的特性"><a href="#词嵌入的特性" class="headerlink" title="词嵌入的特性"></a>词嵌入的特性</h3><ul>
+<li>类比：将具有相关性的词的向量相减，得到两者之间的特征向量，可用于类比到具有相似性质的词上，例如，要从“man”以及“woman”之间的关系求“King”相对应的词(期望是“Queen”)，只要求</li>
+</ul>
+<p>$$e_{man}-e_{woman}\approx e_{king}-e_w$$<br>$$\text{Find word w}:\arg\max \ sim(e_w,e_{king}-e_{man}+e_{women})$$</p>
+<ul>
+<li>其中利用向量间的余弦相似度</li>
+</ul>
+<p>$$sim(u,v)=\frac{u^Tv}{||u||_2||v||_2}$$</p>
+<h3 id="词嵌入矩阵"><a href="#词嵌入矩阵" class="headerlink" title="词嵌入矩阵"></a>词嵌入矩阵</h3><ul>
+<li>例如，有一个词典$E$，具有10000个词汇和300维特征，它是$300\times10000$维的矩阵；其中第6257位的单词“Orange”的<code>1-hot</code>向量为10000维向量，相乘得到“Orange”的嵌入向量</li>
+</ul>
+<p>$$E\cdot o_{6257}=e_{6257}$$</p>
+<ul>
+<li>在实际中利用矩阵乘法获取嵌入向量效率低下，因此直接获取词典矩阵的某一列元素</li>
+</ul>
+<h3 id="学习词嵌入"><a href="#学习词嵌入" class="headerlink" title="学习词嵌入"></a>学习词嵌入</h3><ul>
+<li>预测一句话的最后一个单词，可将这句话前面的所有单词（或者固定长度的历史窗口）的向量输入一个神经网络，经过softmax函数输出预测的单词</li>
+<li>其他方法包括将所需预测单词的左边n个和右边n个单词输入神经网络；或只取所需预测单词的左边1个单词；或取最邻近的某个单词，称为<code>skip-gram</code>模型</li>
+</ul>
+<h3 id="Word2Vec"><a href="#Word2Vec" class="headerlink" title="Word2Vec"></a>Word2Vec</h3><ul>
+<li><code>skip-gram</code>：抽取上下文的目标词配对，构造监督学习问题</li>
+<li>输入一个词的<code>1-hot</code>向量，与词嵌入矩阵相乘得到嵌入向量，输入进softmax函数，预测这个词前后是什么词的概率</li>
+<li>例如在10000维的词典中，得到某单词的嵌入向量$e_c$，输入softmax函数，输出预测$\hat{y}$</li>
+</ul>
+<p>$$P(t|c)=\frac{e^{\theta_t^Te_c}}{\sum^{10000}<em>{j=1}e^{\theta_j^Te_c}}$$<br>$$\mathcal{L}(\hat{y},y)=-\sum^{10000}</em>{i=1}y_i\log \hat{y}_i$$</p>
+<ul>
+<li>$\theta_t$是与$t$有关的参数，是$t$与标签相符的概率</li>
+<li>由于过大的词典会导致计算代价高昂，故常采用树状二分类器</li>
+<li><code>CBOW</code>：获得中间词两边的上下文，利用周围的词预测中间词</li>
+</ul>
+<h3 id="负采样"><a href="#负采样" class="headerlink" title="负采样"></a>负采样</h3><ul>
+<li>在一句话中抽取一个上下文词和目标词作为一对正样本，利用相同的上下文词在词典中抽取k个词作为负样本，即便这个词出现在目标词上下文中</li>
+<li>学习算法输入一对词，输出它们是否配对的预测</li>
+<li>对于小数据集，k选取5～20</li>
+<li>对于大数据集，k选取2～5</li>
+<li>将1个正样本和k个负样本输入softmax函数</li>
+</ul>
+<p>$$P(y=1|c,t)=\sigma(\theta_t^Te_c)$$</p>
+<ul>
+<li>相比<code>skip-gram</code>，只需更新k+1个logistic单元</li>
+<li>负采样的抽样方法：根据经验，按照英文单词分布的抽样方法</li>
+</ul>
+<p>$$P(W_i)=\frac{f(W_i)^{\frac{3}{4}}}{\sum^{10000}_{j=1}f(W_j)^{\frac{3}{4}}}$$</p>
+<h3 id="GloVe词向量"><a href="#GloVe词向量" class="headerlink" title="GloVe词向量"></a>GloVe词向量</h3><ul>
+<li>记$X_{ij}$是单词i在单词j上下文中出现的次数</li>
+</ul>
+<p>$$\text{minimize} \sum^{10000}<em>{i=1}\sum^{10000}</em>{j=1}f(X_{ij})(\theta^T_ie_j+b_i+b_j’-\log X_{ij})^2$$</p>
+<h3 id="情绪分类"><a href="#情绪分类" class="headerlink" title="情绪分类"></a>情绪分类</h3><ul>
+<li>从一句话的单词中提取嵌入向量，用求和或平均的方法得到特征向量，输入softmax函数，预测评分</li>
+<li>缺点：没有考虑词序对情绪分类的影响</li>
+<li>使用多对一的RNN结构，在最后时刻输出对整句话的评分</li>
+</ul>
+<h3 id="词嵌入除偏"><a href="#词嵌入除偏" class="headerlink" title="词嵌入除偏"></a>词嵌入除偏</h3><ul>
+<li>使用机器学习进行决策的一个优点在于避免了人为的主观偏见，而词嵌入模型往往会出现性别歧视、种族歧视、年龄歧视等不期望出现的偏见，因此要修改学习算法尽量避免这些偏见</li>
+<li>辨别出想要消除特定偏见的趋势，例如求出“he”和“she”以及“male”和“female”的嵌入向量之差，求平均得到性别偏见的方向向量</li>
+<li>中和步（<code>Neutralizer</code>）：对于定义不明确的单词，例如“doctor”和“babysitter”，减少它们在存在偏见的方向上的距离</li>
+<li>均衡步（<code>Equalize pairs</code>）：利用线性代数的方法让存在明显性别区别的一对词同某个不存在性别偏见的词的距离相接近</li>
+</ul>
+<h2 id="序列模型和注意力机制"><a href="#序列模型和注意力机制" class="headerlink" title="序列模型和注意力机制"></a>序列模型和注意力机制</h2><h3 id="Seq2Seq模型"><a href="#Seq2Seq模型" class="headerlink" title="Seq2Seq模型"></a>Seq2Seq模型</h3><ul>
+<li>机器翻译：多对多结构</li>
+<li>图片转文字：用循环网络替换深度卷积网络的softmax层</li>
+</ul>
+<h3 id="语言模型与机器翻译"><a href="#语言模型与机器翻译" class="headerlink" title="语言模型与机器翻译"></a>语言模型与机器翻译</h3><ul>
+<li>语言模型：输入一个零向量，用上一时刻的输出作为这一时刻的输入</li>
+<li>机器翻译（条件语言模型）：后半部分（Decoder）类似于语言模型，区别在于输入是一个句子构成Encoder</li>
+<li>贪心搜索：每个时刻都取概率最大的输出值</li>
+</ul>
+<p>$$\arg\max_{y^{&lt;1&gt;},\cdots,y^{<Ty>}}P(y^{&lt;1&gt;},\cdots,y^{<Ty>}|x)$$</p>
+<h3 id="集束搜索"><a href="#集束搜索" class="headerlink" title="集束搜索"></a>集束搜索</h3><ul>
+<li>集束宽度（<code>Beam Width</code>）：集束搜索考虑的结果个数</li>
+<li>集束宽度大，结果越好，计算越慢</li>
+<li>集束搜索在每一时刻的输入都保留集束宽度个结果，结果通常比贪心搜索效果好</li>
+<li>第一步输入Encoder的结果，输出词典中每个词的概率，取前集束宽度个结果保存，并作为下一时刻的输入</li>
+<li>第二步将上一时刻的多个输出作为输入，计算组合概率</li>
+</ul>
+<p>$$P(y^{&lt;1&gt;},y^{&lt;2&gt;}|x)=P(y^{&lt;1&gt;}|x)P(y^{&lt;2&gt;}|x,y^{&lt;1&gt;})$$</p>
+<h3 id="长度归一化"><a href="#长度归一化" class="headerlink" title="长度归一化"></a>长度归一化</h3><ul>
+<li>集束搜索的目标是最大化条件概率</li>
+</ul>
+<p>$$\arg\max_y\prod^{T_y}_{t=1}P(y^{<t>}|x,y^{&lt;1&gt;},\cdots,y^{<t-1>})$$</p>
+<ul>
+<li>为了防止结果超出浮点精度，通常取对数</li>
+</ul>
+<p>$$\arg\max_y\sum^{T_y}_{t=1}\log P(y^{<t>}|x,y^{&lt;1&gt;},\cdots,y^{<t-1>})$$</p>
+<ul>
+<li>它会导致输出偏向较短的句子，因此采用归一化方法</li>
+</ul>
+<p>$$\frac{1}{T_y^\alpha}\sum_{t=1}^{T_y}\log P(y^{<t>}|x,y^{&lt;1&gt;},\cdots,y^{<t-1>})$$</p>
+<ul>
+<li>通常取$\alpha=0.7$</li>
+</ul>
+<h3 id="集束搜索误差分析"><a href="#集束搜索误差分析" class="headerlink" title="集束搜索误差分析"></a>集束搜索误差分析</h3><ul>
+<li>误差来源有RNN和集束搜索</li>
+<li>设人工翻译的预测为$y^*$，机器翻译的预测为$\hat{y}$</li>
+<li>若$P(y^*|x)&gt;P(\hat{y}|x)$：集束搜索出现问题</li>
+<li>若$P(y^*|x)\leq P(\hat{y}|x)$：RNN出现问题</li>
+<li>对多个样本进行分析，从而判断主因</li>
+</ul>
+<h3 id="Bleu得分"><a href="#Bleu得分" class="headerlink" title="Bleu得分"></a>Bleu得分</h3><ul>
+<li>Bleu得分能自动评价机器翻译的好坏</li>
+<li>Bleu的原理是观察机器翻译的结果是否在人工翻译中至少出现一次</li>
+<li>改良后的精度评估：分母为某个单词在机器翻译中出现的次数，分子为该单词在人工翻译样本中出现次数的最大值</li>
+<li>以上扩展至n元词组，将从1至n的Bleu得分平均，并引入BP（简短惩罚）以惩罚太短的翻译结果，得到联合Bleu得分</li>
+</ul>
+<p>$$BP=\begin{cases}1\ \text{if MT output length&gt;reference output length}\\exp(1-\frac{\text{MT output length}}{\text{reference output length}})\ \text{otherwise}\end{cases}$$</p>
+<h3 id="注意力模型"><a href="#注意力模型" class="headerlink" title="注意力模型"></a>注意力模型</h3><ul>
+<li>机器翻译通常在短句子上Bleu得分较高，在长句子上得分较低</li>
+<li>注意力模型使用注意力参数$\alpha^{&lt;t,t’&gt;}$来表示生成单词$t$时应该放多少注意力在单词$t’$上</li>
+</ul>
+<p>$$\sum_{t’}\alpha^{&lt;t,t’&gt;}=1$$</p>
+<ul>
+<li>将X输入双向RNN中，得到前向和后向激活值，激活值乘以注意力参数得到上下文关系，输入到隐藏层S中</li>
+</ul>
+<p>$$c^{<t>}=\sum_{t’}\alpha^{&lt;t,t’&gt;}a^{&lt;t’&gt;}$$</p>
+<ul>
+<li>把上一个S层的输出以及激活值输入到softmax函数，输出$e^{&lt;t,t’&gt;}$，并计算注意力参数$\alpha$</li>
+</ul>
+<p>$$\alpha^{&lt;t,t’&gt;}=\frac{\exp(e^{&lt;t,t’&gt;})}{\sum^{T_x}_{t’=1}\exp(e^{&lt;t,t’&gt;})}$$</p>
+<h3 id="语音识别"><a href="#语音识别" class="headerlink" title="语音识别"></a>语音识别</h3><ul>
+<li>注意力模型的语音识别</li>
+<li>CTC损失函数语音识别：通过输出重复字符和空白符以使得输出维度等于输入维度，通过把空白符分隔开的重复字符折叠起来，得到较短的句子</li>
+</ul>
+<h3 id="触发字检测"><a href="#触发字检测" class="headerlink" title="触发字检测"></a>触发字检测</h3><ul>
+<li>例如，Google Home（Okay Google），Apple Siri（Hey Siri）</li>
+<li>平时的标签为0，当检测到关键字时，标签为1</li>
+<li>为了适当提高标签为1的比例，并非只在一个时刻点标签1，而是一段时间内标签1</li>
+</ul>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BE%AA%E7%8E%AF%E5%BA%8F%E5%88%97%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.</span> <span class="toc-text">循环序列模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BA%8F%E5%88%97%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">1.1.</span> <span class="toc-text">序列模型应用场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E5%AD%A6%E7%AC%A6%E5%8F%B7"><span class="toc-number">1.2.</span> <span class="toc-text">数学符号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BE%AA%E7%8E%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.3.</span> <span class="toc-text">循环神经网络模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E6%97%B6%E9%97%B4%E7%9A%84%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD"><span class="toc-number">1.4.</span> <span class="toc-text">基于时间的反向传播</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8D%E5%90%8C%E7%B1%BB%E5%9E%8B%E7%9A%84RNN"><span class="toc-number">1.5.</span> <span class="toc-text">不同类型的RNN</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%92%8C%E5%BA%8F%E5%88%97%E7%94%9F%E6%88%90"><span class="toc-number">1.6.</span> <span class="toc-text">语言模型和序列生成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%8E%E8%AE%AD%E7%BB%83%E5%A5%BD%E7%9A%84RNN%E4%B8%AD%E9%87%8D%E9%87%87%E6%A0%B7"><span class="toc-number">1.7.</span> <span class="toc-text">从训练好的RNN中重采样</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A2%AF%E5%BA%A6%E6%B6%88%E5%A4%B1"><span class="toc-number">1.8.</span> <span class="toc-text">梯度消失</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GRU%E5%8D%95%E5%85%83"><span class="toc-number">1.9.</span> <span class="toc-text">GRU单元</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%95%BF%E7%9F%AD%E6%97%B6%E8%AE%B0%E5%BF%86%EF%BC%88LSTM%EF%BC%89"><span class="toc-number">1.10.</span> <span class="toc-text">长短时记忆（LSTM）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8C%E5%90%91RNN"><span class="toc-number">1.11.</span> <span class="toc-text">双向RNN</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%B1%E5%B1%82RNN"><span class="toc-number">1.12.</span> <span class="toc-text">深层RNN</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86"><span class="toc-number">2.</span> <span class="toc-text">自然语言处理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%8D%E5%B5%8C%E5%85%A5"><span class="toc-number">2.1.</span> <span class="toc-text">词嵌入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%86%E8%AF%8D%E5%B5%8C%E5%85%A5%E8%BF%90%E7%94%A8%E5%88%B0NLP%E4%B8%AD"><span class="toc-number">2.2.</span> <span class="toc-text">将词嵌入运用到NLP中</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%8D%E5%B5%8C%E5%85%A5%E7%9A%84%E7%89%B9%E6%80%A7"><span class="toc-number">2.3.</span> <span class="toc-text">词嵌入的特性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%8D%E5%B5%8C%E5%85%A5%E7%9F%A9%E9%98%B5"><span class="toc-number">2.4.</span> <span class="toc-text">词嵌入矩阵</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%A6%E4%B9%A0%E8%AF%8D%E5%B5%8C%E5%85%A5"><span class="toc-number">2.5.</span> <span class="toc-text">学习词嵌入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Word2Vec"><span class="toc-number">2.6.</span> <span class="toc-text">Word2Vec</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B4%9F%E9%87%87%E6%A0%B7"><span class="toc-number">2.7.</span> <span class="toc-text">负采样</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GloVe%E8%AF%8D%E5%90%91%E9%87%8F"><span class="toc-number">2.8.</span> <span class="toc-text">GloVe词向量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%83%85%E7%BB%AA%E5%88%86%E7%B1%BB"><span class="toc-number">2.9.</span> <span class="toc-text">情绪分类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%8D%E5%B5%8C%E5%85%A5%E9%99%A4%E5%81%8F"><span class="toc-number">2.10.</span> <span class="toc-text">词嵌入除偏</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%8F%E5%88%97%E6%A8%A1%E5%9E%8B%E5%92%8C%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6"><span class="toc-number">3.</span> <span class="toc-text">序列模型和注意力机制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Seq2Seq%E6%A8%A1%E5%9E%8B"><span class="toc-number">3.1.</span> <span class="toc-text">Seq2Seq模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E4%B8%8E%E6%9C%BA%E5%99%A8%E7%BF%BB%E8%AF%91"><span class="toc-number">3.2.</span> <span class="toc-text">语言模型与机器翻译</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9B%86%E6%9D%9F%E6%90%9C%E7%B4%A2"><span class="toc-number">3.3.</span> <span class="toc-text">集束搜索</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%95%BF%E5%BA%A6%E5%BD%92%E4%B8%80%E5%8C%96"><span class="toc-number">3.4.</span> <span class="toc-text">长度归一化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9B%86%E6%9D%9F%E6%90%9C%E7%B4%A2%E8%AF%AF%E5%B7%AE%E5%88%86%E6%9E%90"><span class="toc-number">3.5.</span> <span class="toc-text">集束搜索误差分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Bleu%E5%BE%97%E5%88%86"><span class="toc-number">3.6.</span> <span class="toc-text">Bleu得分</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%A8%A1%E5%9E%8B"><span class="toc-number">3.7.</span> <span class="toc-text">注意力模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB"><span class="toc-number">3.8.</span> <span class="toc-text">语音识别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A6%E5%8F%91%E5%AD%97%E6%A3%80%E6%B5%8B"><span class="toc-number">3.9.</span> <span class="toc-text">触发字检测</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ster.im/ng_04/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ster.im/ng_04/&text=吴恩达深度学习笔记（4）——序列模型"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ster.im/ng_04/&title=吴恩达深度学习笔记（4）——序列模型"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ster.im/ng_04/&is_video=false&description=吴恩达深度学习笔记（4）——序列模型"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=吴恩达深度学习笔记（4）——序列模型&body=Check out this article: https://ster.im/ng_04/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ster.im/ng_04/&title=吴恩达深度学习笔记（4）——序列模型"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ster.im/ng_04/&title=吴恩达深度学习笔记（4）——序列模型"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ster.im/ng_04/&title=吴恩达深度学习笔记（4）——序列模型"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ster.im/ng_04/&title=吴恩达深度学习笔记（4）——序列模型"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ster.im/ng_04/&name=吴恩达深度学习笔记（4）——序列模型&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ster.im/ng_04/&t=吴恩达深度学习笔记（4）——序列模型"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2012-2021
+    Rarit7
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.3/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdn.bootcdn.net/ajax/libs/clipboard.js/2.0.8/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>

@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Deeplearning.ai网课《深度学习》第四章笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="吴恩达深度学习笔记（3）——卷积神经网络">
+<meta property="og:url" content="https://ster.im/ng_03/index.html">
+<meta property="og:site_name" content="Rarit7&#39;s Blog">
+<meta property="og:description" content="Deeplearning.ai网课《深度学习》第四章笔记">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-04-18T07:00:10.000Z">
+<meta property="article:modified_time" content="2018-04-21T04:33:27.874Z">
+<meta property="article:author" content="Rarit7">
+<meta property="article:tag" content="深度学习">
+<meta property="article:tag" content="Andrew Ng">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>吴恩达深度学习笔记（3）——卷积神经网络</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" "Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇 " href="/ng_04/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇 " href="/ng_02/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部 " href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章 " href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ster.im/ng_03/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ster.im/ng_03/&text=吴恩达深度学习笔记（3）——卷积神经网络"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ster.im/ng_03/&title=吴恩达深度学习笔记（3）——卷积神经网络"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ster.im/ng_03/&is_video=false&description=吴恩达深度学习笔记（3）——卷积神经网络"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=吴恩达深度学习笔记（3）——卷积神经网络&body=Check out this article: https://ster.im/ng_03/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ster.im/ng_03/&title=吴恩达深度学习笔记（3）——卷积神经网络"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ster.im/ng_03/&title=吴恩达深度学习笔记（3）——卷积神经网络"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ster.im/ng_03/&title=吴恩达深度学习笔记（3）——卷积神经网络"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ster.im/ng_03/&title=吴恩达深度学习笔记（3）——卷积神经网络"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ster.im/ng_03/&name=吴恩达深度学习笔记（3）——卷积神经网络&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ster.im/ng_03/&t=吴恩达深度学习笔记（3）——卷积神经网络"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="toc-number">1.</span> <span class="toc-text">卷积神经网络</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B"><span class="toc-number">1.1.</span> <span class="toc-text">边缘检测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Padding"><span class="toc-number">1.2.</span> <span class="toc-text">Padding</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%B7%E7%A7%AF%E6%AD%A5%E9%95%BF"><span class="toc-number">1.3.</span> <span class="toc-text">卷积步长</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%B7%E7%A7%AF%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-number">1.4.</span> <span class="toc-text">卷积的实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%B7%E7%A7%AF%E5%B1%82"><span class="toc-number">1.5.</span> <span class="toc-text">卷积层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B1%A0%E5%8C%96%E5%B1%82"><span class="toc-number">1.6.</span> <span class="toc-text">池化层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9E%84%E5%BB%BA%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="toc-number">1.7.</span> <span class="toc-text">构建卷积神经网络</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BD%BF%E7%94%A8%E5%8D%B7%E7%A7%AF"><span class="toc-number">1.8.</span> <span class="toc-text">为什么要使用卷积</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%8F%E5%85%B8%E5%8D%B7%E7%A7%AF%E7%BD%91%E7%BB%9C"><span class="toc-number">1.9.</span> <span class="toc-text">经典卷积网络</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0"><span class="toc-number">1.10.</span> <span class="toc-text">迁移学习</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%A2%9E%E5%BC%BA"><span class="toc-number">1.11.</span> <span class="toc-text">数据增强</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89%E7%8E%B0%E7%8A%B6"><span class="toc-number">1.12.</span> <span class="toc-text">计算机视觉现状</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B"><span class="toc-number">2.</span> <span class="toc-text">目标检测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%AE%E6%A0%87%E5%AE%9A%E4%BD%8D"><span class="toc-number">2.1.</span> <span class="toc-text">目标定位</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%89%B9%E5%BE%81%E7%82%B9%E6%A3%80%E6%B5%8B"><span class="toc-number">2.2.</span> <span class="toc-text">特征点检测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E7%AE%97%E6%B3%95"><span class="toc-number">2.3.</span> <span class="toc-text">目标检测算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Bounding-Box"><span class="toc-number">2.4.</span> <span class="toc-text">Bounding Box</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%A4%E5%B9%B6%E6%AF%94IoU"><span class="toc-number">2.5.</span> <span class="toc-text">交并比IoU</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%9E%E6%9C%80%E5%A4%A7%E5%80%BC%E6%8A%91%E5%88%B6"><span class="toc-number">2.6.</span> <span class="toc-text">非最大值抑制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Anchor-Box"><span class="toc-number">2.7.</span> <span class="toc-text">Anchor Box</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#YOLO%E7%AE%97%E6%B3%95%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.8.</span> <span class="toc-text">YOLO算法的实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#R-CNN%E7%AE%97%E6%B3%95"><span class="toc-number">2.9.</span> <span class="toc-text">R-CNN算法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB"><span class="toc-number">3.</span> <span class="toc-text">人脸识别</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%BA%E8%84%B8%E9%AA%8C%E8%AF%81vs%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB"><span class="toc-number">3.1.</span> <span class="toc-text">人脸验证vs人脸识别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E6%AC%A1%E8%AF%86%E5%88%AB"><span class="toc-number">3.2.</span> <span class="toc-text">一次识别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Simaese%E7%AE%97%E6%B3%95"><span class="toc-number">3.3.</span> <span class="toc-text">Simaese算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Triplet%E6%8D%9F%E5%A4%B1"><span class="toc-number">3.4.</span> <span class="toc-text">Triplet损失</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%A2%E9%83%A8%E9%AA%8C%E8%AF%81%E4%B8%8E%E8%80%8C%E5%88%86%E7%B1%BB"><span class="toc-number">3.5.</span> <span class="toc-text">面部验证与而分类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A5%9E%E7%BB%8F%E9%A3%8E%E6%A0%BC%E8%BF%81%E7%A7%BB"><span class="toc-number">3.6.</span> <span class="toc-text">神经风格迁移</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        吴恩达深度学习笔记（3）——卷积神经网络
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Rarit7</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2018-04-18T07:00:10.000Z" itemprop="datePublished">2018-04-18</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Andrew-Ng/" rel="tag">Andrew Ng</a>, <a class="tag-link-link" href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" rel="tag">深度学习</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="卷积神经网络"><a href="#卷积神经网络" class="headerlink" title="卷积神经网络"></a>卷积神经网络</h2><h3 id="边缘检测"><a href="#边缘检测" class="headerlink" title="边缘检测"></a>边缘检测</h3><ul>
+<li>过滤器/卷积核（<code>Filter</code>）</li>
+<li>从图像矩阵中选取与卷积核维度相同的子矩阵，与卷积核矩阵进行元素相乘</li>
+<li>设输入一个$n\times n$的矩阵，经过$f\times f$的卷积核运算，输出一个$(n-f+1)\times (n-f+1)$维度的矩阵</li>
+<li>例如，一幅$6\times6$的图像矩阵，经过$3\times3$的卷积核运算，变换为$4\times4$的矩阵</li>
+<li>一种垂直边缘检测卷积核：</li>
+</ul>
+<p>$$\begin{bmatrix}1&amp;0&amp;-1 \ 1&amp;0&amp;-1 \ 1&amp;0&amp;-1 \end{bmatrix}$$</p>
+<ul>
+<li>一种水平边缘检测卷积核：</li>
+</ul>
+<p>$$\begin{bmatrix}1&amp;1&amp;1 \ 0&amp;0&amp;0 \ -1&amp;-1&amp;-1 \end{bmatrix}$$</p>
+<h3 id="Padding"><a href="#Padding" class="headerlink" title="Padding"></a>Padding</h3><ul>
+<li>卷积的缺点：经过多层之后，图片会变得很小；图像边缘大部分信息丢失</li>
+<li><code>Padding</code>就是在图像周围填充像素点，以克服上述缺点</li>
+<li>填充像素的多少采用<code>Valid</code>和<code>Same</code>两种方式确定</li>
+<li><code>Same</code>是输入的图像和输出的图像维度相同，即</li>
+</ul>
+<p>$$n+2p-f+1=n,\ p=\frac{f-1}{2}$$</p>
+<h3 id="卷积步长"><a href="#卷积步长" class="headerlink" title="卷积步长"></a>卷积步长</h3><ul>
+<li>设步长为s，则输出矩阵的维度是$[\frac{n+2p-f}{s}+1]\times[\frac{n+2p-f}{s}+1]$</li>
+</ul>
+<h3 id="卷积的实现"><a href="#卷积的实现" class="headerlink" title="卷积的实现"></a>卷积的实现</h3><ul>
+<li>图像和过滤器都有高、宽和通道数，且两者的通道数相等，输出是一个二维矩阵</li>
+<li>如果应用了多种过滤器，将它们的输出组合成三维矩阵</li>
+</ul>
+<p>$$n\times n\times n_c * f\times f\times n_c\longrightarrow(n-f+1)\times(n-f+1)\times n’_c$$</p>
+<h3 id="卷积层"><a href="#卷积层" class="headerlink" title="卷积层"></a>卷积层</h3><ul>
+<li>设第$l$层为卷积层</li>
+<li>$f^{[l]}$为过滤器的维度</li>
+<li>$p^{[l]}$为padding的大小</li>
+<li>$s^{[l]}$为步长</li>
+<li>$n_C^{[l]}$为过滤器的数量</li>
+<li>$n_C^{[l-1]}$为通道数</li>
+<li>每个过滤器大小为$f^{[l]}\times f^{[l]}\times n_C^{[l-1]}$</li>
+<li>输入层是一个$n_H^{[l-1]}\times n_W^{[l-1]}\times n_C^{[l-1]}$的图像</li>
+<li>输出层是一个$n_H^{[l]}\times n_W^{[l]}\times n_C^{[l]}$的图像，其中宽、高:</li>
+</ul>
+<p>$$n^{[l]}=[\frac{n^{[l-1]}+2p^{[l]}-f^{[l]}}{s^{[l]}}+1]$$</p>
+<ul>
+<li>激活的单元$a^{[l]}$为$n_H^{[l]}\times n_W^{[l]}\times n_C^{[l]}$</li>
+<li>m个样本，$A^{[l]}$为$m\times n_H^{[l]}\times n_W^{[l]}\times n_C^{[l]}$</li>
+<li>权重$W$为$f^{[l]}\times f^{[l]}\times n_C^{[l-1]}\times n_C^{[l]}$</li>
+<li>偏差$b$为$1\times1\times1\times n_C^{[l]}$</li>
+</ul>
+<h3 id="池化层"><a href="#池化层" class="headerlink" title="池化层"></a>池化层</h3><ul>
+<li>最大池化：选择过滤器大小内的最大值输出</li>
+<li>平均池化：选择过滤器大小内的平均值输出</li>
+<li>超参数有过滤器大小<code>Filter Size</code>和步长<code>Stride</code>，通常都取2</li>
+</ul>
+<h3 id="构建卷积神经网络"><a href="#构建卷积神经网络" class="headerlink" title="构建卷积神经网络"></a>构建卷积神经网络</h3><ul>
+<li>一个典型的卷积神经网络包含：卷积层<code>CONV</code>，池化层<code>POOL</code>，全连接层<code>FC</code></li>
+<li>一般在统计网络层数时，只计算具有权重的层，因此把<code>CONV</code>和<code>POOL</code>算作一层</li>
+<li>图片输入经过多层卷积后，平整化为一个一维向量，输入到下一层，这一层称为全连接层；全连接层后是softmax函数输出图像分类</li>
+<li>随着层数的增加，图片的宽、高通常都会减小，通道数增加</li>
+<li>一种常见的CNN模式：<code>CONV-&gt;POOL-&gt;CONV-&gt;POOL-&gt;FC-&gt;FC-&gt;FC-&gt;Softmax</code></li>
+</ul>
+<h3 id="为什么要使用卷积"><a href="#为什么要使用卷积" class="headerlink" title="为什么要使用卷积"></a>为什么要使用卷积</h3><ul>
+<li>参数共享：图片的每个位置可以使用同一个过滤器提取特征</li>
+<li>稀疏连接：每一层的输出值只取决于一小部分输入值</li>
+</ul>
+<h3 id="经典卷积网络"><a href="#经典卷积网络" class="headerlink" title="经典卷积网络"></a>经典卷积网络</h3><ul>
+<li><code>LeNet-5</code>(Yann LeCun, 1994)：早期的CNN模型，可对手写数字进行识别</li>
+<li><code>AlexNet</code>(Alex krizhevsky, 2012)：使用了<code>ReLU</code>激活函数、<code>Dropout</code>、局部响应归一层（<code>LRN</code>）</li>
+<li><code>VGG-16</code>(VGG(Oxford), 2014)：全部使用$3\times3$的卷积核和$2\times2$的最大池化层，包含16个卷积层和全连接层</li>
+<li><code>ResNet</code>(Microsoft, 2015)：增加了跳远连接，使用残差块可以训练更深（152层）的网络</li>
+<li><code>Inception</code>(Google, 2014)：每个<code>Inception</code>模块包含和多个不同size的卷积层（也包含$1\times1$的卷积核）和一个<code>Same</code>的最大池化层，去除了全连接层</li>
+<li>这些已经实现并开源的深度网络实例可以在github上下载</li>
+</ul>
+<h3 id="迁移学习"><a href="#迁移学习" class="headerlink" title="迁移学习"></a>迁移学习</h3><ul>
+<li>将他人开源的训练成果迁移到自己的训练模型上</li>
+<li>使用他人训练的权重而不修改参数，称为<code>freeze</code>层，当自己的数据较少时，只训练softmax层，也可以获得很好的性能</li>
+<li>自己的数据越多，<code>freeze</code>层越少，自己训练的层数越多</li>
+<li>如果自己有大量数据，把开源的权重作为初始化并自己训练整个网络</li>
+</ul>
+<h3 id="数据增强"><a href="#数据增强" class="headerlink" title="数据增强"></a>数据增强</h3><ul>
+<li>垂直镜像对称</li>
+<li>随机裁剪</li>
+<li>色彩转换</li>
+</ul>
+<h3 id="计算机视觉现状"><a href="#计算机视觉现状" class="headerlink" title="计算机视觉现状"></a>计算机视觉现状</h3><ul>
+<li>用于基准训练和赢得比赛的常用技巧（通常对实际生产不实用）</li>
+<li>集成：独立地训练几个神经网络，平均它们的输出</li>
+<li><code>Multi-crop</code>：分类器在一个图像的多个分割上训练，平均它们的输出</li>
+<li>使用已发表论文上的神经网络模型</li>
+<li>使用开源的神经网络架构</li>
+<li>使用他人预先训练的模型，在数据集上微调</li>
+</ul>
+<h2 id="目标检测"><a href="#目标检测" class="headerlink" title="目标检测"></a>目标检测</h2><h3 id="目标定位"><a href="#目标定位" class="headerlink" title="目标定位"></a>目标定位</h3><ul>
+<li>标签$y$包含的信息包括：$P_c$表示是否检测到目标，$b_x$、$b_y$表示目标中心的坐标，$b_h$、$b_w$表示目标的高、宽，$C_1$、$C_2$、$C_3$表示目标的类别</li>
+</ul>
+<h3 id="特征点检测"><a href="#特征点检测" class="headerlink" title="特征点检测"></a>特征点检测</h3><ul>
+<li>对于人脸，手工检测的特征点包含眼睛、嘴部、脸部等多个人工标注的特征点</li>
+<li>对于人身体，手工检测的特征点包含胸部、肘部等多个人工标注的特征</li>
+</ul>
+<h3 id="目标检测算法"><a href="#目标检测算法" class="headerlink" title="目标检测算法"></a>目标检测算法</h3><ul>
+<li>训练集是适当裁剪过的图像（例如：车占满一幅图片），标记为1（有目标）或0（无目标）</li>
+<li>滑动窗口目标检测：用一个固定大小的窗口以某个特定的步幅遍历图像的每一个区域，然后将窗口扩大重复操作</li>
+<li>在卷积网络里，实现滑动窗口要把全连接层变为卷积层，减少重复计算</li>
+</ul>
+<h3 id="Bounding-Box"><a href="#Bounding-Box" class="headerlink" title="Bounding Box"></a>Bounding Box</h3><ul>
+<li>YOLO算法</li>
+<li>把输入图像划分成$S\times S$的格子，每个格子包含$P_c$表示是否检测到目标，$b_x$、$b_y$表示目标中心的坐标，$b_h$、$b_w$表示目标的高、宽，$C_1$、$C_2$、$C_3$表示目标的类别，用在格子中的相对位置和长度表示目标的位置</li>
+</ul>
+<h3 id="交并比IoU"><a href="#交并比IoU" class="headerlink" title="交并比IoU"></a>交并比<code>IoU</code></h3><ul>
+<li>监测区域相交的部分/合并的部分称为交并比</li>
+</ul>
+<h3 id="非最大值抑制"><a href="#非最大值抑制" class="headerlink" title="非最大值抑制"></a>非最大值抑制</h3><ul>
+<li>将所有框的得分（$P_c$）排序，选中最高分及其对应的框</li>
+<li>遍历其余的框，如果和当前最高分框的重叠面积<code>IoU</code>大于一定阈值，将框删除</li>
+<li>从未处理的框中继续选一个得分最高的，重复上述过程</li>
+</ul>
+<h3 id="Anchor-Box"><a href="#Anchor-Box" class="headerlink" title="Anchor Box"></a>Anchor Box</h3><ul>
+<li>用于检测多个目标</li>
+<li>输出$y$的前8个参数和<code>AnchorBox1</code>关联，后面8个参数和<code>AnchorBox2</code>关联，看哪一个anchor box和实际边界框的交并比更高</li>
+</ul>
+<h3 id="YOLO算法的实现"><a href="#YOLO算法的实现" class="headerlink" title="YOLO算法的实现"></a>YOLO算法的实现</h3><ul>
+<li>将图像分割为$n$个网格</li>
+<li>输出$y$为$[n\times n\times anchorBox\times (5+classes)]$维向量</li>
+<li>用非最大值抑制去除冗余的窗口</li>
+<li>使用卷积层进行位置检测，全连接层进行目标识别，实现了端到端的学习</li>
+</ul>
+<h3 id="R-CNN算法"><a href="#R-CNN算法" class="headerlink" title="R-CNN算法"></a>R-CNN算法</h3><ul>
+<li>首先对输入图像运行图像分割算法</li>
+<li>在色块上创建窗口，并运行分类器</li>
+<li>Fast R-CNN：使用卷积层实现了滑动窗口，比R-CNN速度加快</li>
+<li>Faster R-CNN：使用卷积神经网络实现了滑动窗口，比R-CNN速度大大加快</li>
+</ul>
+<h2 id="人脸识别"><a href="#人脸识别" class="headerlink" title="人脸识别"></a>人脸识别</h2><h3 id="人脸验证vs人脸识别"><a href="#人脸验证vs人脸识别" class="headerlink" title="人脸验证vs人脸识别"></a>人脸验证vs人脸识别</h3><ul>
+<li>人脸验证是1:1比对，精度可达99.9%</li>
+<li>人脸识别是1:K比对，将人脸与数据库中的K个脸样本比对，返回人脸的ID</li>
+</ul>
+<h3 id="一次识别"><a href="#一次识别" class="headerlink" title="一次识别"></a>一次识别</h3><ul>
+<li>在实际应用中，往往只有一张照片，训练样本太小以至于无法进行CNN训练</li>
+<li>通常采用相似度进行比较，越相似的人脸，得分差值越小</li>
+</ul>
+<h3 id="Simaese算法"><a href="#Simaese算法" class="headerlink" title="Simaese算法"></a>Simaese算法</h3><ul>
+<li>用一个卷积神经网络，把不同人脸图片输入，比较其输出的值的范数平方距离作为相似度</li>
+</ul>
+<h3 id="Triplet损失"><a href="#Triplet损失" class="headerlink" title="Triplet损失"></a>Triplet损失</h3><p>$$||f(A)-f(P)||^2-||f(A)-f(N)||^2+\alpha\le0$$</p>
+<ul>
+<li>$\alpha$是间隔参数，防止上式恒等于0</li>
+</ul>
+<p>$$L(A,P,N)=\max(||f(A)-f(P)||^2-||f(A)-f(N)||^2+\alpha,0)$$</p>
+<ul>
+<li>选择的样本尽量使得$d(A,P)\approx d(A,N)$，这样训练起来效率更高</li>
+</ul>
+<h3 id="面部验证与而分类"><a href="#面部验证与而分类" class="headerlink" title="面部验证与而分类"></a>面部验证与而分类</h3><ul>
+<li>采用逻辑函数对<code>Simaese</code>判定是否是同一个人</li>
+</ul>
+<p>$$\hat{y}=\sigma(\sum^{128}_{k=1}W_i|f(x^{(i)})_k-f(x^{(j)})_k|+b)$$</p>
+<h3 id="神经风格迁移"><a href="#神经风格迁移" class="headerlink" title="神经风格迁移"></a>神经风格迁移</h3><ul>
+<li>代价函数</li>
+</ul>
+<p>$$J(G)=\alpha J_{content}(C,G)+\beta J_{style}(S,G)$$</p>
+<ul>
+<li>随机初始化$G$</li>
+<li>使用梯度下降最小化代价函数$J(G)$</li>
+<li>$J_{content}(C,G)$用隐藏层$l$计算代价函数，使用预先训练好的模型（如VGG），如果“内容图像”和“输出图像”两个激活值相似：</li>
+</ul>
+<p>$$J_{content}(C,G)=\frac{1}{2}||a^{<a href="C">l</a>}-a^{<a href="G">l</a>}||^2$$</p>
+<ul>
+<li>“风格图像”是一个$n_c^{[l]} \times n_c^{[l]}$矩阵</li>
+</ul>
+<p>$$G_{kk’}^{<a href="S">l</a>}=\sum^{n_H^{[l]}}<em>{i=1}\sum^{n_W^{[l]}}</em>{j=1}a_{ijk}^{<a href="S">l</a>}a_{ijk’}^{<a href="S">l</a>}$$<br>$$G_{kk’}^{<a href="G">l</a>}=\sum^{n_H^{[l]}}<em>{i=1}\sum^{n_W^{[l]}}</em>{j=1}a_{ijk}^{<a href="G">l</a>}a_{ijk’}^{<a href="G">l</a>}$$<br>$$J_{style}^{[l]}(S,G)=\frac{1}{(2n_H^{[l]}n_W^{[l]}n_C^{[l]})^2}\sum_k\sum_{k’}(G_{kk’}^{<a href="S">l</a>}-G_{kk’}^{<a href="G">l</a>})$$</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="toc-number">1.</span> <span class="toc-text">卷积神经网络</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B"><span class="toc-number">1.1.</span> <span class="toc-text">边缘检测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Padding"><span class="toc-number">1.2.</span> <span class="toc-text">Padding</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%B7%E7%A7%AF%E6%AD%A5%E9%95%BF"><span class="toc-number">1.3.</span> <span class="toc-text">卷积步长</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%B7%E7%A7%AF%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-number">1.4.</span> <span class="toc-text">卷积的实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%B7%E7%A7%AF%E5%B1%82"><span class="toc-number">1.5.</span> <span class="toc-text">卷积层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B1%A0%E5%8C%96%E5%B1%82"><span class="toc-number">1.6.</span> <span class="toc-text">池化层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9E%84%E5%BB%BA%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="toc-number">1.7.</span> <span class="toc-text">构建卷积神经网络</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BD%BF%E7%94%A8%E5%8D%B7%E7%A7%AF"><span class="toc-number">1.8.</span> <span class="toc-text">为什么要使用卷积</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%8F%E5%85%B8%E5%8D%B7%E7%A7%AF%E7%BD%91%E7%BB%9C"><span class="toc-number">1.9.</span> <span class="toc-text">经典卷积网络</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0"><span class="toc-number">1.10.</span> <span class="toc-text">迁移学习</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%A2%9E%E5%BC%BA"><span class="toc-number">1.11.</span> <span class="toc-text">数据增强</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89%E7%8E%B0%E7%8A%B6"><span class="toc-number">1.12.</span> <span class="toc-text">计算机视觉现状</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B"><span class="toc-number">2.</span> <span class="toc-text">目标检测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%AE%E6%A0%87%E5%AE%9A%E4%BD%8D"><span class="toc-number">2.1.</span> <span class="toc-text">目标定位</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%89%B9%E5%BE%81%E7%82%B9%E6%A3%80%E6%B5%8B"><span class="toc-number">2.2.</span> <span class="toc-text">特征点检测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E7%AE%97%E6%B3%95"><span class="toc-number">2.3.</span> <span class="toc-text">目标检测算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Bounding-Box"><span class="toc-number">2.4.</span> <span class="toc-text">Bounding Box</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%A4%E5%B9%B6%E6%AF%94IoU"><span class="toc-number">2.5.</span> <span class="toc-text">交并比IoU</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%9E%E6%9C%80%E5%A4%A7%E5%80%BC%E6%8A%91%E5%88%B6"><span class="toc-number">2.6.</span> <span class="toc-text">非最大值抑制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Anchor-Box"><span class="toc-number">2.7.</span> <span class="toc-text">Anchor Box</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#YOLO%E7%AE%97%E6%B3%95%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.8.</span> <span class="toc-text">YOLO算法的实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#R-CNN%E7%AE%97%E6%B3%95"><span class="toc-number">2.9.</span> <span class="toc-text">R-CNN算法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB"><span class="toc-number">3.</span> <span class="toc-text">人脸识别</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%BA%E8%84%B8%E9%AA%8C%E8%AF%81vs%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB"><span class="toc-number">3.1.</span> <span class="toc-text">人脸验证vs人脸识别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E6%AC%A1%E8%AF%86%E5%88%AB"><span class="toc-number">3.2.</span> <span class="toc-text">一次识别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Simaese%E7%AE%97%E6%B3%95"><span class="toc-number">3.3.</span> <span class="toc-text">Simaese算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Triplet%E6%8D%9F%E5%A4%B1"><span class="toc-number">3.4.</span> <span class="toc-text">Triplet损失</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%A2%E9%83%A8%E9%AA%8C%E8%AF%81%E4%B8%8E%E8%80%8C%E5%88%86%E7%B1%BB"><span class="toc-number">3.5.</span> <span class="toc-text">面部验证与而分类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A5%9E%E7%BB%8F%E9%A3%8E%E6%A0%BC%E8%BF%81%E7%A7%BB"><span class="toc-number">3.6.</span> <span class="toc-text">神经风格迁移</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ster.im/ng_03/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ster.im/ng_03/&text=吴恩达深度学习笔记（3）——卷积神经网络"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ster.im/ng_03/&title=吴恩达深度学习笔记（3）——卷积神经网络"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ster.im/ng_03/&is_video=false&description=吴恩达深度学习笔记（3）——卷积神经网络"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=吴恩达深度学习笔记（3）——卷积神经网络&body=Check out this article: https://ster.im/ng_03/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ster.im/ng_03/&title=吴恩达深度学习笔记（3）——卷积神经网络"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ster.im/ng_03/&title=吴恩达深度学习笔记（3）——卷积神经网络"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ster.im/ng_03/&title=吴恩达深度学习笔记（3）——卷积神经网络"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ster.im/ng_03/&title=吴恩达深度学习笔记（3）——卷积神经网络"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ster.im/ng_03/&name=吴恩达深度学习笔记（3）——卷积神经网络&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ster.im/ng_03/&t=吴恩达深度学习笔记（3）——卷积神经网络"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2012-2021
+    Rarit7
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.3/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdn.bootcdn.net/ajax/libs/clipboard.js/2.0.8/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>
