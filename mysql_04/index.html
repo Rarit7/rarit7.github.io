@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="MySQL优化">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL学习笔记（4）——优化">
+<meta property="og:url" content="https://ster.im/mysql_04/index.html">
+<meta property="og:site_name" content="Rarit7&#39;s Blog">
+<meta property="og:description" content="MySQL优化">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-03-07T14:52:12.000Z">
+<meta property="article:modified_time" content="2021-08-31T15:46:27.258Z">
+<meta property="article:author" content="Rarit7">
+<meta property="article:tag" content="开发">
+<meta property="article:tag" content="MySQL">
+<meta property="article:tag" content="OLTP">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon-192x192.png">
+        
+      
+    
+    <!-- title -->
+    <title>MySQL学习笔记（4）——优化</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" "Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="下一篇 " href="/mysql_03/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部 " href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章 " href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ster.im/mysql_04/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ster.im/mysql_04/&text=MySQL学习笔记（4）——优化"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ster.im/mysql_04/&title=MySQL学习笔记（4）——优化"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ster.im/mysql_04/&is_video=false&description=MySQL学习笔记（4）——优化"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=MySQL学习笔记（4）——优化&body=Check out this article: https://ster.im/mysql_04/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ster.im/mysql_04/&title=MySQL学习笔记（4）——优化"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ster.im/mysql_04/&title=MySQL学习笔记（4）——优化"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ster.im/mysql_04/&title=MySQL学习笔记（4）——优化"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ster.im/mysql_04/&title=MySQL学习笔记（4）——优化"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ster.im/mysql_04/&name=MySQL学习笔记（4）——优化&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ster.im/mysql_04/&t=MySQL学习笔记（4）——优化"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A1%A8%E8%AE%BE%E8%AE%A1"><span class="toc-number">1.</span> <span class="toc-text">表设计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1%E4%B8%89%E5%A4%A7%E8%8C%83%E5%BC%8F"><span class="toc-number">1.1.</span> <span class="toc-text">数据库设计三大范式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%90%88%E9%80%82%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-number">1.2.</span> <span class="toc-text">使用合适的数据类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BB%BA%E7%AB%8B%E7%B4%A2%E5%BC%95%E7%9A%84%E5%8E%9F%E5%88%99"><span class="toc-number">1.3.</span> <span class="toc-text">建立索引的原则</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MySQL%E6%9F%A5%E8%AF%A2%E8%BF%87%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">MySQL查询过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96"><span class="toc-number">3.</span> <span class="toc-text">查询优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#EXPLAIN%E5%91%BD%E4%BB%A4"><span class="toc-number">3.1.</span> <span class="toc-text">EXPLAIN命令</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8"><span class="toc-number">4.</span> <span class="toc-text">分库分表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9E%82%E7%9B%B4%E6%8B%86%E5%88%86"><span class="toc-number">4.1.</span> <span class="toc-text">垂直拆分</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B0%B4%E5%B9%B3%E6%8B%86%E5%88%86"><span class="toc-number">4.2.</span> <span class="toc-text">水平拆分</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E5%B8%83%E5%BC%8FID"><span class="toc-number">4.3.</span> <span class="toc-text">分布式ID</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1"><span class="toc-number">4.4.</span> <span class="toc-text">分布式事务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB"><span class="toc-number">4.5.</span> <span class="toc-text">读写分离</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6"><span class="toc-number">4.6.</span> <span class="toc-text">主从复制</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        MySQL学习笔记（4）——优化
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Rarit7</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2020-03-07T14:52:12.000Z" itemprop="datePublished">2020-03-07</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/MySQL/" rel="tag">MySQL</a>, <a class="tag-link-link" href="/tags/OLTP/" rel="tag">OLTP</a>, <a class="tag-link-link" href="/tags/%E5%BC%80%E5%8F%91/" rel="tag">开发</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="表设计"><a href="#表设计" class="headerlink" title="表设计"></a>表设计</h2><h3 id="数据库设计三大范式"><a href="#数据库设计三大范式" class="headerlink" title="数据库设计三大范式"></a>数据库设计三大范式</h3><ul>
+<li>确保每列都是不可分割的原子项。</li>
+<li>确保每列都和主键相关。</li>
+<li>确保每列和主键直接相关，而不是间接相关。</li>
+</ul>
+<h3 id="使用合适的数据类型"><a href="#使用合适的数据类型" class="headerlink" title="使用合适的数据类型"></a>使用合适的数据类型</h3><ul>
+<li>对于字符串，固定长度使用<code>char</code>，非固定长度使用<code>varchar</code>。对于InnoDB而言，推荐使用<code>varchar</code>。</li>
+<li>对于小数，关于财务方面需要精确数据的，使用<code>decimal</code>，其他情况使用<code>float</code>或者<code>double</code>。</li>
+<li>对于日期类型，尽量使用<code>timestamp</code>，它占用空间小且自动进行时区转换。</li>
+<li>对于大数据，<code>text</code>只能存储字符型数据，<code>blob</code>可以存储二进制数据，例如图片。</li>
+<li>尽可能使用<code>NOT NULL</code>定义字段。</li>
+</ul>
+<h3 id="建立索引的原则"><a href="#建立索引的原则" class="headerlink" title="建立索引的原则"></a>建立索引的原则</h3><ul>
+<li>对经常使用<code>WHERE</code>、<code>ORDER BY</code>、<code>GROUP BY</code>的字段建立索引，避免全表扫描。</li>
+<li>对区分度高的字段建立索引，而例如性别等区分度低的字段不适合建立索引。</li>
+<li>索引并不是建的越多越好，过多的索引会导致<code>INSERT</code>、<code>UPDATE</code>等写入操作的效率降低。</li>
+<li>如果多个字段常用<code>AND</code>连接，应当建立联合索引，而不是单独为每个字段建立索引。</li>
+</ul>
+<h2 id="MySQL查询过程"><a href="#MySQL查询过程" class="headerlink" title="MySQL查询过程"></a>MySQL查询过程</h2><ol>
+<li>客户端连接数据库，连接器进行<strong>权限验证</strong>；</li>
+<li>客户端发送查询语句，MySQL首先会<strong>查询缓存</strong>中是否执行过该语句，如果命中则返回缓存的结果，否则进入下一步；</li>
+<li>对输入的SQL语句进行<strong>语法分析</strong>，识别字符串为对象，检查SQL语句是否符合语法；</li>
+<li><strong>优化器</strong>对SQL语句进行优化，比如存在多个索引时选择走哪一个索引，存在多表关联时选择表连接的顺序；</li>
+<li><strong>执行器</strong>先验证权限，再调用引擎的接口，将符合条件的行保存在结果集合中。</li>
+</ol>
+<h2 id="查询优化"><a href="#查询优化" class="headerlink" title="查询优化"></a>查询优化</h2><ul>
+<li>在<code>WHERE</code>子句中，应当避免使用函数、运算、不等号（<code>&lt;&gt;</code>或<code>!=</code>）、<code>OR</code>、<code>IN</code>、<code>NOT IN</code>、<code>IS NULL</code>、<code>LIKE</code>查询以<code>%</code>开头，这些会导致索引失效。</li>
+<li>注意使用同类型进行比较，字符串使用引号括起来。</li>
+<li>使用联合索引注意最左前缀原则。</li>
+<li>避免使用<code>SELECT *</code>，用具体的字段代替<code>*</code>。</li>
+<li>存储引擎使用聚簇索引时，尽量利用覆盖索引提升查询性能。</li>
+<li>使用<code>LIMIT</code>限制返回结果的数量。</li>
+<li>避免使用子查询和<code>JOIN</code>。</li>
+<li>使用<code>BETWEEN</code>代替<code>IN</code>。</li>
+</ul>
+<h3 id="EXPLAIN命令"><a href="#EXPLAIN命令" class="headerlink" title="EXPLAIN命令"></a>EXPLAIN命令</h3><p><code>explain SELECT ... FROM t WHERE ...</code>用于显示MySQL为SQL语句准备的执行计划，查看是否走了索引、走了什么样的索引，可以用于优化索引和查询语句。主要关注以下几条信息：</p>
+<ul>
+<li><code>type</code>：表示MySQL走的索引类型，常见的类型如下（按性能由好到差排列）：<ul>
+<li><code>system</code>：表仅有一行，是<code>const</code>的特例。</li>
+<li><code>const</code>：表最多有一个匹配行，将在查询开始时被读取。</li>
+<li><code>eq_ref</code>：最多返回一条符合条件的记录，使用主键索引或者唯一索引时出现。</li>
+<li><code>ref</code>：返回所有符合条件的记录，使用非主键索引、非唯一索引或者联合索引时出现。</li>
+<li><code>range</code>：范围查找。</li>
+<li><code>index</code>：遍历全索引树进行查找。</li>
+<li><code>ALL</code>：全表查找。</li>
+</ul>
+</li>
+<li><code>possible_keys</code>：若查询涉及到的字段上存在索引，则该索引被列出，但不一定被使用。</li>
+<li><code>key</code>：实际使用的索引。</li>
+<li><code>ref</code>：显示哪些字段或常量被用于查找索引列上的值。</li>
+<li><code>rows</code>：估计需要读取的行数，这个值越小越好。</li>
+<li><code>extra</code>：主要关心是否出现<code>Using index</code>，如果出现则表示使用了覆盖索引。</li>
+</ul>
+<h2 id="分库分表"><a href="#分库分表" class="headerlink" title="分库分表"></a>分库分表</h2><h3 id="垂直拆分"><a href="#垂直拆分" class="headerlink" title="垂直拆分"></a>垂直拆分</h3><ul>
+<li>垂直分表是按照字段的活跃性，把一个表中的字段拆分到不同的表中。</li>
+<li>每个表的数据不同，每个表都有一列交集（一般为主键）用于关联数据，所有表的并集是全量数据。</li>
+<li>字段较多，热门字段和非热门字段放在一起，单行数据占用空间大，查询时IO开销大，产生IO瓶颈。垂直分表减少了随机IO，但查询时需要获取多个表的数据来获得全部数据。</li>
+</ul>
+<h3 id="水平拆分"><a href="#水平拆分" class="headerlink" title="水平拆分"></a>水平拆分</h3><ul>
+<li>水平分表是将数据行按照一定策略（如Hash取模、时间戳等）拆分到多个表中。</li>
+<li>水平分库是将数据行按照一定策略拆分到多个库中。每个库中数据的结构一致，且没有交集。</li>
+<li>水平分库分表提升数据库整体的并发量和负载能力。</li>
+<li>按照时间戳或者ID范围切分：<ul>
+<li>单表大小可控，便于水平扩展，避免跨分片查询。</li>
+<li>近期的热点数据被频繁读写，早期的数据很少被查询，使得热点数据成为性能瓶颈。</li>
+</ul>
+</li>
+<li>Hash取模切分：<ul>
+<li>数据分片均匀，不会造成并发访问的瓶颈。</li>
+<li>后期集群扩容时，需要迁移旧的数据（使用一致性Hash算法可解决这类问题）；容易出现跨分片查询。</li>
+</ul>
+</li>
+</ul>
+<h3 id="分布式ID"><a href="#分布式ID" class="headerlink" title="分布式ID"></a>分布式ID</h3><ul>
+<li><strong>UUID</strong>：优点：易于实现，本地生成。缺点：UUID占用大量存储空间且无序，在B+树索引上引起数据频繁变动。</li>
+<li><strong>MySQL单独维护自增主键ID表</strong>：优点是易于实现。缺点：可用性低，容易成为性能瓶颈。</li>
+<li><strong>设置自增步长的自增ID</strong>：优点是易于实现。缺点：后续扩容升级较为麻烦，也没有解决性能问题。</li>
+<li><strong>Redis自增ID</strong>：Redis<code>incr</code>原子自增，高并发。缺点：RDB持久化容易丢失数据，AOF持久化损失性能。</li>
+<li><strong>Snowflake</strong>：64位的<code>Long</code>型数字，其中第1位不使用，41位为毫秒级时间戳，5位为数据中心ID，5位为工作机器ID，12位为毫秒内的序列号。优点：自增，高性能，灵活。缺点：依赖强机器时钟。</li>
+<li><strong>Leaf Segment</strong>：一次性批量获取自增ID号段，每台机器只使用本地缓存的ID，耗尽之后再去获取。优点：易于扩展，容灾性高。缺点：ID不够随机，大量请求可能造成阻塞。</li>
+</ul>
+<h3 id="分布式事务"><a href="#分布式事务" class="headerlink" title="分布式事务"></a>分布式事务</h3><ul>
+<li><strong>两阶段提交</strong>：分为协调者和参与者节点。<ul>
+<li>第一阶段：协调者向所有的参与者发送事务预处理请求，开始等待各参与者的响应；各个参与者节点在本地执行事务操作，但不提交，而是向协调者报告它执行事务是否成功；</li>
+<li>第二阶段：如果第一阶段所有参与者都报告本地事务执行成功，则告知所有参与者正式提交事务；如果有任何一个参与者报告事务失败或者超时，告知所有参与者回滚。</li>
+</ul>
+</li>
+</ul>
+<h3 id="读写分离"><a href="#读写分离" class="headerlink" title="读写分离"></a>读写分离</h3><p>主库负责写，从库负责读，这样即使主库需要锁表而不能读时，也能从从库读取保证业务正常进行；当主节点挂了，也能从从库中选取一个作为新的主节点。</p>
+<h3 id="主从复制"><a href="#主从复制" class="headerlink" title="主从复制"></a>主从复制</h3><ol>
+<li>Slave连接到Master，Master创建binlog dump线程。</li>
+<li>Master的binlog发生变化时，dump线程会通知所有的Slave，并将binlog内容推送给Slave。</li>
+<li>Slave执行<code>start slave</code>命令，创建IO线程用于从主节点接收binlog，将内容写到本地的relay log。</li>
+<li>Slave的SQL线程负责读取relay log中的内容，解析成具体的操作并执行，保证主从数据的一致性。</li>
+</ol>
+<p>主从复制模式：</p>
+<ul>
+<li><strong>同步</strong>：Master等待所有的Slave都回应后才提交。</li>
+<li><strong>半同步</strong>：Master等待至少一个Slave回应就可以提交。</li>
+<li><strong>异步</strong>：Master不会等待Slave回应就提交。</li>
+</ul>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A1%A8%E8%AE%BE%E8%AE%A1"><span class="toc-number">1.</span> <span class="toc-text">表设计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1%E4%B8%89%E5%A4%A7%E8%8C%83%E5%BC%8F"><span class="toc-number">1.1.</span> <span class="toc-text">数据库设计三大范式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%90%88%E9%80%82%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-number">1.2.</span> <span class="toc-text">使用合适的数据类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BB%BA%E7%AB%8B%E7%B4%A2%E5%BC%95%E7%9A%84%E5%8E%9F%E5%88%99"><span class="toc-number">1.3.</span> <span class="toc-text">建立索引的原则</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MySQL%E6%9F%A5%E8%AF%A2%E8%BF%87%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">MySQL查询过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96"><span class="toc-number">3.</span> <span class="toc-text">查询优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#EXPLAIN%E5%91%BD%E4%BB%A4"><span class="toc-number">3.1.</span> <span class="toc-text">EXPLAIN命令</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8"><span class="toc-number">4.</span> <span class="toc-text">分库分表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9E%82%E7%9B%B4%E6%8B%86%E5%88%86"><span class="toc-number">4.1.</span> <span class="toc-text">垂直拆分</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B0%B4%E5%B9%B3%E6%8B%86%E5%88%86"><span class="toc-number">4.2.</span> <span class="toc-text">水平拆分</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E5%B8%83%E5%BC%8FID"><span class="toc-number">4.3.</span> <span class="toc-text">分布式ID</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1"><span class="toc-number">4.4.</span> <span class="toc-text">分布式事务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB"><span class="toc-number">4.5.</span> <span class="toc-text">读写分离</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6"><span class="toc-number">4.6.</span> <span class="toc-text">主从复制</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ster.im/mysql_04/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ster.im/mysql_04/&text=MySQL学习笔记（4）——优化"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ster.im/mysql_04/&title=MySQL学习笔记（4）——优化"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ster.im/mysql_04/&is_video=false&description=MySQL学习笔记（4）——优化"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=MySQL学习笔记（4）——优化&body=Check out this article: https://ster.im/mysql_04/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ster.im/mysql_04/&title=MySQL学习笔记（4）——优化"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ster.im/mysql_04/&title=MySQL学习笔记（4）——优化"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ster.im/mysql_04/&title=MySQL学习笔记（4）——优化"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ster.im/mysql_04/&title=MySQL学习笔记（4）——优化"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ster.im/mysql_04/&name=MySQL学习笔记（4）——优化&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ster.im/mysql_04/&t=MySQL学习笔记（4）——优化"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2012-2021
+    Rarit7
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.3/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdn.bootcdn.net/ajax/libs/clipboard.js/2.0.8/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>

@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="MySQL事务">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL学习笔记（1）——事务">
+<meta property="og:url" content="https://ster.im/mysql_01/index.html">
+<meta property="og:site_name" content="Rarit7&#39;s Blog">
+<meta property="og:description" content="MySQL事务">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-02-12T20:11:42.000Z">
+<meta property="article:modified_time" content="2021-08-31T15:46:12.093Z">
+<meta property="article:author" content="Rarit7">
+<meta property="article:tag" content="开发">
+<meta property="article:tag" content="MySQL">
+<meta property="article:tag" content="OLTP">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon-192x192.png">
+        
+      
+    
+    <!-- title -->
+    <title>MySQL学习笔记（1）——事务</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" "Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇 " href="/mysql_02/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇 " href="/redis_07/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部 " href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章 " href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ster.im/mysql_01/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ster.im/mysql_01/&text=MySQL学习笔记（1）——事务"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ster.im/mysql_01/&title=MySQL学习笔记（1）——事务"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ster.im/mysql_01/&is_video=false&description=MySQL学习笔记（1）——事务"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=MySQL学习笔记（1）——事务&body=Check out this article: https://ster.im/mysql_01/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ster.im/mysql_01/&title=MySQL学习笔记（1）——事务"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ster.im/mysql_01/&title=MySQL学习笔记（1）——事务"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ster.im/mysql_01/&title=MySQL学习笔记（1）——事务"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ster.im/mysql_01/&title=MySQL学习笔记（1）——事务"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ster.im/mysql_01/&name=MySQL学习笔记（1）——事务&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ster.im/mysql_01/&t=MySQL学习笔记（1）——事务"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1"><span class="toc-number">1.</span> <span class="toc-text">事务</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1%E7%9A%84%E7%89%B9%E6%80%A7%EF%BC%88ACID%EF%BC%89"><span class="toc-number">2.</span> <span class="toc-text">事务的特性（ACID）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="toc-number">3.</span> <span class="toc-text">事务隔离级别</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B9%B6%E5%8F%91%E4%BA%8B%E5%8A%A1%E5%8F%AF%E8%83%BD%E5%8F%91%E7%94%9F%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">3.1.</span> <span class="toc-text">并发事务可能发生的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MySQL%E6%94%AF%E6%8C%81%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="toc-number">3.2.</span> <span class="toc-text">MySQL支持的隔离级别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MySQL%E9%94%81%E6%9C%BA%E5%88%B6"><span class="toc-number">3.3.</span> <span class="toc-text">MySQL锁机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MySQL%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-number">3.4.</span> <span class="toc-text">MySQL隔离级别的实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E7%89%88%E6%9C%AC%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6%EF%BC%88MVCC%EF%BC%89"><span class="toc-number">3.5.</span> <span class="toc-text">多版本并发控制（MVCC）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BF%AB%E7%85%A7%E8%AF%BB%E5%92%8C%E5%BD%93%E5%89%8D%E8%AF%BB"><span class="toc-number">3.6.</span> <span class="toc-text">快照读和当前读</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        MySQL学习笔记（1）——事务
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Rarit7</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2020-02-12T20:11:42.000Z" itemprop="datePublished">2020-02-13</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/MySQL/" rel="tag">MySQL</a>, <a class="tag-link-link" href="/tags/OLTP/" rel="tag">OLTP</a>, <a class="tag-link-link" href="/tags/%E5%BC%80%E5%8F%91/" rel="tag">开发</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h2><p>事务是指在一系列操作中，所有的操作必须全部成功完成，一旦有一个操作失败，要撤销所有的更改。</p>
+<h2 id="事务的特性（ACID）"><a href="#事务的特性（ACID）" class="headerlink" title="事务的特性（ACID）"></a>事务的特性（ACID）</h2><ul>
+<li><strong>原子性</strong>（<code>Atomicity</code>）：事务是不可分割的最小工作单位，一次事务中的所有操作要么全部成功提交，要么失败回滚，不可能只执行其中一部分操作。</li>
+<li><strong>一致性</strong>（<code>Consistency</code>）：事务执行前后，数据库的完整性保持一致。</li>
+<li><strong>隔离性</strong>（<code>Isolation</code>）：一个事务所作的修改在最终提交前对其他事务是不可见的。</li>
+<li><strong>持久性</strong>（<code>Durability</code>）：事务一旦成功提交，更改会永久性地保存在数据库中，即使数据库故障，所做的修改也不丢失。</li>
+</ul>
+<h2 id="事务隔离级别"><a href="#事务隔离级别" class="headerlink" title="事务隔离级别"></a>事务隔离级别</h2><h3 id="并发事务可能发生的问题"><a href="#并发事务可能发生的问题" class="headerlink" title="并发事务可能发生的问题"></a>并发事务可能发生的问题</h3><ul>
+<li><strong>脏读</strong>：事务A修改数据之后还未提交，此时事务B读取数据，读取的是事务A修改后的数据，然后事务A失败回滚，此时B读到了脏数据。</li>
+<li><strong>不可重复读</strong>：事务A读取某个数据后，再次读取该数据，发现读取的数据已经发生更改或者被删除。</li>
+<li><strong>幻读</strong>：事务A查询某个范围的记录，此时事务B在该范围内插入新的记录/删除部分记录，A再次读取该范围的记录时，发现比原来多/少了几行记录。</li>
+</ul>
+<h3 id="MySQL支持的隔离级别"><a href="#MySQL支持的隔离级别" class="headerlink" title="MySQL支持的隔离级别"></a>MySQL支持的隔离级别</h3><ul>
+<li><strong>未提交读</strong>（<code>READ UNCOMMITTED</code>）：可能出现脏读、不可重复读、幻读。</li>
+<li><strong>提交读</strong>（<code>READ COMMITTED</code>）：解决脏读，可能出现不可重复读、幻读。</li>
+<li><strong>可重复读</strong>（<code>REPEATABLE READ</code>）：解决脏读、不可重复读，可能出现幻读。是MySQL的默认隔离级别。InnoDB引擎通过多版本并发控制（MVCC）和<code>next-key lock</code>解决了幻读问题。</li>
+<li><strong>串行化</strong>（<code>SERIALIZABLE</code>）：解决脏读、不可重复读、幻读。</li>
+</ul>
+<p>以上隔离级别的隔离强度逐渐变强，并发性能逐渐变差。</p>
+<h3 id="MySQL锁机制"><a href="#MySQL锁机制" class="headerlink" title="MySQL锁机制"></a>MySQL锁机制</h3><ul>
+<li><strong>共享锁</strong>：又称S锁，用于读的场景，当事务对记录加S锁，其他事务可以对该记录加S锁，但不能加X锁。<code>SELECT ... LOCK IN SHARE MODE</code>会为记录加S锁。</li>
+<li><strong>排他锁</strong>：又称X锁，用于写的场景，当事务对记录加X锁，其他事务不能对该记录加任何锁，直到事务结束。<code>INSERT</code>、<code>UPDATE</code>、<code>DELETE</code>、<code>SELECT ... FOR UPDATE</code>会为记录加X锁。</li>
+<li><strong>行锁</strong>：锁粒度细，占用更多资源，并发行能好。</li>
+<li><strong>表锁</strong>：锁粒度粗，占用资源少，并发行能差，不会出现死锁。</li>
+<li><strong>意向锁</strong>：分为意向共享锁（IS）和意向排他锁（IX），作用于表，当表里某个记录被加X锁，那么这个表就会自动获得IX锁，其他事务想要对该表加锁就只要先检测这个表是否被上了意向锁，无需对整个表进行遍历。</li>
+<li><code>record lock</code>：即行锁，仅仅把一条记录加锁（S锁或X锁）。</li>
+<li><strong>间隙锁</strong>（<code>gap lock</code>）：，锁住记录之间的间隙，防止其他事务在这个间隙中修改或插入记录。</li>
+<li><code>next-key lock</code>：是<code>record lock</code>和<code>gap lock</code>的组合，用于RR隔离级别防止幻读。</li>
+</ul>
+<h3 id="MySQL隔离级别的实现"><a href="#MySQL隔离级别的实现" class="headerlink" title="MySQL隔离级别的实现"></a>MySQL隔离级别的实现</h3><ul>
+<li>未提交读：读不加任何锁，写加排他锁直到事务结束。</li>
+<li>提交读：读不加锁，而是在每次读时，利用MVCC生成<code>ReadView</code>；写加排他锁直到事务结束。</li>
+<li>可重复读：读不加锁，而是在事务第一次读时，利用MVCC生成<code>ReadView</code>；写加排他锁直到事务结束。</li>
+<li>串行化：读写都加排他锁，将事务串行执行，后来的事务必须等待前面的事务执行结束才开始执行，因此隔离效果最好，效率最差。</li>
+</ul>
+<h3 id="多版本并发控制（MVCC）"><a href="#多版本并发控制（MVCC）" class="headerlink" title="多版本并发控制（MVCC）"></a>多版本并发控制（MVCC）</h3><ul>
+<li>InnoDB存储引擎通过MVCC实现了RC和RR隔离级别。</li>
+<li>InnoDB的行记录中，存在几个隐藏的字段：<ul>
+<li><code>trx_id</code>记录最近修改该行记录的事务的ID；</li>
+<li><code>db_roll_ptr</code>指向修改前版本的<code>undo log</code>，通过这个指针可以不断回溯到该记录上一个版本。</li>
+</ul>
+</li>
+<li><code>ReadView</code>用于判断记录的某个版本是否对当前事务可见。它包含以下内容：<ul>
+<li><code>trx_ids</code>：生成此<code>ReadView</code>时系统中未提交的事务列表。</li>
+<li><code>up_limit_id</code>：<code>trx_ids</code>中最小的事务ID，小于此版本号的事务对当前<code>ReadView</code>是可见的。</li>
+<li><code>low_limit_id</code>：当前最大的事务版本号+1，即下一个将被分配的事务id，大于此版本号的事务对当前<code>ReadView</code>是不可见的。</li>
+<li><code>creator_trx_id</code>：当前创建事务的ID。</li>
+</ul>
+</li>
+<li><code>ReadView</code>与记录的<code>trx_id</code>比较算法：<ul>
+<li><code>trx_id</code>&lt;<code>up_limit_id</code>：表示这条记录在当前事务创建快照之前就已经提交了，所以该行数据对当前事务可见；</li>
+<li><code>trx_id</code>&gt;=<code>low_limit_id</code>：表示这条记录在当前事务创建快照之后才被修改，所以该行数据对当前事务不可见；</li>
+<li><code>up_limit_id</code>&lt;=<code>trx_id</code>&lt;<code>low_limit_id</code>：表示这条记录在当前事务创建快照之时可能处于活动状态或者已提交状态，需要对<code>trx_ids</code>进行查找，如果能找到ID为<code>trx_id</code>的事务，这条记录对当前事务是不可见的；如果没有找到，说明ID为<code>trx_id</code>的事务已经提交，这条记录对当前事务是可见的；</li>
+<li>如果判断这条记录对当前事务不可见，则从这条记录的<code>db_roll_ptr</code>中找到它上一个版本号作为<code>trx_id</code>重新开始判断；</li>
+<li>如果判断这条记录对当前事务可见，则将这条记录的值返回。</li>
+</ul>
+</li>
+<li>在RC级别，每次查询都会生成最新版本的<code>ReadView</code>，因此保留了不可重复读和幻读的问题。</li>
+<li>在RR级别，只有在事务第一次<code>SELECT</code>时生成<code>ReadView</code>，此后的查询都基于这个快照。但如果在两次读的过程中，出现了写的情况，仍然会发生幻读的问题。</li>
+</ul>
+<h3 id="快照读和当前读"><a href="#快照读和当前读" class="headerlink" title="快照读和当前读"></a>快照读和当前读</h3><ul>
+<li>在RR隔离级别，事务会在第一次<code>SELECT</code>时生成快照，此后的普通查询都在这个快照上完成，此过程不会加锁，为快照读，或称为非阻塞读。在单纯的快照读情况下，由MVCC保证不会发生幻读。</li>
+<li>对于<code>SELECT ... FOR UPDATE</code>、<code>SELECT ... LOCK IN SHARE MODE</code>、<code>DELETE</code>、<code>UPDATE</code>等需要加锁的操作，此时为当前读，数据库会使用<code>next-key lock</code>来防止幻读。</li>
+</ul>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1"><span class="toc-number">1.</span> <span class="toc-text">事务</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1%E7%9A%84%E7%89%B9%E6%80%A7%EF%BC%88ACID%EF%BC%89"><span class="toc-number">2.</span> <span class="toc-text">事务的特性（ACID）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="toc-number">3.</span> <span class="toc-text">事务隔离级别</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B9%B6%E5%8F%91%E4%BA%8B%E5%8A%A1%E5%8F%AF%E8%83%BD%E5%8F%91%E7%94%9F%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">3.1.</span> <span class="toc-text">并发事务可能发生的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MySQL%E6%94%AF%E6%8C%81%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="toc-number">3.2.</span> <span class="toc-text">MySQL支持的隔离级别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MySQL%E9%94%81%E6%9C%BA%E5%88%B6"><span class="toc-number">3.3.</span> <span class="toc-text">MySQL锁机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MySQL%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-number">3.4.</span> <span class="toc-text">MySQL隔离级别的实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E7%89%88%E6%9C%AC%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6%EF%BC%88MVCC%EF%BC%89"><span class="toc-number">3.5.</span> <span class="toc-text">多版本并发控制（MVCC）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BF%AB%E7%85%A7%E8%AF%BB%E5%92%8C%E5%BD%93%E5%89%8D%E8%AF%BB"><span class="toc-number">3.6.</span> <span class="toc-text">快照读和当前读</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ster.im/mysql_01/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ster.im/mysql_01/&text=MySQL学习笔记（1）——事务"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ster.im/mysql_01/&title=MySQL学习笔记（1）——事务"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ster.im/mysql_01/&is_video=false&description=MySQL学习笔记（1）——事务"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=MySQL学习笔记（1）——事务&body=Check out this article: https://ster.im/mysql_01/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ster.im/mysql_01/&title=MySQL学习笔记（1）——事务"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ster.im/mysql_01/&title=MySQL学习笔记（1）——事务"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ster.im/mysql_01/&title=MySQL学习笔记（1）——事务"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ster.im/mysql_01/&title=MySQL学习笔记（1）——事务"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ster.im/mysql_01/&name=MySQL学习笔记（1）——事务&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ster.im/mysql_01/&t=MySQL学习笔记（1）——事务"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2012-2021
+    Rarit7
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.3/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdn.bootcdn.net/ajax/libs/clipboard.js/2.0.8/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>
