@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Kafka学习笔记（4）——Patition和Consumer Group的负载均衡">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kafka学习笔记（4）——负载均衡">
+<meta property="og:url" content="http://ster.im/Kafka_04/index.html">
+<meta property="og:site_name" content="Rarit7&#39;s Blog">
+<meta property="og:description" content="Kafka学习笔记（4）——Patition和Consumer Group的负载均衡">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-04-25T02:28:11.000Z">
+<meta property="article:modified_time" content="2021-12-07T09:14:57.409Z">
+<meta property="article:author" content="Rarit7">
+<meta property="article:tag" content="Kafka">
+<meta property="article:tag" content="消息队列">
+<meta property="article:tag" content="分布式">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon-192x192.png">
+        
+      
+    
+    <!-- title -->
+    <title>Kafka学习笔记（4）——负载均衡</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" "Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇 " href="/Kafka_05/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇 " href="/Kafka_03/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部 " href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章 " href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://ster.im/Kafka_04/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://ster.im/Kafka_04/&text=Kafka学习笔记（4）——负载均衡"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://ster.im/Kafka_04/&title=Kafka学习笔记（4）——负载均衡"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://ster.im/Kafka_04/&is_video=false&description=Kafka学习笔记（4）——负载均衡"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Kafka学习笔记（4）——负载均衡&body=Check out this article: http://ster.im/Kafka_04/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://ster.im/Kafka_04/&title=Kafka学习笔记（4）——负载均衡"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://ster.im/Kafka_04/&title=Kafka学习笔记（4）——负载均衡"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://ster.im/Kafka_04/&title=Kafka学习笔记（4）——负载均衡"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://ster.im/Kafka_04/&title=Kafka学习笔记（4）——负载均衡"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://ster.im/Kafka_04/&name=Kafka学习笔记（4）——负载均衡&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://ster.im/Kafka_04/&t=Kafka学习笔记（4）——负载均衡"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%8C%BA%E5%89%AF%E6%9C%AC%E6%9C%BA%E5%88%B6"><span class="toc-number">1.</span> <span class="toc-text">分区副本机制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Leader-Replica"><span class="toc-number">1.1.</span> <span class="toc-text">Leader Replica</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Follower-Replica"><span class="toc-number">1.2.</span> <span class="toc-text">Follower Replica</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Leader%E9%80%89%E4%B8%BE"><span class="toc-number">1.3.</span> <span class="toc-text">Leader选举</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ISR%E6%9C%BA%E5%88%B6"><span class="toc-number">1.4.</span> <span class="toc-text">ISR机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#acks%E6%9C%BA%E5%88%B6"><span class="toc-number">1.5.</span> <span class="toc-text">acks机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Segment"><span class="toc-number">1.6.</span> <span class="toc-text">Segment</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B6%88%E6%81%AF%E6%8A%95%E9%80%92%E7%9A%84%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1"><span class="toc-number">2.</span> <span class="toc-text">消息投递的负载均衡</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Consumer-Group-%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1"><span class="toc-number">3.</span> <span class="toc-text">Consumer Group 负载均衡</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Kafka学习笔记（4）——负载均衡
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Rarit7</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2020-04-25T02:28:11.000Z" itemprop="datePublished">2020-04-25</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/">中间件</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Kafka/" rel="tag">Kafka</a>, <a class="tag-link-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a>, <a class="tag-link-link" href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" rel="tag">消息队列</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="分区副本机制"><a href="#分区副本机制" class="headerlink" title="分区副本机制"></a>分区副本机制</h2><p>每个Topic可以有多个Partition, 用于实现高伸缩、负载均衡, 同时每个Partition可以有多个<strong>副本</strong>(<code>Replica</code>), 用于实现Kafka的高可用.</p>
+<h3 id="Leader-Replica"><a href="#Leader-Replica" class="headerlink" title="Leader Replica"></a>Leader Replica</h3><p>每一个Partition有且只有1个Replica可以作为Leader, 负责处理Producer、Consumer的请求, 并负责监管和维护ISR中所有Follower的滞后状态.</p>
+<h3 id="Follower-Replica"><a href="#Follower-Replica" class="headerlink" title="Follower Replica"></a>Follower Replica</h3><p>每个Partition除了Leader以外的Replica都是Follwer, 不处理来自客户端的请求, 只通过Fetch Request拉取Leader Replica的数据进行同步.</p>
+<h3 id="Leader选举"><a href="#Leader选举" class="headerlink" title="Leader选举"></a>Leader选举</h3><p>Broker Controller负责整个集群中的分区和副本的状态, 它会监听其他Broker的信息, 一旦有一个Broker宕机, Controller会读取该Broker上所有Partition在ZooKeeper上的状态, 并遍历ISR列表中的每个Replica, 决定哪一个成为新的Partition leader, 同时更新分区的ISR列表.</p>
+<h3 id="ISR机制"><a href="#ISR机制" class="headerlink" title="ISR机制"></a>ISR机制</h3><p>每个分区都有一个ISR列表, 用于维护所有同步的、可用的副本, Leader Replica会追踪和维护ISR中所有Follower Replica的滞后状态, Follower Replica需要满足以下条件才被认为是同步的Replica:</p>
+<ul>
+<li>与ZooKeeper之间有一个活跃的会话, 定时向ZooKeeper发送心跳;</li>
+<li>在规定的时间内从Leader Replica低延迟地获取过消息.</li>
+</ul>
+<p>如果不满足以上状态, Leader Replica会把该Replica从ISR移除.</p>
+<h3 id="acks机制"><a href="#acks机制" class="headerlink" title="acks机制"></a>acks机制</h3><p>当Leader Replica接收到一条消息, 等待ISR中所有Replica都同步复制完成, 该消息才能被消费, 保证消息不丢失, 但如果Replica数量较大, 每条消息都同步完成耗时较大, 需要在一致性和可用性上做权衡, 设置参数<code>request.required.acks</code>:</p>
+<ul>
+<li><code>0</code>: 生产者不等待来自Broker的确认, 继续发送下一条消息. 延迟低, 吞吐量高, 但可靠性低.</li>
+<li><code>1</code>: 生产者收到来自Leader的确认后发送下一条消息, 默认值.</li>
+<li><code>-1</code>: 生产者等待ISR中所有Follower的确认后发送下一条消息, 只要至少一个Replica存活就不会丢失数据, 损失性能换来数据的健壮性.</li>
+</ul>
+<h3 id="Segment"><a href="#Segment" class="headerlink" title="Segment"></a>Segment</h3><p>Partition不是最小的存储单元, 每个Partition由一个或多个Segment组成, 所有的Segment均存在于所属Partition目录下. 每一个Segment都以所存储的第一个消息的上一个Offset为文件名, 可以通过二分查找迅速找到所属的Segment.</p>
+<h2 id="消息投递的负载均衡"><a href="#消息投递的负载均衡" class="headerlink" title="消息投递的负载均衡"></a>消息投递的负载均衡</h2><p>Producer发送消息时必须指定Topic, 但不必指定Partition, Kafka会进行负载均衡, 把消息均衡分布到Topic下的分区上, 也可以手动指定分区.</p>
+<ul>
+<li>Kafka默认的分区机制:<ul>
+<li>如果不指定分区<code>key</code>, 使用轮询算法将消息均衡地分布到各个分区上;</li>
+<li>如果分区<code>key</code>参数不为<code>null</code>, 使用内置的hash算法将消息分布到各个分区上.</li>
+</ul>
+</li>
+<li>自定义分区:<ul>
+<li>生产者发送消息时, 手动指定分区;</li>
+<li>自定义Partitioner.</li>
+</ul>
+</li>
+</ul>
+<h2 id="Consumer-Group-负载均衡"><a href="#Consumer-Group-负载均衡" class="headerlink" title="Consumer Group 负载均衡"></a>Consumer Group 负载均衡</h2><p>当发生以下情况时, 会导致Consumer Group的负载均衡(<code>Rebalance</code>):</p>
+<ul>
+<li>订阅的Topic数量发生变化;</li>
+<li>订阅的Topic分区数发生变化;</li>
+<li>Consumer个数发生变化.</li>
+</ul>
+<p>Rebalance发生时, 消费者组下所有的Consumer都会一起参与, 保证尽量达到公平分配, 但会使所有Consumer停止工作, 直到Rebalance完成.</p>
+<p>Consumer个数发生变化是意外发生Rebalance的主要原因. 减少Rebalance情况的出现的可选参数:</p>
+<ul>
+<li>设置<code>session.timeout.ms</code>和<code>heartbeat.interval.ms</code>, 使得Consumer不会因为没有及时发送心跳而被认为下线;</li>
+<li>设置<code>max.poll.interval.ms</code>, 让Consumer有足够时间消费消息, 防止因为处理消息时间太长而触发Rebalance.</li>
+</ul>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%8C%BA%E5%89%AF%E6%9C%AC%E6%9C%BA%E5%88%B6"><span class="toc-number">1.</span> <span class="toc-text">分区副本机制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Leader-Replica"><span class="toc-number">1.1.</span> <span class="toc-text">Leader Replica</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Follower-Replica"><span class="toc-number">1.2.</span> <span class="toc-text">Follower Replica</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Leader%E9%80%89%E4%B8%BE"><span class="toc-number">1.3.</span> <span class="toc-text">Leader选举</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ISR%E6%9C%BA%E5%88%B6"><span class="toc-number">1.4.</span> <span class="toc-text">ISR机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#acks%E6%9C%BA%E5%88%B6"><span class="toc-number">1.5.</span> <span class="toc-text">acks机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Segment"><span class="toc-number">1.6.</span> <span class="toc-text">Segment</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B6%88%E6%81%AF%E6%8A%95%E9%80%92%E7%9A%84%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1"><span class="toc-number">2.</span> <span class="toc-text">消息投递的负载均衡</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Consumer-Group-%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1"><span class="toc-number">3.</span> <span class="toc-text">Consumer Group 负载均衡</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://ster.im/Kafka_04/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://ster.im/Kafka_04/&text=Kafka学习笔记（4）——负载均衡"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://ster.im/Kafka_04/&title=Kafka学习笔记（4）——负载均衡"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://ster.im/Kafka_04/&is_video=false&description=Kafka学习笔记（4）——负载均衡"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Kafka学习笔记（4）——负载均衡&body=Check out this article: http://ster.im/Kafka_04/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://ster.im/Kafka_04/&title=Kafka学习笔记（4）——负载均衡"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://ster.im/Kafka_04/&title=Kafka学习笔记（4）——负载均衡"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://ster.im/Kafka_04/&title=Kafka学习笔记（4）——负载均衡"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://ster.im/Kafka_04/&title=Kafka学习笔记（4）——负载均衡"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://ster.im/Kafka_04/&name=Kafka学习笔记（4）——负载均衡&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://ster.im/Kafka_04/&t=Kafka学习笔记（4）——负载均衡"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2012-2021
+    Rarit7
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.3/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdn.bootcdn.net/ajax/libs/clipboard.js/2.0.8/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Hive学习笔记（5）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hive（5）学习笔记——数仓建模">
+<meta property="og:url" content="http://ster.im/Hive_05/index.html">
+<meta property="og:site_name" content="Rarit7&#39;s Blog">
+<meta property="og:description" content="Hive学习笔记（5）">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-08-18T04:01:41.000Z">
+<meta property="article:modified_time" content="2021-12-07T09:22:05.741Z">
+<meta property="article:author" content="Rarit7">
+<meta property="article:tag" content="OLAP">
+<meta property="article:tag" content="Hive">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon-192x192.png">
+        
+      
+    
+    <!-- title -->
+    <title>Hive（5）学习笔记——数仓建模</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" "Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="下一篇 " href="/Hive_04/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部 " href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章 " href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://ster.im/Hive_05/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://ster.im/Hive_05/&text=Hive（5）学习笔记——数仓建模"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://ster.im/Hive_05/&title=Hive（5）学习笔记——数仓建模"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://ster.im/Hive_05/&is_video=false&description=Hive（5）学习笔记——数仓建模"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Hive（5）学习笔记——数仓建模&body=Check out this article: http://ster.im/Hive_05/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://ster.im/Hive_05/&title=Hive（5）学习笔记——数仓建模"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://ster.im/Hive_05/&title=Hive（5）学习笔记——数仓建模"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://ster.im/Hive_05/&title=Hive（5）学习笔记——数仓建模"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://ster.im/Hive_05/&title=Hive（5）学习笔记——数仓建模"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://ster.im/Hive_05/&name=Hive（5）学习笔记——数仓建模&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://ster.im/Hive_05/&t=Hive（5）学习笔记——数仓建模"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%B4%E5%BA%A6%E5%BB%BA%E6%A8%A1"><span class="toc-number">1.</span> <span class="toc-text">维度建模</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8B%E5%AE%9E%E8%A1%A8%E5%92%8C%E7%BB%B4%E5%BA%A6%E8%A1%A8"><span class="toc-number">1.1.</span> <span class="toc-text">事实表和维度表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%98%9F%E5%9E%8B%E6%9E%B6%E6%9E%84%E3%80%81%E9%9B%AA%E8%8A%B1%E6%9E%B6%E6%9E%84%E3%80%81%E6%98%9F%E5%BA%A7%E6%9E%B6%E6%9E%84"><span class="toc-number">1.2.</span> <span class="toc-text">星型架构、雪花架构、星座架构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E5%BB%BA%E8%AE%BE%E7%9A%84%E6%84%8F%E4%B9%89"><span class="toc-number">1.3.</span> <span class="toc-text">数据模型建设的意义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Kimball%E7%BB%B4%E5%BA%A6%E5%BB%BA%E6%A8%A1%E8%BF%87%E7%A8%8B"><span class="toc-number">1.4.</span> <span class="toc-text">Kimball维度建模过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%B4%E5%BA%A6%E4%B8%80%E8%87%B4%E6%80%A7"><span class="toc-number">1.5.</span> <span class="toc-text">维度一致性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%B4%E5%BA%A6%E5%BB%BA%E6%A8%A1%E7%BC%BA%E7%82%B9"><span class="toc-number">1.6.</span> <span class="toc-text">维度建模缺点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Hadoop%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1"><span class="toc-number">2.</span> <span class="toc-text">Hadoop数据仓库架构设计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E5%88%86%E5%B1%82"><span class="toc-number">2.1.</span> <span class="toc-text">数据仓库分层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E8%90%BD%E5%9C%B0%E5%B1%82ODS"><span class="toc-number">2.2.</span> <span class="toc-text">数据落地层ODS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E5%B1%82DW"><span class="toc-number">2.3.</span> <span class="toc-text">数据仓库层DW</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%94%E7%94%A8%E5%B1%82ADS"><span class="toc-number">2.4.</span> <span class="toc-text">数据应用层ADS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%B4%E8%A1%A8%E5%B1%82DIM"><span class="toc-number">2.5.</span> <span class="toc-text">维表层DIM</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Hive（5）学习笔记——数仓建模
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Rarit7</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2021-08-18T04:01:41.000Z" itemprop="datePublished">2021-08-18</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93/">数据仓库</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Hive/" rel="tag">Hive</a>, <a class="tag-link-link" href="/tags/OLAP/" rel="tag">OLAP</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="维度建模"><a href="#维度建模" class="headerlink" title="维度建模"></a>维度建模</h2><h3 id="事实表和维度表"><a href="#事实表和维度表" class="headerlink" title="事实表和维度表"></a>事实表和维度表</h3><ul>
+<li><strong>事实表</strong>：业务过程中所有度量在维度建模中都是存储在事实表中的。按照粒度的角色划分，可以分为：<ul>
+<li>事务事实表：用于承载事务数据，粒度比较低；</li>
+<li>周期快照事实表：粒度比较粗事务事实表的定期快照；</li>
+<li>累计快照事实表：存储事务数据的快照信息。</li>
+</ul>
+</li>
+<li><strong>维度表</strong>：包含事实表记录的业务过程度量的上下文和环境，如When、Where、What、Who、Why、How及一些描述字段和标签字段。</li>
+<li>维度属性是查询约束条件（<code>WHERE</code>查询条件）、分组（<code>GROUP BY</code>分组条件）与报表标签生成的基本来源。</li>
+</ul>
+<h3 id="星型架构、雪花架构、星座架构"><a href="#星型架构、雪花架构、星座架构" class="headerlink" title="星型架构、雪花架构、星座架构"></a>星型架构、雪花架构、星座架构</h3><ul>
+<li><strong>星形架构</strong>：所有维度表直接连接到事实表，称为星形架构，其数据存储存在冗余。</li>
+<li><strong>雪花架构</strong>：一个或多个维度表通过其他维度表连接到事实表，称为雪花架构，去除了数据冗余，节省了部分存储，但使用上比较复杂，实际上较少使用。</li>
+<li><strong>星座架构</strong>：基于星型架构的扩展，多张事实表共享维度表。</li>
+<li>大多数情况下使用星形架构，只有在必须使用桥接表的情况下必须使用雪花架构。</li>
+</ul>
+<h3 id="数据模型建设的意义"><a href="#数据模型建设的意义" class="headerlink" title="数据模型建设的意义"></a>数据模型建设的意义</h3><ul>
+<li>进行全面的业务梳理，改进业务流程；</li>
+<li>建立全方位的数据视角，消灭信息孤岛和数据差异；</li>
+<li>解决业务的变动和数据仓库的灵活性；</li>
+<li>帮助数据仓库系统本身的建设。</li>
+</ul>
+<h3 id="Kimball维度建模过程"><a href="#Kimball维度建模过程" class="headerlink" title="Kimball维度建模过程"></a>Kimball维度建模过程</h3><ul>
+<li><strong>选择业务过程</strong>：业务过程是业务执行的活动，与之相关的维度描述业务过程事件关联的描述性环境，如竞价、展现、点击。</li>
+<li><strong>定义粒度</strong>：粒度是事实表度量的细节级别，如客户单次点击搜索。</li>
+<li><strong>确定维度</strong>：维度表示承担每个度量环境中所有可能的单值描述符，如5W1H。</li>
+<li><strong>确定事实</strong>：不同粒度的事实必须放在不同的事实表中；查询操作主要是基于事实表展开计算和聚合。</li>
+</ul>
+<h3 id="维度一致性"><a href="#维度一致性" class="headerlink" title="维度一致性"></a>维度一致性</h3><ul>
+<li>如果两个维度有关系，要么就是完全一样的，要么就是一个维度在数学意义上是另一个维度的子集。</li>
+<li>必须保证维度一致性，避免孤立数据集市的出现。</li>
+<li>非完全独立的维度应该合并为一个维度，将同一层次的元素标示为事实表中的不同维度会增加查询和存储负担。</li>
+</ul>
+<h3 id="维度建模缺点"><a href="#维度建模缺点" class="headerlink" title="维度建模缺点"></a>维度建模缺点</h3><ul>
+<li>维度建模之前需要大量的数据预处理。</li>
+<li>业务发生变化时，往往需要重新整理维度数据。</li>
+<li>维度建模主要适用于数据集市层，在数据仓库的底层，不能保证数据来源的一致性和准确性。</li>
+</ul>
+<h2 id="Hadoop数据仓库架构设计"><a href="#Hadoop数据仓库架构设计" class="headerlink" title="Hadoop数据仓库架构设计"></a>Hadoop数据仓库架构设计</h2><h3 id="数据仓库分层"><a href="#数据仓库分层" class="headerlink" title="数据仓库分层"></a>数据仓库分层</h3><p>对数据仓库分层的主要原因：</p>
+<ul>
+<li>在管理数据时，对数据有更清晰的把控；</li>
+<li>明确数据来源，快速精准定位问题；</li>
+<li>减少重复开发；</li>
+<li>将复杂的任务分解成多个简单的任务完成；</li>
+<li>屏蔽原始数据的异常。</li>
+</ul>
+<h3 id="数据落地层ODS"><a href="#数据落地层ODS" class="headerlink" title="数据落地层ODS"></a>数据落地层ODS</h3><p>对源数据表原封不动地存储一份，是后续数据仓库层加工数据的来源。</p>
+<h3 id="数据仓库层DW"><a href="#数据仓库层DW" class="headerlink" title="数据仓库层DW"></a>数据仓库层DW</h3><p>数据仓库层是Hadoop数据平台的主体内容，其数据是ODS层数据经过ETL清洗、转换、加载生成的。又细分为<code>DWD</code>、<code>DWM</code>、<code>DWS</code>层。</p>
+<ul>
+<li>数据明细层（<code>DWD</code>）一般保持和ODS层一样的数据粒度，并且提供一定的数据质量保证。该层采用一些维度退化手法，减少事实表和维度表的关联，提高明细表的易用性。</li>
+<li>数据中间层（<code>DWM</code>）对数据做轻度的聚合，生成一系列中间表。</li>
+<li>数据服务层（<code>DWS</code>）又称数据集市或宽表，按照业务划分，生成字段比较多的宽表，用于提供后续业务查询、OLAP分析、数据分发等。</li>
+</ul>
+<h3 id="数据应用层ADS"><a href="#数据应用层ADS" class="headerlink" title="数据应用层ADS"></a>数据应用层ADS</h3><p>提供数据产品和数据分析使用的数据，主要面向前端展现。</p>
+<h3 id="维表层DIM"><a href="#维表层DIM" class="headerlink" title="维表层DIM"></a>维表层DIM</h3><ul>
+<li>高维度数据：一般是用户资料表、商品资料表等，数据量可能是上亿级别。</li>
+<li>低维度数据：一般是配置表，比如枚举值对应的含义，或日期维表。</li>
+</ul>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%B4%E5%BA%A6%E5%BB%BA%E6%A8%A1"><span class="toc-number">1.</span> <span class="toc-text">维度建模</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8B%E5%AE%9E%E8%A1%A8%E5%92%8C%E7%BB%B4%E5%BA%A6%E8%A1%A8"><span class="toc-number">1.1.</span> <span class="toc-text">事实表和维度表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%98%9F%E5%9E%8B%E6%9E%B6%E6%9E%84%E3%80%81%E9%9B%AA%E8%8A%B1%E6%9E%B6%E6%9E%84%E3%80%81%E6%98%9F%E5%BA%A7%E6%9E%B6%E6%9E%84"><span class="toc-number">1.2.</span> <span class="toc-text">星型架构、雪花架构、星座架构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E5%BB%BA%E8%AE%BE%E7%9A%84%E6%84%8F%E4%B9%89"><span class="toc-number">1.3.</span> <span class="toc-text">数据模型建设的意义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Kimball%E7%BB%B4%E5%BA%A6%E5%BB%BA%E6%A8%A1%E8%BF%87%E7%A8%8B"><span class="toc-number">1.4.</span> <span class="toc-text">Kimball维度建模过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%B4%E5%BA%A6%E4%B8%80%E8%87%B4%E6%80%A7"><span class="toc-number">1.5.</span> <span class="toc-text">维度一致性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%B4%E5%BA%A6%E5%BB%BA%E6%A8%A1%E7%BC%BA%E7%82%B9"><span class="toc-number">1.6.</span> <span class="toc-text">维度建模缺点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Hadoop%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1"><span class="toc-number">2.</span> <span class="toc-text">Hadoop数据仓库架构设计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E5%88%86%E5%B1%82"><span class="toc-number">2.1.</span> <span class="toc-text">数据仓库分层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E8%90%BD%E5%9C%B0%E5%B1%82ODS"><span class="toc-number">2.2.</span> <span class="toc-text">数据落地层ODS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E5%B1%82DW"><span class="toc-number">2.3.</span> <span class="toc-text">数据仓库层DW</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%94%E7%94%A8%E5%B1%82ADS"><span class="toc-number">2.4.</span> <span class="toc-text">数据应用层ADS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%B4%E8%A1%A8%E5%B1%82DIM"><span class="toc-number">2.5.</span> <span class="toc-text">维表层DIM</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://ster.im/Hive_05/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://ster.im/Hive_05/&text=Hive（5）学习笔记——数仓建模"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://ster.im/Hive_05/&title=Hive（5）学习笔记——数仓建模"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://ster.im/Hive_05/&is_video=false&description=Hive（5）学习笔记——数仓建模"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Hive（5）学习笔记——数仓建模&body=Check out this article: http://ster.im/Hive_05/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://ster.im/Hive_05/&title=Hive（5）学习笔记——数仓建模"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://ster.im/Hive_05/&title=Hive（5）学习笔记——数仓建模"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://ster.im/Hive_05/&title=Hive（5）学习笔记——数仓建模"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://ster.im/Hive_05/&title=Hive（5）学习笔记——数仓建模"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://ster.im/Hive_05/&name=Hive（5）学习笔记——数仓建模&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://ster.im/Hive_05/&t=Hive（5）学习笔记——数仓建模"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2012-2021
+    Rarit7
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.3/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdn.bootcdn.net/ajax/libs/clipboard.js/2.0.8/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>

@@ -4,6 +4,288 @@
   
     
     <entry>
+      <title>Hive（5）学习笔记——数仓建模</title>
+      <link href="/Hive_05/"/>
+      <url>/Hive_05/</url>
+      
+        <content type="html"><![CDATA[<h2 id="维度建模"><a href="#维度建模" class="headerlink" title="维度建模"></a>维度建模</h2><h3 id="事实表和维度表"><a href="#事实表和维度表" class="headerlink" title="事实表和维度表"></a>事实表和维度表</h3><ul><li><strong>事实表</strong>：业务过程中所有度量在维度建模中都是存储在事实表中的。按照粒度的角色划分，可以分为：<ul><li>事务事实表：用于承载事务数据，粒度比较低；</li><li>周期快照事实表：粒度比较粗事务事实表的定期快照；</li><li>累计快照事实表：存储事务数据的快照信息。</li></ul></li><li><strong>维度表</strong>：包含事实表记录的业务过程度量的上下文和环境，如When、Where、What、Who、Why、How及一些描述字段和标签字段。</li><li>维度属性是查询约束条件（<code>WHERE</code>查询条件）、分组（<code>GROUP BY</code>分组条件）与报表标签生成的基本来源。</li></ul><h3 id="星型架构、雪花架构、星座架构"><a href="#星型架构、雪花架构、星座架构" class="headerlink" title="星型架构、雪花架构、星座架构"></a>星型架构、雪花架构、星座架构</h3><ul><li><strong>星形架构</strong>：所有维度表直接连接到事实表，称为星形架构，其数据存储存在冗余。</li><li><strong>雪花架构</strong>：一个或多个维度表通过其他维度表连接到事实表，称为雪花架构，去除了数据冗余，节省了部分存储，但使用上比较复杂，实际上较少使用。</li><li><strong>星座架构</strong>：基于星型架构的扩展，多张事实表共享维度表。</li><li>大多数情况下使用星形架构，只有在必须使用桥接表的情况下必须使用雪花架构。</li></ul><h3 id="数据模型建设的意义"><a href="#数据模型建设的意义" class="headerlink" title="数据模型建设的意义"></a>数据模型建设的意义</h3><ul><li>进行全面的业务梳理，改进业务流程；</li><li>建立全方位的数据视角，消灭信息孤岛和数据差异；</li><li>解决业务的变动和数据仓库的灵活性；</li><li>帮助数据仓库系统本身的建设。</li></ul><h3 id="Kimball维度建模过程"><a href="#Kimball维度建模过程" class="headerlink" title="Kimball维度建模过程"></a>Kimball维度建模过程</h3><ul><li><strong>选择业务过程</strong>：业务过程是业务执行的活动，与之相关的维度描述业务过程事件关联的描述性环境，如竞价、展现、点击。</li><li><strong>定义粒度</strong>：粒度是事实表度量的细节级别，如客户单次点击搜索。</li><li><strong>确定维度</strong>：维度表示承担每个度量环境中所有可能的单值描述符，如5W1H。</li><li><strong>确定事实</strong>：不同粒度的事实必须放在不同的事实表中；查询操作主要是基于事实表展开计算和聚合。</li></ul><h3 id="维度一致性"><a href="#维度一致性" class="headerlink" title="维度一致性"></a>维度一致性</h3><ul><li>如果两个维度有关系，要么就是完全一样的，要么就是一个维度在数学意义上是另一个维度的子集。</li><li>必须保证维度一致性，避免孤立数据集市的出现。</li><li>非完全独立的维度应该合并为一个维度，将同一层次的元素标示为事实表中的不同维度会增加查询和存储负担。</li></ul><h3 id="维度建模缺点"><a href="#维度建模缺点" class="headerlink" title="维度建模缺点"></a>维度建模缺点</h3><ul><li>维度建模之前需要大量的数据预处理。</li><li>业务发生变化时，往往需要重新整理维度数据。</li><li>维度建模主要适用于数据集市层，在数据仓库的底层，不能保证数据来源的一致性和准确性。</li></ul><h2 id="Hadoop数据仓库架构设计"><a href="#Hadoop数据仓库架构设计" class="headerlink" title="Hadoop数据仓库架构设计"></a>Hadoop数据仓库架构设计</h2><h3 id="数据仓库分层"><a href="#数据仓库分层" class="headerlink" title="数据仓库分层"></a>数据仓库分层</h3><p>对数据仓库分层的主要原因：</p><ul><li>在管理数据时，对数据有更清晰的把控；</li><li>明确数据来源，快速精准定位问题；</li><li>减少重复开发；</li><li>将复杂的任务分解成多个简单的任务完成；</li><li>屏蔽原始数据的异常。</li></ul><h3 id="数据落地层ODS"><a href="#数据落地层ODS" class="headerlink" title="数据落地层ODS"></a>数据落地层ODS</h3><p>对源数据表原封不动地存储一份，是后续数据仓库层加工数据的来源。</p><h3 id="数据仓库层DW"><a href="#数据仓库层DW" class="headerlink" title="数据仓库层DW"></a>数据仓库层DW</h3><p>数据仓库层是Hadoop数据平台的主体内容，其数据是ODS层数据经过ETL清洗、转换、加载生成的。又细分为<code>DWD</code>、<code>DWM</code>、<code>DWS</code>层。</p><ul><li>数据明细层（<code>DWD</code>）一般保持和ODS层一样的数据粒度，并且提供一定的数据质量保证。该层采用一些维度退化手法，减少事实表和维度表的关联，提高明细表的易用性。</li><li>数据中间层（<code>DWM</code>）对数据做轻度的聚合，生成一系列中间表。</li><li>数据服务层（<code>DWS</code>）又称数据集市或宽表，按照业务划分，生成字段比较多的宽表，用于提供后续业务查询、OLAP分析、数据分发等。</li></ul><h3 id="数据应用层ADS"><a href="#数据应用层ADS" class="headerlink" title="数据应用层ADS"></a>数据应用层ADS</h3><p>提供数据产品和数据分析使用的数据，主要面向前端展现。</p><h3 id="维表层DIM"><a href="#维表层DIM" class="headerlink" title="维表层DIM"></a>维表层DIM</h3><ul><li>高维度数据：一般是用户资料表、商品资料表等，数据量可能是上亿级别。</li><li>低维度数据：一般是配置表，比如枚举值对应的含义，或日期维表。</li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> 数据仓库 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> OLAP </tag>
+            
+            <tag> Hive </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Hive（4）学习笔记——调优</title>
+      <link href="/Hive_04/"/>
+      <url>/Hive_04/</url>
+      
+        <content type="html"><![CDATA[<h2 id="常用参数设置"><a href="#常用参数设置" class="headerlink" title="常用参数设置"></a>常用参数设置</h2><ul><li><code>set mapred.recduce.tasks = 1;</code>：设置默认启动的Reducer数量。</li><li><code>set hive.mapred.mode = strict/nonstrict;</code>：开启严格模式，如果设置为<code>strict</code>，会禁止以下情况提交任务，以防止触发低效的MapReduce任务：<ul><li>笛卡尔积<code>JOIN</code>；</li><li><code>ORDER BY</code>不含<code>LIMIT</code>；</li><li>读取分区表没有指定分区字段。</li></ul></li><li><code>set hive.merge.mapredfiles = true;</code>：在map任务开始和Reduce任务结束时合并小文件，防止开启过多的map任务。</li><li><code>set hive.merge.size.per.task = 256000000;</code>：每个任务合并后文件的大小，据此大小确定Reducer的个数。</li><li><code>set hive.merge.smallfiles.avgsize=64000000;</code>：需要合并的小文件群的平均大小。</li><li><code>set hive.exec.compress.intermediate = true;</code>：开启中间压缩，减少job中Map和Reduce Task的数据传输量。</li><li><code>set hive.exec.mode.local.auto = true;</code>：开启本地模式，可以在处理小数据集时避免使用MapReduce。</li><li><code>set hive.exec.dynamic.partition = true;</code>：打开动态分区，默认关闭。</li><li><code>set hive.exec.dynamic.partition.mode = strict/nonstrict;</code>：动态分区若采用严格模式，则至少要包含一个静态分区。</li></ul><h2 id="存储和压缩方式"><a href="#存储和压缩方式" class="headerlink" title="存储和压缩方式"></a>存储和压缩方式</h2><ul><li><strong>行式存储</strong>：数据按行连续存储，行查询效率高、列查询效率低，适合<code>SELECT *</code>比较多的情况，数据压缩效率低。默认的<code>TextFile</code>和<code>SequenceFile</code>均为行式存储。</li><li><strong>列式存储</strong>：数据按列连续存储，列查询效率高、行查询效率低，适合<code>SELECT col_name</code>比较多的情况，数据压缩效率高。<code>ORCFile</code>和<code>Parquet</code>为列式存储。</li><li><strong>压缩方式</strong>：Hive支持多种压缩方式，如<code>Snappy</code>、<code>LZ4</code>、<code>LZO</code>、<code>GZIP</code>、<code>BZIP2</code>等。压缩数据能减少磁盘空间占用、降低网络IO和磁盘IO，提升传输速度。</li></ul><p>在实际项目开发中，Hive表存储格式一般选择<code>ORCFile</code>或<code>Parquet</code>，压缩方式一般选择<code>Snappy</code>。</p><h2 id="Hive查看执行计划"><a href="#Hive查看执行计划" class="headerlink" title="Hive查看执行计划"></a>Hive查看执行计划</h2><p><code>EXPLAIN [EXTENDED]</code>可以查看Hive如何把任务转化为MapReduce任务：</p><ol><li>显示抽象语法树<code>AST</code>；</li><li>显示STAGE依赖关系：一个Hive任务包含多个STAGE，不同STAGE之间存在依赖关系，越复杂的任务会包含越多的STAGE，需要更多的时间完成；</li><li>显示每个阶段的具体描述，例如<code>SelectOperator</code>、<code>GroupByOperator</code>及其对应的字段名称。</li></ol><h2 id="数据倾斜"><a href="#数据倾斜" class="headerlink" title="数据倾斜"></a>数据倾斜</h2><p>分布式数据处理希望数据平均分布到每个处理节点，但是由于数据本身或者分布算法的问题，每个节点分配到的数据量不均衡，导致分布式处理的性能大打折扣。</p><h3 id="解决GROUP-BY的数据倾斜"><a href="#解决GROUP-BY的数据倾斜" class="headerlink" title="解决GROUP BY的数据倾斜"></a>解决GROUP BY的数据倾斜</h3><ul><li><code>set hive.map.aggr = true;</code>开启Map端聚合参数设置。</li><li><code>set hive.groupby.skewindata = true;</code>开启负载均衡，默认关闭。</li><li>开启负载均衡，会产生两个MapReduce任务，第一个MapReduce Job会把Map输出的结果随机分配到Reduce中，达到负载均衡的目的；第二个MapReduce Job根据预处理的数据结果按照<code>GROUP BY</code>键分布到Reduce中，保证相同的键分布到同一个Reduce中，完成聚合操作。</li></ul><h3 id="解决COUNT-DISTINCT的数据倾斜"><a href="#解决COUNT-DISTINCT的数据倾斜" class="headerlink" title="解决COUNT DISTINCT的数据倾斜"></a>解决COUNT DISTINCT的数据倾斜</h3><ul><li>由于需要去重，会把Map阶段的输出分布到一个Reduce Task上，因此可以转化为先<code>GROUP BY</code>去重、再<code>COUNT(1)</code>的方式来优化。</li></ul><h3 id="JOIN优化"><a href="#JOIN优化" class="headerlink" title="JOIN优化"></a>JOIN优化</h3><ul><li>多表连接使用同一个字段，Hive会进行优化，把多表连接在一个Map/Reduce上进行：假定最后一个表是最大的表，将前面的表缓存起来，扫描到最后的表再进行计算。因此需要保证查询的表从左到右依次增大。也可以通过<code>/*+STREAMTABLE()*/</code>来标识最大的表。</li></ul><h3 id="大表JOIN小表优化"><a href="#大表JOIN小表优化" class="headerlink" title="大表JOIN小表优化"></a>大表JOIN小表优化</h3><ul><li><code>set hive.auto.convert.join = true;</code>开启mapjoin功能，默认是开启的。</li><li>mapjoin hint：<code>/*+MAPJOIN(b)*/</code>（mapjoin多个表：<code>/*+MAPJOIN(b, c, d)*/</code>）。</li><li>在Map阶段进行<code>JOIN</code>，把小表全量复制到每个Map节点的内存中，在Map中完成JOIN，无需Reduce过程，因此不会产生数据倾斜。</li><li>通过设置<code>set hive.auto.convert.join.noconditionaltask.size</code>来确定小表的大小是否满足条件，默认25MB，一般不能超过1GB。</li></ul><h3 id="大表JOIN大表优化"><a href="#大表JOIN大表优化" class="headerlink" title="大表JOIN大表优化"></a>大表JOIN大表优化</h3><ul><li>方法1：根据业务需求，限制行数、列数，使得过滤后的表满足mapjoin的条件。</li><li>方法2：针对NULL值过多造成的数据倾斜，对NULL值取随机数，随机分发到不同的Reducer上。</li><li>方法3：倍数B表，再取模<code>JOIN</code>。</li><li>方法4：动态一分为二，不倾斜的正常<code>JOIN</code>，倾斜的找出来后mapjoin，然后<code>UNION ALL</code>。</li></ul><h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><ul><li>尽量不使用<code>SELECT *</code>，用到哪些列指定哪些列。</li><li><code>WHERE</code>尽量添加过滤条件，去掉无关的数据行。</li><li>输入文件不要是大量的小文件，否则开启过多的Map节点造成性能上的浪费。</li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> 数据仓库 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> OLAP </tag>
+            
+            <tag> Hive </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Hive（3）学习笔记——执行过程</title>
+      <link href="/Hive_03/"/>
+      <url>/Hive_03/</url>
+      
+        <content type="html"><![CDATA[<h2 id="Hive主要组件"><a href="#Hive主要组件" class="headerlink" title="Hive主要组件"></a>Hive主要组件</h2><ul><li><strong>Driver组件</strong>：包括Complier（编译器）、Optimizer（优化器）和Exector（执行器），是Hive的核心组件。</li><li><strong>Metastore组件</strong>：存储Hive的元数据，存储在关系型数据库中，包括Derby和MySQL。</li><li><strong>CLI</strong>：命令行接口。</li><li><strong>Thrift Server</strong>：用于可扩展、跨语言的服务开发。</li><li><strong>Hive Web Interface</strong>：提供网页的方式访问Hive服务。</li></ul><h2 id="Hive基本执行过程"><a href="#Hive基本执行过程" class="headerlink" title="Hive基本执行过程"></a>Hive基本执行过程</h2><ul><li>Hive将HQL转换成一组操作符，这些操作符是Hive的最小单元。</li><li>每个操作符代表一个HDFS操作或者MapReduce作业，如<code>GroupByOperator</code>，<code>JoinOperator</code>等。</li><li>Hive通过<code>ExecMapper</code>和<code>ExecReducer</code>执行MapReduce程序，执行模式有本地模式和分布式两种模式。</li><li>本地模式在单机上处理所有任务，适合小数据集，效率比提交到集群处理高很多。任务需要满足：<ul><li>job输入数据小于<code>hive.exec.mode.local.auto.inputbytes.max</code>（默认为128MB）；</li><li>job的Map数小于<code>hive.exec.mode.local.auto.tasks.max</code>（默认为4）；</li><li>job的Reduce数必须为0或者1。</li></ul></li></ul><h2 id="Hive执行计划"><a href="#Hive执行计划" class="headerlink" title="Hive执行计划"></a>Hive执行计划</h2><ul><li>读取元数据信息，对SQL进行词法和语法分析，检查表、字段是否存在，SQL是否有误；</li><li>将SQL转换成抽象语法树<code>AST</code>，然后将其转换为查询块<code>Query Block</code>，进一步抽象和结构化；</li><li>遍历<code>Query Block</code>，生成<code>Operator Tree</code>；</li><li>逻辑层优化器变换<code>Operator Tree</code>，合并不必要的<code>ReduceSinkOperator</code>，减少Shuffle数量；</li><li>生成物理执行计划，遍历<code>Operator Tree</code>，翻译为MapReduce任务；</li><li>物理层优化器进行MapReduce任务的变换，生成最终的执行计划。</li></ul><h2 id="SELECT执行过程"><a href="#SELECT执行过程" class="headerlink" title="SELECT执行过程"></a>SELECT执行过程</h2><h3 id="输入分片"><a href="#输入分片" class="headerlink" title="输入分片"></a>输入分片</h3><ul><li>按照分区条件，读取对应分区的文件。</li><li>根据分片大小（Hadoop1.x默认是64MB，Hadoop2.x默认是128MB），对文件进行分片。</li></ul><h3 id="Map阶段"><a href="#Map阶段" class="headerlink" title="Map阶段"></a>Map阶段</h3><ul><li>根据分片数量，启动对应数量的Map任务。</li><li>每个Map任务仅对自己的分片进行检查。</li><li>所有Map任务并行执行，只需增加相应的机器和节点，就能在相同时间内处理更多的数据。</li></ul><h3 id="Shuffle和Reduce阶段"><a href="#Shuffle和Reduce阶段" class="headerlink" title="Shuffle和Reduce阶段"></a>Shuffle和Reduce阶段</h3><ul><li><code>SELECT</code>操作不涉及数据的重新分发和分布，不需要启动任何的Reduce任务。</li></ul><h3 id="输出文件"><a href="#输出文件" class="headerlink" title="输出文件"></a>输出文件</h3><ul><li>Hadoop合并Map任务输出文件到输出目录。</li></ul><h2 id="GROUP-BY执行过程"><a href="#GROUP-BY执行过程" class="headerlink" title="GROUP BY执行过程"></a>GROUP BY执行过程</h2><h3 id="输入分片-1"><a href="#输入分片-1" class="headerlink" title="输入分片"></a>输入分片</h3><ul><li>按照分区条件，读取对应分区的文件。</li><li>根据分片大小，对文件进行分片。</li></ul><h3 id="Map阶段-1"><a href="#Map阶段-1" class="headerlink" title="Map阶段"></a>Map阶段</h3><ul><li>根据分片数量，启动对应数量的Map任务。</li><li>每个Map任务检查对应分片中的字段名是否符合筛选条件，如果是，输出形如<code>&lt;xxx, 1&gt;</code>的键值对（xxx为分组条件）。</li></ul><h3 id="Combiner阶段"><a href="#Combiner阶段" class="headerlink" title="Combiner阶段"></a>Combiner阶段</h3><ul><li>如果选择了<code>Combiner</code>操作，Hadoop会在Map任务的本地输出执行<code>Combiner</code>，去除冗余输出。例如，一个Reducer中出现了<code>&lt;xxx, 1&gt;</code>两次，则会合并为<code>&lt;xxx, 2&gt;</code>。注意使用<code>Combiner</code>的原则是不影响到Reduce计算的最终输入，例如求总数、求最大值等，但不适合求均值等情况。</li></ul><h3 id="Shuffle阶段"><a href="#Shuffle阶段" class="headerlink" title="Shuffle阶段"></a>Shuffle阶段</h3><ul><li>Shuffle过程是把Map任务输出到Reduce任务输入的整个处理过程。</li><li>对于<code>GROUP BY</code>，Hadoop通过某种方法把每个输出的键值对分配到某一个Reducer进行合并。最为常用的方法是<code>Hash Partitioner</code>，即Hadoop对每个键取Hash，对此Hash按照Reduce任务数量取模，得到对应的Reducer。合并后的输出形如<code>&lt;xxx, &#123;2,1&#125;&gt;</code>，将其作为一个Reducer的输入。</li></ul><h3 id="Reduce阶段"><a href="#Reduce阶段" class="headerlink" title="Reduce阶段"></a>Reduce阶段</h3><ul><li>Reduce Task调用reduce函数逻辑将输入汇总，输出到本地文件中。</li></ul><h3 id="输出文件-1"><a href="#输出文件-1" class="headerlink" title="输出文件"></a>输出文件</h3><ul><li>Hadoop合并Reduce Task任务输出文件到输出目录。</li></ul><h2 id="JOIN执行过程"><a href="#JOIN执行过程" class="headerlink" title="JOIN执行过程"></a>JOIN执行过程</h2><p>如果<code>JOIN</code>语句中存在子查询，它会被拆分成数个MapReduce任务。</p><h3 id="输入分片-2"><a href="#输入分片-2" class="headerlink" title="输入分片"></a>输入分片</h3><ul><li>如果<code>JOIN</code>任务的输入是两个MapReduce任务的输出，依然会对它们根据文件大小进行分片。</li></ul><h3 id="Map阶段-2"><a href="#Map阶段-2" class="headerlink" title="Map阶段"></a>Map阶段</h3><ul><li>根据分片数量，启动对应数量的Map任务。</li></ul><h3 id="Shuffle阶段-1"><a href="#Shuffle阶段-1" class="headerlink" title="Shuffle阶段"></a>Shuffle阶段</h3><ul><li>对于<code>JOIN</code>，Shuffle主要过程是<code>Partition</code>，根据<code>JOIN</code>的列进行数据的重分布和分发。常用的<code>Partition</code>方法也是<code>Hash Partitioner</code>。</li></ul><h3 id="Reduce阶段-1"><a href="#Reduce阶段-1" class="headerlink" title="Reduce阶段"></a>Reduce阶段</h3><ul><li>Reduce Task根据<code>JOIN</code>的键将它们的值关联合并成一行，写入本地的输出文件中。</li></ul><h3 id="输出文件-2"><a href="#输出文件-2" class="headerlink" title="输出文件"></a>输出文件</h3><ul><li>Hadoop合并Reduce Task任务输出文件到输出目录。</li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> 数据仓库 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> OLAP </tag>
+            
+            <tag> Hive </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Hive（2）学习笔记——基本语法</title>
+      <link href="/Hive_02/"/>
+      <url>/Hive_02/</url>
+      
+        <content type="html"><![CDATA[<h2 id="基本语法"><a href="#基本语法" class="headerlink" title="基本语法"></a>基本语法</h2><p>本文只介绍与传统SQL语法有所区别的部分。</p><ul><li><p>建表：</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> [<span class="keyword">EXTERNAL</span>] <span class="keyword">TABLE</span> [IF <span class="keyword">NOT</span> <span class="keyword">EXISTS</span>] table_name (</span><br><span class="line">    col_name col_type [COMMENT col_comment], </span><br><span class="line">    ...) [COMMENT table_comment]</span><br><span class="line">    PARTITIONED <span class="keyword">BY</span> (<span class="keyword">month</span>, string) </span><br><span class="line">    CLUSTERD <span class="keyword">BY</span> (id) SORTED <span class="keyword">BY</span> (id) [<span class="keyword">ASC</span><span class="operator">|</span><span class="keyword">DESC</span>] <span class="keyword">INTO</span> n BUCKETS </span><br><span class="line">    <span class="type">ROW</span> FORMAT DELIMITED </span><br><span class="line">    FIELDS TERMINATED <span class="keyword">BY</span> <span class="string">&#x27;\t&#x27;</span> </span><br><span class="line">    LINES TERMINATED <span class="keyword">BY</span> <span class="string">&#x27;\n&#x27;</span></span><br><span class="line">    STORED <span class="keyword">AS</span> ORC</span><br><span class="line">    TBLPROPERTIES(<span class="string">&#x27;orc.compress&#x27;</span><span class="operator">=</span><span class="string">&#x27;SNAPPY&#x27;</span>)</span><br><span class="line">    LOCATION <span class="string">&#x27;/user/hive/warehouse/table&#x27;</span>;</span><br></pre></td></tr></table></figure></li><li><p>通过<code>CREATE TABLE AS SELECT</code>的方式创建表：</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> table_name <span class="keyword">AS</span> <span class="keyword">SELECT</span> ...;</span><br></pre></td></tr></table></figure></li><li><p>复制表结构，但不复制数据：</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> table_name_1 <span class="keyword">LIKE</span> table_name_2;</span><br></pre></td></tr></table></figure></li><li><p>指定分隔符，如不指定，Hive默认使用SOH字符(<code>&#39;\001&#39;</code>)为分隔符：</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ROW</span> FORMAT DELIMITED FIELDS TERMINATED <span class="keyword">BY</span> <span class="string">&#x27;\t&#x27;</span>;</span><br></pre></td></tr></table></figure></li><li><p>从本地加载数据：</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LOAD DATA <span class="keyword">LOCAL</span> INPATH <span class="string">&#x27;/path/file.csv&#x27;</span> <span class="keyword">INTO</span> <span class="keyword">TABLE</span> table_name;</span><br></pre></td></tr></table></figure></li><li><p>向指定分区插入数据：</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> OVERWRITE <span class="keyword">INTO</span> table_name_1 [<span class="keyword">PARTITION</span> (<span class="keyword">month</span><span class="operator">=</span>xxx)] <span class="keyword">SELECT</span> ...;</span><br></pre></td></tr></table></figure></li><li><p>修改表名：</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> old_table_name RENAME <span class="keyword">TO</span> new_table_name;</span><br></pre></td></tr></table></figure></li><li><p>修改列名：</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> table_name </span><br><span class="line">    CHANGE [<span class="keyword">COLUMN</span>] old_column_name new_column_name column_type；</span><br></pre></td></tr></table></figure></li><li><p>删除表的数据和元数据（对于外部表，只删除Metastore中的数据，外部数据保持不变）：</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> [IF <span class="keyword">EXISTS</span>] table_name ;</span><br></pre></td></tr></table></figure></li><li><p>删除表中的数据，但保留表结构：</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">TRUNCATE</span> <span class="keyword">TABLE</span> table_name;</span><br></pre></td></tr></table></figure></li><li><p>查询语句：</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> [<span class="keyword">ALL</span><span class="operator">|</span><span class="keyword">DISTINCT</span>] col_name, ...</span><br><span class="line">    <span class="keyword">FROM</span> table_name</span><br><span class="line">    <span class="keyword">WHERE</span> where_condition</span><br><span class="line">    <span class="keyword">GROUP</span> <span class="keyword">BY</span> col_name <span class="keyword">HAVING</span> have_condition</span><br><span class="line">    CLUSTER <span class="keyword">BY</span> col_name</span><br><span class="line">    [DISTRIBUTE <span class="keyword">BY</span> col_name SORT <span class="keyword">BY</span><span class="operator">|</span> <span class="keyword">ORDER</span> <span class="keyword">BY</span> col_name]</span><br><span class="line">    LIMIT limit_number;</span><br></pre></td></tr></table></figure></li><li><p>当<code>DISTRIBUTE BY</code>和<code>SORT BY</code>指定为同一个字段时，可以用<code>CLUSTER BY</code>代替之。</p></li><li><p><code>SORT BY</code>会在每一个Reducer中排序，不保证全局有序；<code>ORDER BY</code>会对所给数据全局排序。</p></li></ul><h3 id="外部表"><a href="#外部表" class="headerlink" title="外部表"></a>外部表</h3><p>Hive不会独占外部表的数据，当删除外部表时，数据仍然存放在HDFS中。而删除内部表时，表数据和HDFS中的文件也会被删除。如果数据不只被Hive使用，应当建立外部表。</p><p>创建外部表命令：<code>CREATE EXTERNAL TABLE table_name(...);</code></p><h3 id="分区表"><a href="#分区表" class="headerlink" title="分区表"></a>分区表</h3><p>Hive把整个表按照某个或某些字段划分成数个小文件，并放到不同的文件夹里。</p><p>当查询时通过<code>WHERE</code>指定分区，就只到该分区的文件夹下扫描数据，从而提升查询速度。</p><p>如果<code>hive.mapred.mode</code>设置为严格模式，读取分区表需要<code>WHERE</code>语句指定分区。</p><p>在物理结构上，分区就是把数据存放在按分区字段命名的目录中，形如<code>分区key=value</code>。</p><p>如果设置多个分区字段，反映在文件结构中就是目录的嵌套。</p><ul><li><p>分区建表，指定分区字段为<code>month</code>：</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> table_name(id <span class="type">int</span>, name string) PARTITIONED <span class="keyword">BY</span>(<span class="keyword">month</span> string);</span><br></pre></td></tr></table></figure></li><li><p>分区表加载本地数据到指定分区：</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LOAD DATA <span class="keyword">LOCAL</span> INPATH <span class="string">&#x27;/path/file.csv&#x27;</span> <span class="keyword">INTO</span> <span class="keyword">TABLE</span> table_name <span class="keyword">PARTITION</span>(<span class="keyword">month</span><span class="operator">=</span><span class="string">&#x27;202001&#x27;</span>);</span><br></pre></td></tr></table></figure></li><li><p>查询指定分区：</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> table_name <span class="keyword">WHERE</span> <span class="keyword">month</span><span class="operator">=</span><span class="string">&#x27;202001&#x27;</span>;</span><br></pre></td></tr></table></figure></li><li><p>建立分区表，并将数据文件复制到路径后，可以使用如下命令修复分区表：</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MSCK REPAIR <span class="keyword">TABLE</span> table_name;</span><br></pre></td></tr></table></figure></li></ul><h3 id="分桶表"><a href="#分桶表" class="headerlink" title="分桶表"></a>分桶表</h3><p>分桶是把数据按照指定字段划分到多个文档中，就是MapReduce中的分区。</p><p>Hive常见的分桶方式是对某一列数据哈希取模、均匀地分发到不同的桶文件中。</p><ul><li><p>设置强制分桶：</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> hive.enforce.bucketing <span class="operator">=</span> <span class="literal">true</span>;</span><br></pre></td></tr></table></figure></li><li><p>设置Reduce个数：</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> mapreduce.job.reduces <span class="operator">=</span> <span class="number">4</span>;</span><br></pre></td></tr></table></figure></li><li><p>分桶建表：</p></li></ul><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> table_name (</span><br><span class="line">    id <span class="type">int</span>, </span><br><span class="line">    name string) </span><br><span class="line">    CLUSTERD <span class="keyword">BY</span> (id) <span class="keyword">INTO</span> <span class="number">4</span> BUCKETS </span><br><span class="line">    <span class="type">ROW</span> FORMAT DELIMITED </span><br><span class="line">    FIELDS TERMINATED <span class="keyword">BY</span> <span class="string">&#x27;\t&#x27;</span>;</span><br></pre></td></tr></table></figure><ul><li>分桶表加载数据：先创建普通表作为中建表，再通过把数据加载到分桶表中。<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> OVERWRITE <span class="keyword">TABLE</span> clustered_table <span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> helper_table CLUSTER <span class="keyword">BY</span>(id);</span><br></pre></td></tr></table></figure></li></ul><h2 id="HiveQL注意事项"><a href="#HiveQL注意事项" class="headerlink" title="HiveQL注意事项"></a>HiveQL注意事项</h2><ul><li><code>JOIN</code>只支持等值连接，且不支持在子句间使用<code>OR</code>串联。</li><li>默认<code>JOIN</code>最后一张表为主表，因此需要把大表放在<code>JOIN</code>语句的最后。也可用<code>/*+STREAMTABLE(xxx)*/</code>来告知优化器哪张表是大表。</li><li><code>ORDER BY</code>和MySQL的<code>ORDER BY</code>一致，对输入全局排序，需要较长的时间；而<code>SORT BY</code>只在每一个Reducer内进行排序，不保证全局有序，速度较快。</li><li><code>DISTRIBUTE BY</code>根据指定字段把数据分发到不同的Reducer。</li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> 数据仓库 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> OLAP </tag>
+            
+            <tag> Hive </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Hive（1）学习笔记——概念</title>
+      <link href="/Hive_01/"/>
+      <url>/Hive_01/</url>
+      
+        <content type="html"><![CDATA[<h2 id="Hadoop"><a href="#Hadoop" class="headerlink" title="Hadoop"></a>Hadoop</h2><ul><li><strong>Hadoop</strong>：一种由Java语言编写的分布式数据存储解决方案，其核心是HDFS和MapReduce。HDFS提供了存储，MapReduce提供了计算。</li><li><strong>HDFS</strong>：Hadoop应用的最主要的分布式文件系统。一个HDFS集群主要由一个NameNode和多个Datanode组成，NameNode管理文件系统的元数据，Datanode存储了实际的数据。</li><li><strong>MapReduce</strong>：一个计算框架，将计算任务分割成多个处理单元分散集群内的服务器里执行，从而降低成本。</li><li><strong>HBase</strong>：使用HDFS持久化存储数据，主要存储非结构化和半结构化的松散数据，支持行级别的更新、快速查询、支持事务。</li><li><strong>Yarn</strong>：Hadoop资源管理框架。</li><li><strong>Hive</strong>：基于Hadoop的一种数据仓库工具，可将结构化的数据文件映射为一张数据库表，并提供类SQL查询功能。</li></ul><h2 id="HDFS"><a href="#HDFS" class="headerlink" title="HDFS"></a>HDFS</h2><p>Hadoop分布式文件系统(Hadoop Distributed File System)，将一份大文件分成若干块存储在不同的服务器节点上，实现多机分享文件和存储空间。</p><p>特点: </p><ul><li>保存多个副本(默认3个)，提供容错机制;</li><li>适合保存大数据，不适合保存小文件。</li></ul><h3 id="NameNode"><a href="#NameNode" class="headerlink" title="NameNode"></a>NameNode</h3><p>NameNode是HDFS的Master节点，管理数据块的映射、处理客户端的读写请求、配置副本粗略、管理HDFS的名称空间。</p><p>NameNode包含<code>fsimage</code>和<code>edits</code>文件，保存目录与数据块之间的关系。</p><ul><li><code>fsimage</code>存储目录树信息，即某一数据块保存在哪些数据节点上的信息，NameNode启动时首先读取这个文件，将目录树信息加载到内存中;</li><li><code>edits</code>存储日志信息，NameNode启动后对目录树的增删改信息记录到日志中;</li><li>NameNode启动时，先加载<code>fsimage</code>，再加载<code>edits</code>，把新的目录树信息添加到<code>fsimage</code>文件中，然后启用新的<code>edits</code>文件。这个过程称为<strong>检查点</strong>(<code>Checkpoint</code>)。</li></ul><h3 id="Secondary-NameNode"><a href="#Secondary-NameNode" class="headerlink" title="Secondary NameNode"></a>Secondary NameNode</h3><p>如果<code>edits</code>文件过大，加载<code>fsimage</code>和<code>edits</code>的时间就会变长，导致NameNode启动时间过长，因此采用Secondary NameNode定时拉取NameNode上的文件进行合并，并拷贝到NameNode，防止<code>edits</code>文件过大。</p><h3 id="Standby-NameNode"><a href="#Standby-NameNode" class="headerlink" title="Standby NameNode"></a>Standby NameNode</h3><p>Hadoop 2.0提出了NameNode高可用解决方案，即两个NameNode互为主备，一台处于Active状态，一台处于Standby状态。</p><p>只有Active状态的NameNode对外提供服务，Standby NameNode在Active NameNode不可用时切换为Active状态。</p><h3 id="DataNode"><a href="#DataNode" class="headerlink" title="DataNode"></a>DataNode</h3><p>DataNode在HDFS是负责读写和存储数据的节点，按照block为单位存储数据。</p><p>DataNode定时向NameNode报告节点状态，如果NameNode超过一定时间没有收到DataNode的心跳，认为该节点不可用。</p><h2 id="Hive"><a href="#Hive" class="headerlink" title="Hive"></a>Hive</h2><p>特点:</p><ul><li>适应Hadoop环境，提升磁盘性能；</li><li>语法接近SQL，避免写MapReduce，减少学习成本；</li><li>适合超大数据集的计算和存储，集群扩展容易；</li><li>支持用户自定义函数；</li><li>不支持行级插入、更新、删除操作，不支持事务；</li><li>执行延迟比较高，常用于数据分析等对实时性要求不高的场合。</li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> 数据仓库 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> OLAP </tag>
+            
+            <tag> Hive </tag>
+            
+            <tag> Hadoop </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Kafka学习笔记（5）——消息队列</title>
+      <link href="/Kafka_05/"/>
+      <url>/Kafka_05/</url>
+      
+        <content type="html"><![CDATA[<h2 id="消息丢失"><a href="#消息丢失" class="headerlink" title="消息丢失"></a>消息丢失</h2><p>可能发生消息丢失的环节:</p><ul><li>生产者投递消息, 因为网络波动等原因, 没有发送成功;</li><li>消费者消费消息, 消费者未处理完消息就宕机, 消息没有成功消费;</li><li>分区中的Leader所在的Broker宕机, Leader的数据在同步到Follower前的这段时间内的消息丢失;</li></ul><p>解决方案:</p><ul><li>生产者: 使用带有返回值的消息发送方式, 通过callback得知消息是否发送成功, 如果发送失败进行重发;</li><li>消费者: 开启手动提交, 先消费消息, 再更新offset;</li><li>Broker: 调整分区的Replica数量, 调整<code>acks</code>参数.</li></ul><h2 id="消息重复消费"><a href="#消息重复消费" class="headerlink" title="消息重复消费"></a>消息重复消费</h2><p>发生重复消费的场景: 已经消费了消息, 但是offset没有提交. 产生的原因:</p><ul><li>消费者消费完消息, 还没有提交offset, 消费者线程就被强制<code>kill</code>掉;</li><li>消费者消费消息耗时过长, 超过了timeout, 与分区断开连接, 并且offset没有提交, 触发Rebalance后重复消费;</li></ul><p>解决方案:</p><ul><li>在有消费者线程的应用中, 尽量避免<code>kill -9</code>等操作;</li><li>合理设置<code>max.poll.interval.ms</code>和<code>max.poll.records</code>, 提高消费者处理消息的速度;</li><li>对消费的接口幂等处理, 例如设置唯一id等方式达到单次和多次操作达到一样的效果.</li></ul><h2 id="消息顺序消费"><a href="#消息顺序消费" class="headerlink" title="消息顺序消费"></a>消息顺序消费</h2><p>同一个Partition内的消息能保证消费的顺序性, 但不同Partition之间不能保证顺序.</p><p>解决方案: 发送消息时指定分区, 需要顺序消费的消息发送到同一分区.</p><h2 id="消息积压"><a href="#消息积压" class="headerlink" title="消息积压"></a>消息积压</h2><p>可能产生消息积压的场景:</p><ul><li>消费者宕机, 在重新启动消费者服务前, 数据量很大, 造成消息挤压;<ul><li>解决方案1: 消费者服务重启后直接消费最新的消息, 积压的旧消息通过离线程序补漏;</li><li>解决方案2: 增大消费者的处理能力, 从上次提交offset处开始消费.</li></ul></li><li>Kafka分区不合理, 通常是分区太少, 导致消费能力不足;<ul><li>解决方案: 适当增加分区数.</li></ul></li><li>Kafka消息的key不均匀, 分区数据不平衡;<ul><li>解决方案: 生产者给key增加随机后缀, 使其均衡. </li></ul></li></ul><h2 id="Kafka-高性能的原因"><a href="#Kafka-高性能的原因" class="headerlink" title="Kafka 高性能的原因"></a>Kafka 高性能的原因</h2><h3 id="顺序写"><a href="#顺序写" class="headerlink" title="顺序写"></a>顺序写</h3><p>Kafka虽然是写磁盘, 但因为顺序写, 直接追加数据到末尾, 性能极高.</p><h3 id="零拷贝"><a href="#零拷贝" class="headerlink" title="零拷贝"></a>零拷贝</h3><p>Kafka高吞吐量的原因: 零拷贝. 主要是利用Java NIO中FileChannel的<code>transferTo</code>方法.</p><p>传统IO实际经过4次文件内容复制:</p><ol><li>将磁盘文件数据copy到操作系统内核buffer;</li><li>将内核buffer的数据copy到应用程序的buffer;</li><li>将应用程序buffer中的数据copy到socket buffer;</li><li>将socket buffer中的数据copy到网卡buffer进行网络传输.</li></ol><p>零拷贝只有两次复制:</p><ol><li>将磁盘文件数据copy到操作系统内核buffer;</li><li>将内核buffer的数据copy到网卡buffer进行网络传输.</li></ol>]]></content>
+      
+      
+      <categories>
+          
+          <category> 中间件 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Kafka </tag>
+            
+            <tag> 消息队列 </tag>
+            
+            <tag> 分布式 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Kafka学习笔记（4）——负载均衡</title>
+      <link href="/Kafka_04/"/>
+      <url>/Kafka_04/</url>
+      
+        <content type="html"><![CDATA[<h2 id="分区副本机制"><a href="#分区副本机制" class="headerlink" title="分区副本机制"></a>分区副本机制</h2><p>每个Topic可以有多个Partition, 用于实现高伸缩、负载均衡, 同时每个Partition可以有多个<strong>副本</strong>(<code>Replica</code>), 用于实现Kafka的高可用.</p><h3 id="Leader-Replica"><a href="#Leader-Replica" class="headerlink" title="Leader Replica"></a>Leader Replica</h3><p>每一个Partition有且只有1个Replica可以作为Leader, 负责处理Producer、Consumer的请求, 并负责监管和维护ISR中所有Follower的滞后状态.</p><h3 id="Follower-Replica"><a href="#Follower-Replica" class="headerlink" title="Follower Replica"></a>Follower Replica</h3><p>每个Partition除了Leader以外的Replica都是Follwer, 不处理来自客户端的请求, 只通过Fetch Request拉取Leader Replica的数据进行同步.</p><h3 id="Leader选举"><a href="#Leader选举" class="headerlink" title="Leader选举"></a>Leader选举</h3><p>Broker Controller负责整个集群中的分区和副本的状态, 它会监听其他Broker的信息, 一旦有一个Broker宕机, Controller会读取该Broker上所有Partition在ZooKeeper上的状态, 并遍历ISR列表中的每个Replica, 决定哪一个成为新的Partition leader, 同时更新分区的ISR列表.</p><h3 id="ISR机制"><a href="#ISR机制" class="headerlink" title="ISR机制"></a>ISR机制</h3><p>每个分区都有一个ISR列表, 用于维护所有同步的、可用的副本, Leader Replica会追踪和维护ISR中所有Follower Replica的滞后状态, Follower Replica需要满足以下条件才被认为是同步的Replica:</p><ul><li>与ZooKeeper之间有一个活跃的会话, 定时向ZooKeeper发送心跳;</li><li>在规定的时间内从Leader Replica低延迟地获取过消息.</li></ul><p>如果不满足以上状态, Leader Replica会把该Replica从ISR移除.</p><h3 id="acks机制"><a href="#acks机制" class="headerlink" title="acks机制"></a>acks机制</h3><p>当Leader Replica接收到一条消息, 等待ISR中所有Replica都同步复制完成, 该消息才能被消费, 保证消息不丢失, 但如果Replica数量较大, 每条消息都同步完成耗时较大, 需要在一致性和可用性上做权衡, 设置参数<code>request.required.acks</code>:</p><ul><li><code>0</code>: 生产者不等待来自Broker的确认, 继续发送下一条消息. 延迟低, 吞吐量高, 但可靠性低.</li><li><code>1</code>: 生产者收到来自Leader的确认后发送下一条消息, 默认值.</li><li><code>-1</code>: 生产者等待ISR中所有Follower的确认后发送下一条消息, 只要至少一个Replica存活就不会丢失数据, 损失性能换来数据的健壮性.</li></ul><h3 id="Segment"><a href="#Segment" class="headerlink" title="Segment"></a>Segment</h3><p>Partition不是最小的存储单元, 每个Partition由一个或多个Segment组成, 所有的Segment均存在于所属Partition目录下. 每一个Segment都以所存储的第一个消息的上一个Offset为文件名, 可以通过二分查找迅速找到所属的Segment.</p><h2 id="消息投递的负载均衡"><a href="#消息投递的负载均衡" class="headerlink" title="消息投递的负载均衡"></a>消息投递的负载均衡</h2><p>Producer发送消息时必须指定Topic, 但不必指定Partition, Kafka会进行负载均衡, 把消息均衡分布到Topic下的分区上, 也可以手动指定分区.</p><ul><li>Kafka默认的分区机制:<ul><li>如果不指定分区<code>key</code>, 使用轮询算法将消息均衡地分布到各个分区上;</li><li>如果分区<code>key</code>参数不为<code>null</code>, 使用内置的hash算法将消息分布到各个分区上.</li></ul></li><li>自定义分区:<ul><li>生产者发送消息时, 手动指定分区;</li><li>自定义Partitioner.</li></ul></li></ul><h2 id="Consumer-Group-负载均衡"><a href="#Consumer-Group-负载均衡" class="headerlink" title="Consumer Group 负载均衡"></a>Consumer Group 负载均衡</h2><p>当发生以下情况时, 会导致Consumer Group的负载均衡(<code>Rebalance</code>):</p><ul><li>订阅的Topic数量发生变化;</li><li>订阅的Topic分区数发生变化;</li><li>Consumer个数发生变化.</li></ul><p>Rebalance发生时, 消费者组下所有的Consumer都会一起参与, 保证尽量达到公平分配, 但会使所有Consumer停止工作, 直到Rebalance完成.</p><p>Consumer个数发生变化是意外发生Rebalance的主要原因. 减少Rebalance情况的出现的可选参数:</p><ul><li>设置<code>session.timeout.ms</code>和<code>heartbeat.interval.ms</code>, 使得Consumer不会因为没有及时发送心跳而被认为下线;</li><li>设置<code>max.poll.interval.ms</code>, 让Consumer有足够时间消费消息, 防止因为处理消息时间太长而触发Rebalance.</li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> 中间件 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Kafka </tag>
+            
+            <tag> 消息队列 </tag>
+            
+            <tag> 分布式 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Kafka学习笔记（3）——Offset</title>
+      <link href="/Kafka_03/"/>
+      <url>/Kafka_03/</url>
+      
+        <content type="html"><![CDATA[<h2 id="Offset"><a href="#Offset" class="headerlink" title="Offset"></a>Offset</h2><p>Offset用于记录消费者上一次读取到哪里, 一般是连续递增的.</p><p>Kafka提供两种Consumer API:</p><ul><li><code>High level API</code>: offset存放在ZooKeeper, 自动读取该Consumer Group中的last offset, 自动实现负载均衡;</li><li><code>Low level API</code>: offset由消费者自己维护, 消费消息更加灵活, 但需要自己管理offset、自己实现负载均衡.</li></ul><p>当有分区的offset不存在时, 根据<code>auto.offset.reset</code>的设置, 会有几种不同的策略:</p><ul><li><code>earlist</code>: 从头开始消费;</li><li><code>latest</code>: 从最新的消息开始消费;</li><li><code>none</code>: 只要该topic下有一个分区不存在已提交的offset, 就抛出异常.</li></ul><h4 id="HW和LEO"><a href="#HW和LEO" class="headerlink" title="HW和LEO"></a>HW和LEO</h4><ul><li><code>LEO</code>(Log End Offset): 当前日志文件中下一条待写入的消息的Offset, 即当前日志文件中最后一条消息的Offset+1.</li><li><code>HW</code>(High Watermark): 俗称高水位, 分区ISR集合中最小的LEO即为分区的HW. 是一个特定的offset, 消费者只能拉取到HW之前的消息.</li></ul><h4 id="Offset更新方式"><a href="#Offset更新方式" class="headerlink" title="Offset更新方式"></a>Offset更新方式</h4><ul><li>自动提交: <code>enable.auto.commit = true</code>, 更新的频率按照<code>auto.commit.interval.ms</code>确定. 消费者fetch到消息后就更新offset, 无论消息是否消费成功. 实现At Most Once, 是Kafka默认的设置.</li><li>手动提交: <code>enable.auto.commit = false</code>, 消费者fetch到消息后, 等到消费完成再调用<code>consumer.commitSync()</code>, 手动更新offset; 如果消费失败, offset不会更新, 此消息被重复消费一次. 实现At Least Once. 如果能保证消息的幂等性, 则能实现Exactly Once.</li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> 中间件 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Kafka </tag>
+            
+            <tag> 消息队列 </tag>
+            
+            <tag> 分布式 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Kafka学习笔记（2）——角色</title>
+      <link href="/Kafka_02/"/>
+      <url>/Kafka_02/</url>
+      
+        <content type="html"><![CDATA[<h2 id="Kafka-角色"><a href="#Kafka-角色" class="headerlink" title="Kafka 角色"></a>Kafka 角色</h2><p>一个典型的Kafka集群包含若干个<strong>生产者</strong>(<code>Producer</code>), 若干<strong>代理</strong>(<code>Broker</code>), 若干<strong>消费者</strong>(<code>Consumer</code>)组成Consumer Group, 和一个<code>ZooKeeper</code>集群.</p><p>Producer通过<code>push</code>将消息发布到Broker, Consumer通过<code>pull</code>从Broker订阅并消费消息.</p><p>Kafka使用<strong>主题</strong>(<code>Topic</code>)作为消息通信载体, 发布者发布一条消息, 该消息通过主题传递给所有的订阅者.</p><h2 id="Broker"><a href="#Broker" class="headerlink" title="Broker"></a>Broker</h2><p><strong>代理</strong>(<code>Broker</code>)可以看做一个独立的Kafka实例. 多个Broker组成一个Cluster.</p><h3 id="Broker-Controller选举"><a href="#Broker-Controller选举" class="headerlink" title="Broker Controller选举"></a>Broker Controller选举</h3><p>Broker Cluster受zooKeeper管理, 所有Broker节点在启动时都会在ZooKeeper上注册临时节点, 但只有第一个Broker注册成功, 其他的都会失败, 注册成功的Broker成为Controller, 注册失败的Broker通过watch接收Controller变更的通知.</p><p>如果此Controller宕机, 注册在ZooKeeper上的临时节点就会失效, 此时其他的Broker去ZooKeeper上注册临时节点, 注册成功的Broker成为新的Controller.</p><h3 id="Topic-amp-Partition"><a href="#Topic-amp-Partition" class="headerlink" title="Topic &amp; Partition"></a>Topic &amp; Partition</h3><p>Kafka的消息通过<strong>主题</strong>(<code>Topic</code>)进行分类, 一个Topic可以包含若干个<strong>分区</strong>(<code>Partition</code>), 实现数据的冗余和伸缩性, 不同的Partition可以分布在不同的服务器上, 实现高性能.</p><p>消息以追加的方式写入Partition, 消费者以先进先出的顺序进行读取, 可以保证单个Partition内消息的顺序性, 但无法保证整个Topic内消息的顺序性.</p><p>每个Partition还具有多个<strong>副本</strong>(<code>Replica</code>)实现数据的冗余.</p><h2 id="Producer"><a href="#Producer" class="headerlink" title="Producer"></a>Producer</h2><p><strong>生产者</strong>负责创建消息, 一般情况下, 生产者把消息均衡地分布在指定Topic的所有Partition上, 也可以通过自定义分区器实现把消息写入到指定的Partition.</p><h2 id="Consumer"><a href="#Consumer" class="headerlink" title="Consumer"></a>Consumer</h2><p><strong>消费者</strong>负责消费消息, 消费者可以订阅一个或多个主题, 并按照消息生成的顺序读取它们.</p><h3 id="Consumer-Group"><a href="#Consumer-Group" class="headerlink" title="Consumer Group"></a>Consumer Group</h3><p>单个消费者无法跟上数据生成的速度时, 可以增加更多的消费者, 分担负载、分别处理分区的消息, 形成消费者组.</p><p>同一个分区只能被同一个消费者组里的一个消费者读取, 不可能出现同一个分区被同一个消费者组里的多个消费者共同消费的情况. 如果一个消息需要被多个消费者消费, 那这些消费者必须在不同的消费者组.</p><p>一个消费者组里无论有多少个消费者, 都会把topic下所有的Partition消费了, 当消费者组内消费者数量小于分区数量时, 会出现一个消费者消费多个分区的情况; 当消费者数量大于分区数量时, 就会有消费者线程空闲; 因此效率最好的情况是消费者数量等于分区数量.</p><p>多个消费者组消费同一个topic下的message, 它们的offset互不影响, 这些message会被重复消费.</p><h2 id="ZooKeeper"><a href="#ZooKeeper" class="headerlink" title="ZooKeeper"></a>ZooKeeper</h2><p>ZooKeeper为Kafka提供元数据管理的功能, 保存Broker信息和Consumer信息.</p><ul><li>管理Broker和Consumer的动态加入与离开;</li><li>提供消费者组的负载均衡Rebalance;</li><li>维护消费关系和Partition的消费信息.</li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> 中间件 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Kafka </tag>
+            
+            <tag> 消息队列 </tag>
+            
+            <tag> 分布式 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Kafka学习笔记（1）——概念</title>
+      <link href="/Kafka_01/"/>
+      <url>/Kafka_01/</url>
+      
+        <content type="html"><![CDATA[<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>Kafka是一个分布式、支持分区、多副本、基于ZooKeeper协调的分布式消息系统.</p><h2 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h2><ul><li><strong>高吞吐, 低延迟</strong>: 最高每秒处理千万级别的消息, 延迟最低只有几毫秒;</li><li><strong>扩展性</strong>: Kafka集群支持热扩展;</li><li><strong>持久性、可靠性</strong>: 消息持久化到磁盘, 防止消息丢失;</li><li><strong>容错性</strong>: 允许集群中节点失败;</li><li><strong>高并发</strong>: 支持数千个客户端同时读写.</li></ul><h2 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h2><ul><li><strong>日志收集</strong>: 收集各种服务的log, 以统一接口开放给各种下游消费者;</li><li><strong>消息队列</strong>: 解耦生产者、消费者, 缓存消息;</li><li><strong>用户活动跟踪</strong>: 记录用户活动信息, 订阅者订阅相关Topic进行实时监控分析;</li><li><strong>运营指标</strong>: 记录运营监控数据, 比如警告和报告;</li><li><strong>流式处理</strong>: 例如Spark Streaming, Storm.</li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> 中间件 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Kafka </tag>
+            
+            <tag> 消息队列 </tag>
+            
+            <tag> 分布式 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>MySQL学习笔记（4）——优化</title>
       <link href="/mysql_04/"/>
       <url>/mysql_04/</url>

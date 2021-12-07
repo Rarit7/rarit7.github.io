@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Hive学习笔记（3）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hive（3）学习笔记——执行过程">
+<meta property="og:url" content="http://ster.im/Hive_03/index.html">
+<meta property="og:site_name" content="Rarit7&#39;s Blog">
+<meta property="og:description" content="Hive学习笔记（3）">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-08-06T11:42:09.000Z">
+<meta property="article:modified_time" content="2021-12-07T09:22:21.339Z">
+<meta property="article:author" content="Rarit7">
+<meta property="article:tag" content="OLAP">
+<meta property="article:tag" content="Hive">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon-192x192.png">
+        
+      
+    
+    <!-- title -->
+    <title>Hive（3）学习笔记——执行过程</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" "Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇 " href="/Hive_04/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇 " href="/Hive_02/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部 " href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章 " href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://ster.im/Hive_03/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://ster.im/Hive_03/&text=Hive（3）学习笔记——执行过程"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://ster.im/Hive_03/&title=Hive（3）学习笔记——执行过程"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://ster.im/Hive_03/&is_video=false&description=Hive（3）学习笔记——执行过程"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Hive（3）学习笔记——执行过程&body=Check out this article: http://ster.im/Hive_03/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://ster.im/Hive_03/&title=Hive（3）学习笔记——执行过程"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://ster.im/Hive_03/&title=Hive（3）学习笔记——执行过程"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://ster.im/Hive_03/&title=Hive（3）学习笔记——执行过程"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://ster.im/Hive_03/&title=Hive（3）学习笔记——执行过程"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://ster.im/Hive_03/&name=Hive（3）学习笔记——执行过程&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://ster.im/Hive_03/&t=Hive（3）学习笔记——执行过程"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Hive%E4%B8%BB%E8%A6%81%E7%BB%84%E4%BB%B6"><span class="toc-number">1.</span> <span class="toc-text">Hive主要组件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Hive%E5%9F%BA%E6%9C%AC%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">Hive基本执行过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Hive%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92"><span class="toc-number">3.</span> <span class="toc-text">Hive执行计划</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SELECT%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B"><span class="toc-number">4.</span> <span class="toc-text">SELECT执行过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%85%A5%E5%88%86%E7%89%87"><span class="toc-number">4.1.</span> <span class="toc-text">输入分片</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Map%E9%98%B6%E6%AE%B5"><span class="toc-number">4.2.</span> <span class="toc-text">Map阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Shuffle%E5%92%8CReduce%E9%98%B6%E6%AE%B5"><span class="toc-number">4.3.</span> <span class="toc-text">Shuffle和Reduce阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%87%BA%E6%96%87%E4%BB%B6"><span class="toc-number">4.4.</span> <span class="toc-text">输出文件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GROUP-BY%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B"><span class="toc-number">5.</span> <span class="toc-text">GROUP BY执行过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%85%A5%E5%88%86%E7%89%87-1"><span class="toc-number">5.1.</span> <span class="toc-text">输入分片</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Map%E9%98%B6%E6%AE%B5-1"><span class="toc-number">5.2.</span> <span class="toc-text">Map阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Combiner%E9%98%B6%E6%AE%B5"><span class="toc-number">5.3.</span> <span class="toc-text">Combiner阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Shuffle%E9%98%B6%E6%AE%B5"><span class="toc-number">5.4.</span> <span class="toc-text">Shuffle阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Reduce%E9%98%B6%E6%AE%B5"><span class="toc-number">5.5.</span> <span class="toc-text">Reduce阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%87%BA%E6%96%87%E4%BB%B6-1"><span class="toc-number">5.6.</span> <span class="toc-text">输出文件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JOIN%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B"><span class="toc-number">6.</span> <span class="toc-text">JOIN执行过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%85%A5%E5%88%86%E7%89%87-2"><span class="toc-number">6.1.</span> <span class="toc-text">输入分片</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Map%E9%98%B6%E6%AE%B5-2"><span class="toc-number">6.2.</span> <span class="toc-text">Map阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Shuffle%E9%98%B6%E6%AE%B5-1"><span class="toc-number">6.3.</span> <span class="toc-text">Shuffle阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Reduce%E9%98%B6%E6%AE%B5-1"><span class="toc-number">6.4.</span> <span class="toc-text">Reduce阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%87%BA%E6%96%87%E4%BB%B6-2"><span class="toc-number">6.5.</span> <span class="toc-text">输出文件</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Hive（3）学习笔记——执行过程
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Rarit7</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2021-08-06T11:42:09.000Z" itemprop="datePublished">2021-08-06</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93/">数据仓库</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Hive/" rel="tag">Hive</a>, <a class="tag-link-link" href="/tags/OLAP/" rel="tag">OLAP</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="Hive主要组件"><a href="#Hive主要组件" class="headerlink" title="Hive主要组件"></a>Hive主要组件</h2><ul>
+<li><strong>Driver组件</strong>：包括Complier（编译器）、Optimizer（优化器）和Exector（执行器），是Hive的核心组件。</li>
+<li><strong>Metastore组件</strong>：存储Hive的元数据，存储在关系型数据库中，包括Derby和MySQL。</li>
+<li><strong>CLI</strong>：命令行接口。</li>
+<li><strong>Thrift Server</strong>：用于可扩展、跨语言的服务开发。</li>
+<li><strong>Hive Web Interface</strong>：提供网页的方式访问Hive服务。</li>
+</ul>
+<h2 id="Hive基本执行过程"><a href="#Hive基本执行过程" class="headerlink" title="Hive基本执行过程"></a>Hive基本执行过程</h2><ul>
+<li>Hive将HQL转换成一组操作符，这些操作符是Hive的最小单元。</li>
+<li>每个操作符代表一个HDFS操作或者MapReduce作业，如<code>GroupByOperator</code>，<code>JoinOperator</code>等。</li>
+<li>Hive通过<code>ExecMapper</code>和<code>ExecReducer</code>执行MapReduce程序，执行模式有本地模式和分布式两种模式。</li>
+<li>本地模式在单机上处理所有任务，适合小数据集，效率比提交到集群处理高很多。任务需要满足：<ul>
+<li>job输入数据小于<code>hive.exec.mode.local.auto.inputbytes.max</code>（默认为128MB）；</li>
+<li>job的Map数小于<code>hive.exec.mode.local.auto.tasks.max</code>（默认为4）；</li>
+<li>job的Reduce数必须为0或者1。</li>
+</ul>
+</li>
+</ul>
+<h2 id="Hive执行计划"><a href="#Hive执行计划" class="headerlink" title="Hive执行计划"></a>Hive执行计划</h2><ul>
+<li>读取元数据信息，对SQL进行词法和语法分析，检查表、字段是否存在，SQL是否有误；</li>
+<li>将SQL转换成抽象语法树<code>AST</code>，然后将其转换为查询块<code>Query Block</code>，进一步抽象和结构化；</li>
+<li>遍历<code>Query Block</code>，生成<code>Operator Tree</code>；</li>
+<li>逻辑层优化器变换<code>Operator Tree</code>，合并不必要的<code>ReduceSinkOperator</code>，减少Shuffle数量；</li>
+<li>生成物理执行计划，遍历<code>Operator Tree</code>，翻译为MapReduce任务；</li>
+<li>物理层优化器进行MapReduce任务的变换，生成最终的执行计划。</li>
+</ul>
+<h2 id="SELECT执行过程"><a href="#SELECT执行过程" class="headerlink" title="SELECT执行过程"></a>SELECT执行过程</h2><h3 id="输入分片"><a href="#输入分片" class="headerlink" title="输入分片"></a>输入分片</h3><ul>
+<li>按照分区条件，读取对应分区的文件。</li>
+<li>根据分片大小（Hadoop1.x默认是64MB，Hadoop2.x默认是128MB），对文件进行分片。</li>
+</ul>
+<h3 id="Map阶段"><a href="#Map阶段" class="headerlink" title="Map阶段"></a>Map阶段</h3><ul>
+<li>根据分片数量，启动对应数量的Map任务。</li>
+<li>每个Map任务仅对自己的分片进行检查。</li>
+<li>所有Map任务并行执行，只需增加相应的机器和节点，就能在相同时间内处理更多的数据。</li>
+</ul>
+<h3 id="Shuffle和Reduce阶段"><a href="#Shuffle和Reduce阶段" class="headerlink" title="Shuffle和Reduce阶段"></a>Shuffle和Reduce阶段</h3><ul>
+<li><code>SELECT</code>操作不涉及数据的重新分发和分布，不需要启动任何的Reduce任务。</li>
+</ul>
+<h3 id="输出文件"><a href="#输出文件" class="headerlink" title="输出文件"></a>输出文件</h3><ul>
+<li>Hadoop合并Map任务输出文件到输出目录。</li>
+</ul>
+<h2 id="GROUP-BY执行过程"><a href="#GROUP-BY执行过程" class="headerlink" title="GROUP BY执行过程"></a>GROUP BY执行过程</h2><h3 id="输入分片-1"><a href="#输入分片-1" class="headerlink" title="输入分片"></a>输入分片</h3><ul>
+<li>按照分区条件，读取对应分区的文件。</li>
+<li>根据分片大小，对文件进行分片。</li>
+</ul>
+<h3 id="Map阶段-1"><a href="#Map阶段-1" class="headerlink" title="Map阶段"></a>Map阶段</h3><ul>
+<li>根据分片数量，启动对应数量的Map任务。</li>
+<li>每个Map任务检查对应分片中的字段名是否符合筛选条件，如果是，输出形如<code>&lt;xxx, 1&gt;</code>的键值对（xxx为分组条件）。</li>
+</ul>
+<h3 id="Combiner阶段"><a href="#Combiner阶段" class="headerlink" title="Combiner阶段"></a>Combiner阶段</h3><ul>
+<li>如果选择了<code>Combiner</code>操作，Hadoop会在Map任务的本地输出执行<code>Combiner</code>，去除冗余输出。例如，一个Reducer中出现了<code>&lt;xxx, 1&gt;</code>两次，则会合并为<code>&lt;xxx, 2&gt;</code>。注意使用<code>Combiner</code>的原则是不影响到Reduce计算的最终输入，例如求总数、求最大值等，但不适合求均值等情况。</li>
+</ul>
+<h3 id="Shuffle阶段"><a href="#Shuffle阶段" class="headerlink" title="Shuffle阶段"></a>Shuffle阶段</h3><ul>
+<li>Shuffle过程是把Map任务输出到Reduce任务输入的整个处理过程。</li>
+<li>对于<code>GROUP BY</code>，Hadoop通过某种方法把每个输出的键值对分配到某一个Reducer进行合并。最为常用的方法是<code>Hash Partitioner</code>，即Hadoop对每个键取Hash，对此Hash按照Reduce任务数量取模，得到对应的Reducer。合并后的输出形如<code>&lt;xxx, &#123;2,1&#125;&gt;</code>，将其作为一个Reducer的输入。</li>
+</ul>
+<h3 id="Reduce阶段"><a href="#Reduce阶段" class="headerlink" title="Reduce阶段"></a>Reduce阶段</h3><ul>
+<li>Reduce Task调用reduce函数逻辑将输入汇总，输出到本地文件中。</li>
+</ul>
+<h3 id="输出文件-1"><a href="#输出文件-1" class="headerlink" title="输出文件"></a>输出文件</h3><ul>
+<li>Hadoop合并Reduce Task任务输出文件到输出目录。</li>
+</ul>
+<h2 id="JOIN执行过程"><a href="#JOIN执行过程" class="headerlink" title="JOIN执行过程"></a>JOIN执行过程</h2><p>如果<code>JOIN</code>语句中存在子查询，它会被拆分成数个MapReduce任务。</p>
+<h3 id="输入分片-2"><a href="#输入分片-2" class="headerlink" title="输入分片"></a>输入分片</h3><ul>
+<li>如果<code>JOIN</code>任务的输入是两个MapReduce任务的输出，依然会对它们根据文件大小进行分片。</li>
+</ul>
+<h3 id="Map阶段-2"><a href="#Map阶段-2" class="headerlink" title="Map阶段"></a>Map阶段</h3><ul>
+<li>根据分片数量，启动对应数量的Map任务。</li>
+</ul>
+<h3 id="Shuffle阶段-1"><a href="#Shuffle阶段-1" class="headerlink" title="Shuffle阶段"></a>Shuffle阶段</h3><ul>
+<li>对于<code>JOIN</code>，Shuffle主要过程是<code>Partition</code>，根据<code>JOIN</code>的列进行数据的重分布和分发。常用的<code>Partition</code>方法也是<code>Hash Partitioner</code>。</li>
+</ul>
+<h3 id="Reduce阶段-1"><a href="#Reduce阶段-1" class="headerlink" title="Reduce阶段"></a>Reduce阶段</h3><ul>
+<li>Reduce Task根据<code>JOIN</code>的键将它们的值关联合并成一行，写入本地的输出文件中。</li>
+</ul>
+<h3 id="输出文件-2"><a href="#输出文件-2" class="headerlink" title="输出文件"></a>输出文件</h3><ul>
+<li>Hadoop合并Reduce Task任务输出文件到输出目录。</li>
+</ul>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Hive%E4%B8%BB%E8%A6%81%E7%BB%84%E4%BB%B6"><span class="toc-number">1.</span> <span class="toc-text">Hive主要组件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Hive%E5%9F%BA%E6%9C%AC%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">Hive基本执行过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Hive%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92"><span class="toc-number">3.</span> <span class="toc-text">Hive执行计划</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SELECT%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B"><span class="toc-number">4.</span> <span class="toc-text">SELECT执行过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%85%A5%E5%88%86%E7%89%87"><span class="toc-number">4.1.</span> <span class="toc-text">输入分片</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Map%E9%98%B6%E6%AE%B5"><span class="toc-number">4.2.</span> <span class="toc-text">Map阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Shuffle%E5%92%8CReduce%E9%98%B6%E6%AE%B5"><span class="toc-number">4.3.</span> <span class="toc-text">Shuffle和Reduce阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%87%BA%E6%96%87%E4%BB%B6"><span class="toc-number">4.4.</span> <span class="toc-text">输出文件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GROUP-BY%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B"><span class="toc-number">5.</span> <span class="toc-text">GROUP BY执行过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%85%A5%E5%88%86%E7%89%87-1"><span class="toc-number">5.1.</span> <span class="toc-text">输入分片</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Map%E9%98%B6%E6%AE%B5-1"><span class="toc-number">5.2.</span> <span class="toc-text">Map阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Combiner%E9%98%B6%E6%AE%B5"><span class="toc-number">5.3.</span> <span class="toc-text">Combiner阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Shuffle%E9%98%B6%E6%AE%B5"><span class="toc-number">5.4.</span> <span class="toc-text">Shuffle阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Reduce%E9%98%B6%E6%AE%B5"><span class="toc-number">5.5.</span> <span class="toc-text">Reduce阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%87%BA%E6%96%87%E4%BB%B6-1"><span class="toc-number">5.6.</span> <span class="toc-text">输出文件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JOIN%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B"><span class="toc-number">6.</span> <span class="toc-text">JOIN执行过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%85%A5%E5%88%86%E7%89%87-2"><span class="toc-number">6.1.</span> <span class="toc-text">输入分片</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Map%E9%98%B6%E6%AE%B5-2"><span class="toc-number">6.2.</span> <span class="toc-text">Map阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Shuffle%E9%98%B6%E6%AE%B5-1"><span class="toc-number">6.3.</span> <span class="toc-text">Shuffle阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Reduce%E9%98%B6%E6%AE%B5-1"><span class="toc-number">6.4.</span> <span class="toc-text">Reduce阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%87%BA%E6%96%87%E4%BB%B6-2"><span class="toc-number">6.5.</span> <span class="toc-text">输出文件</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://ster.im/Hive_03/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://ster.im/Hive_03/&text=Hive（3）学习笔记——执行过程"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://ster.im/Hive_03/&title=Hive（3）学习笔记——执行过程"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://ster.im/Hive_03/&is_video=false&description=Hive（3）学习笔记——执行过程"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Hive（3）学习笔记——执行过程&body=Check out this article: http://ster.im/Hive_03/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://ster.im/Hive_03/&title=Hive（3）学习笔记——执行过程"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://ster.im/Hive_03/&title=Hive（3）学习笔记——执行过程"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://ster.im/Hive_03/&title=Hive（3）学习笔记——执行过程"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://ster.im/Hive_03/&title=Hive（3）学习笔记——执行过程"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://ster.im/Hive_03/&name=Hive（3）学习笔记——执行过程&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://ster.im/Hive_03/&t=Hive（3）学习笔记——执行过程"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2012-2021
+    Rarit7
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.3/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdn.bootcdn.net/ajax/libs/clipboard.js/2.0.8/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>
