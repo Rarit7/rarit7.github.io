@@ -13,7 +13,7 @@
       
       <categories>
           
-          <category> 数据仓库 </category>
+          <category> 大数据 </category>
           
       </categories>
       
@@ -23,6 +23,10 @@
             <tag> OLAP </tag>
             
             <tag> Hive </tag>
+            
+            <tag> 数据仓库 </tag>
+            
+            <tag> 数仓建模 </tag>
             
         </tags>
       
@@ -40,7 +44,7 @@
       
       <categories>
           
-          <category> 数据仓库 </category>
+          <category> 大数据 </category>
           
       </categories>
       
@@ -50,6 +54,8 @@
             <tag> OLAP </tag>
             
             <tag> Hive </tag>
+            
+            <tag> 数据仓库 </tag>
             
         </tags>
       
@@ -67,7 +73,7 @@
       
       <categories>
           
-          <category> 数据仓库 </category>
+          <category> 大数据 </category>
           
       </categories>
       
@@ -77,6 +83,8 @@
             <tag> OLAP </tag>
             
             <tag> Hive </tag>
+            
+            <tag> 数据仓库 </tag>
             
         </tags>
       
@@ -94,7 +102,7 @@
       
       <categories>
           
-          <category> 数据仓库 </category>
+          <category> 大数据 </category>
           
       </categories>
       
@@ -104,6 +112,8 @@
             <tag> OLAP </tag>
             
             <tag> Hive </tag>
+            
+            <tag> 数据仓库 </tag>
             
         </tags>
       
@@ -121,7 +131,7 @@
       
       <categories>
           
-          <category> 数据仓库 </category>
+          <category> 大数据 </category>
           
       </categories>
       
@@ -133,6 +143,8 @@
             <tag> Hive </tag>
             
             <tag> Hadoop </tag>
+            
+            <tag> 数据仓库 </tag>
             
         </tags>
       
@@ -150,7 +162,7 @@
       
       <categories>
           
-          <category> 中间件 </category>
+          <category> 大数据 </category>
           
       </categories>
       
@@ -162,6 +174,10 @@
             <tag> 消息队列 </tag>
             
             <tag> 分布式 </tag>
+            
+            <tag> 中间件 </tag>
+            
+            <tag> 流式处理 </tag>
             
         </tags>
       
@@ -179,7 +195,7 @@
       
       <categories>
           
-          <category> 中间件 </category>
+          <category> 大数据 </category>
           
       </categories>
       
@@ -191,6 +207,10 @@
             <tag> 消息队列 </tag>
             
             <tag> 分布式 </tag>
+            
+            <tag> 中间件 </tag>
+            
+            <tag> 流式处理 </tag>
             
         </tags>
       
@@ -208,7 +228,7 @@
       
       <categories>
           
-          <category> 中间件 </category>
+          <category> 大数据 </category>
           
       </categories>
       
@@ -220,6 +240,10 @@
             <tag> 消息队列 </tag>
             
             <tag> 分布式 </tag>
+            
+            <tag> 中间件 </tag>
+            
+            <tag> 流式处理 </tag>
             
         </tags>
       
@@ -237,7 +261,7 @@
       
       <categories>
           
-          <category> 中间件 </category>
+          <category> 大数据 </category>
           
       </categories>
       
@@ -249,6 +273,10 @@
             <tag> 消息队列 </tag>
             
             <tag> 分布式 </tag>
+            
+            <tag> 中间件 </tag>
+            
+            <tag> 流式处理 </tag>
             
         </tags>
       
@@ -266,7 +294,7 @@
       
       <categories>
           
-          <category> 中间件 </category>
+          <category> 大数据 </category>
           
       </categories>
       
@@ -278,6 +306,10 @@
             <tag> 消息队列 </tag>
             
             <tag> 分布式 </tag>
+            
+            <tag> 中间件 </tag>
+            
+            <tag> 流式处理 </tag>
             
         </tags>
       
